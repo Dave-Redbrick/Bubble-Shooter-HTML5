@@ -60,8 +60,9 @@ export class BubbleShooterGame {
       localStorage.getItem("bubbleShooterHighScore") || "0"
     );
     this.currentLevel = 1;
-    this.turnCounter = 0;
     this.rowOffset = 0;
+    this.chancesUntilNewRow = 5;
+    this.shotsWithoutPop = 0;
 
     // Animation
     this.animationState = 0;
@@ -367,8 +368,9 @@ export class BubbleShooterGame {
   newGame() {
     this.score = 0;
     this.currentLevel = 1;
-    this.turnCounter = 0;
     this.rowOffset = 0;
+    this.chancesUntilNewRow = 5;
+    this.shotsWithoutPop = 0;
     this.comboCount = 0;
     this.wallBounceCount = 0;
 
@@ -411,6 +413,7 @@ export class BubbleShooterGame {
       this.ui.updateHighScore(this.highScore);
       this.ui.updateLevel(this.currentLevel);
       this.ui.updateItems(this.items);
+      this.ui.updateChances(this.shotsWithoutPop, this.chancesUntilNewRow);
       
       // 레벨 진행률 업데이트
       const progress = this.levelManager.getLevelProgress(this.score);
@@ -484,6 +487,7 @@ export class BubbleShooterGame {
   }
 
   onClusterRemoved(clusterSize) {
+    this.shotsWithoutPop = 0; // 기회 카운트 리셋
     this.achievements.checkAchievement('firstPop');
     this.achievements.checkAchievement('combo', clusterSize);
     this.statistics.recordBubblesPop(clusterSize);

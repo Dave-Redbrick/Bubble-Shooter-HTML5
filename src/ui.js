@@ -18,6 +18,7 @@ export class UIManager {
       item2: document.getElementById("item2"),
       canvas: document.getElementById("viewport"),
       canvasContainer: null,
+      chancesContainer: document.querySelector(".chances-container"),
     };
 
     // 캔버스 컨테이너 생성
@@ -243,6 +244,23 @@ export class UIManager {
     canvas.addEventListener("touchend", (e) => {
       e.preventDefault();
     });
+  }
+
+  updateChances(shotsWithoutPop, chancesUntilNewRow) {
+    const container = this.elements.chancesContainer;
+    if (!container) return;
+
+    container.innerHTML = ''; // 이전 아이콘들 삭제
+    const chancesLeft = chancesUntilNewRow - shotsWithoutPop;
+
+    for (let i = 0; i < chancesUntilNewRow; i++) {
+      const pip = document.createElement('div');
+      pip.className = 'chance-pip';
+      if (i < chancesLeft) {
+        pip.classList.add('full');
+      }
+      container.appendChild(pip);
+    }
   }
 
   // 일일 도전 알림 표시
