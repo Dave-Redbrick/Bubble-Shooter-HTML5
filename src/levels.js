@@ -150,36 +150,12 @@ export class LevelManager {
       this.game.sound.play('levelComplete');
     }
     
-    // 레벨업 텍스트 표시
-    this.showLevelUpText(newLevel);
+    // 새로운 캔버스 기반 레벨업 효과 호출
+    if (this.game.effects) {
+      this.game.effects.showLevelUp(newLevel);
+    }
     
     this.game.updateUI();
-  }
-
-  showLevelUpText(level) {
-    // 기존 레벨업 텍스트가 있으면 제거
-    const existingText = document.querySelector('.level-up-overlay');
-    if (existingText) {
-      existingText.remove();
-    }
-
-    const levelUpOverlay = document.createElement('div');
-    levelUpOverlay.className = 'level-up-overlay';
-    levelUpOverlay.innerHTML = `
-      <div class="level-up-text">
-        <div class="level-up-main">LEVEL UP!</div>
-        <div class="level-up-number">레벨 ${level}</div>
-      </div>
-    `;
-    
-    document.body.appendChild(levelUpOverlay);
-    
-    // 3초 후 자동 제거
-    setTimeout(() => {
-      if (levelUpOverlay.parentNode) {
-        levelUpOverlay.remove();
-      }
-    }, 3000);
   }
 
   // 게임 시작시 초기 레벨 생성

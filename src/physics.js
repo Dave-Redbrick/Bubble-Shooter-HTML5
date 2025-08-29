@@ -218,12 +218,8 @@ export class PhysicsEngine {
 
     // Add new top row with random colors from the full range
     for (let i = 0; i < levelData.columns; i++) {
-      // 80% 확률로 버블 생성
-      if (Math.random() < 0.8) {
-        levelData.tiles[i][0].type = this.game.randRange(0, CONFIG.BUBBLE.COLORS - 1);
-      } else {
-        levelData.tiles[i][0].type = -1;
-      }
+      // 항상 버블을 생성하여 줄을 꽉 채움
+      levelData.tiles[i][0].type = this.game.randRange(0, CONFIG.BUBBLE.COLORS - 1);
     }
   }
 

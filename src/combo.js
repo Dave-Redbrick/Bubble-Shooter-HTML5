@@ -113,19 +113,23 @@ export class ComboManager {
   render(ctx) {
     if (!this.comboDisplay.visible) return;
 
-    const canvas = this.game.canvas;
-    const centerX = canvas.width / 2;
-    const centerY = canvas.height / 3;
+    const dangerLineY = this.game.player.y - this.game.levelData.tileHeight * 3;
+    const gridRightX = this.game.levelData.x + this.game.levelData.width;
+
+    // 위치를 위험선 우측 상단으로 변경
+    const x = gridRightX - 20;
+    const y = dangerLineY - 20;
 
     ctx.save();
     ctx.globalAlpha = this.comboDisplay.alpha;
-    ctx.translate(centerX, centerY);
+    ctx.translate(x, y);
     ctx.scale(this.comboDisplay.scale, this.comboDisplay.scale);
 
     // 그림자
     ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
     ctx.font = 'bold 48px Arial';
-    ctx.textAlign = 'center';
+    ctx.textAlign = 'right'; // 오른쪽 정렬
+    ctx.textBaseline = 'bottom'; // 하단 정렬
     ctx.fillText(this.comboDisplay.text, 2, 2);
 
     // 메인 텍스트

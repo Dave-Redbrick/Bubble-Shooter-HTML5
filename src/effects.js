@@ -21,12 +21,22 @@ export class EffectsManager {
       duration: 0,
       time: 0
     };
+    this.levelUpText = {
+      active: false,
+      text: '',
+      x: 0, y: 0,
+      alpha: 0,
+      scale: 1,
+      duration: 3,
+      time: 0
+    };
   }
 
   update(dt) {
     this.updateScreenShake(dt);
     this.updateSlowMotion(dt);
     this.updateColorFlash(dt);
+    this.updateLevelUpText(dt);
   }
 
   // 부드러운 화면 흔들림 효과 (VSCode Power Mode 스타일)
@@ -119,6 +129,79 @@ export class EffectsManager {
     ctx.globalAlpha = this.colorFlash.alpha;
     ctx.fillStyle = this.colorFlash.color;
     ctx.fillRect(0, 0, this.game.canvas.width, this.game.canvas.height);
+    ctx.restore();
+  }
+
+  showLevelUp(level) {
+    this.levelUpText.active = true;
+    this.levelUpText.text = `LEVEL ${level} UP!`;
+
+    const dangerLineY = this.game.player.y - this.game.levelData.tileHeight * 3;
+    const gridRightX = this.game.levelData.x + this.game.levelData.width;
+
+    this.levelUpText.x = gridRightX - 20;
+    this.levelUpText.y = dangerLineY - 80; // 콤보보다 약간 아래
+
+    this.levelUpText.time = 0;
+    this.levelUpText.alpha = 1;
+    this.levelUpText.scale = 1;
+  }
+
+  updateLevelUpText(dt) {
+    if (!this.levelUpText.active) return;
+
+    this.levelUpText.time += dt;
+    const effect = this.levelUpText;
+
+    if (effect.time >= effect.duration) {
+      effect.active = false;
+      return;
+    }
+
+    const life = effect.time / effect.duration;
+
+    // 처음 0.5초간 커졌다가 작아지는 효과
+    if (effect.time < 0.5) {
+      effect.scale = 1 + Math.sin((effect.time / 0.5) * Math.PI) * 0.3;
+    } else {
+      effect.scale = 1;
+    }
+
+    // 마지막 1초간 사라지는 효과
+    if (effect.time > effect.duration - 1) {
+      effect.alpha = (effect.duration - effect.time);
+    } else {
+      effect.alpha = 1;
+    }
+  }
+
+  renderLevelUpText(ctx) {
+    if (!this.levelUpText.active) return;
+
+    const effect = this.levelUpText;
+
+    ctx.save();
+    ctx.globalAlpha = effect.alpha;
+    ctx.translate(effect.x, effect.y);
+    ctx.scale(effect.scale, effect.scale);
+
+    ctx.font = 'bold 36px Arial';
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'bottom';
+
+    // 그림자
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+    ctx.fillText(effect.text, 2, 2);
+
+    // 메인 텍스트
+    ctx.fillStyle = '#00ff88';
+    ctx.fillText(effect.text, 0, 0);
+
+    // 외곽선
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 1.5;
+    ctx.strokeText(effect.text, 0, 0);
+
     ctx.restore();
   }
 

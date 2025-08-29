@@ -17,6 +17,7 @@ export class Renderer {
     this.game.particles.render(this.context);
     this.renderGameModeInfo();
     this.renderCombo();
+    this.game.effects.renderLevelUpText(this.context);
     this.renderEffects();
     this.renderGameOver();
     this.renderFPS();

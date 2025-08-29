@@ -66,7 +66,7 @@ export function getLevelConfig(canvas) {
   const config = CONFIG.LEVEL_CONFIGS[deviceType];
 
   // 사용 가능한 세로 공간을 기반으로 행(row) 수를 동적으로 계산
-  const topMargin = 80; // 버블 그리드 상단 여백
+  const topMargin = 0; // 버블 그리드 상단 여백
   const bottomMargin = 250; // 발사대 및 하단 UI를 위한 공간
   const availableHeight = canvas.height - topMargin - bottomMargin;
   const calculatedRows = Math.floor(availableHeight / config.ROW_HEIGHT);
