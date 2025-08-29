@@ -483,68 +483,121 @@ export class Renderer {
     const radius = levelData.radius;
 
     const color = BUBBLE_COLORS[index];
-    const lightColor = this.lightenColor(color, 30);
-    const darkColor = this.darkenColor(color, 30);
 
-    // Drop shadow
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+    // 그림자 효과
+    ctx.save();
+    ctx.globalAlpha = 0.3;
+    ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
     ctx.beginPath();
     ctx.arc(centerX + 3, centerY + 5, radius, 0, 2 * Math.PI);
     ctx.fill();
+    ctx.restore();
 
-    // Main bubble body
-    const gradient = ctx.createRadialGradient(
-      centerX - radius * 0.3,
-      centerY - radius * 0.3,
+    // 메인 버블 - 투명한 유리 효과
+    const mainGradient = ctx.createRadialGradient(
+      centerX,
+      centerY,
       0,
       centerX,
       centerY,
       radius
     );
-    gradient.addColorStop(0, lightColor);
-    gradient.addColorStop(1, color);
 
-    ctx.fillStyle = gradient;
+    // 투명한 색상으로 그라디언트 생성
+    const transparentColor = this.hexToRgba(color, 0.7);
+    const edgeColor = this.hexToRgba(this.darkenColor(color, 30), 0.9);
+
+    mainGradient.addColorStop(0, transparentColor);
+    mainGradient.addColorStop(0.7, transparentColor);
+    mainGradient.addColorStop(1, edgeColor);
+
+    ctx.fillStyle = mainGradient;
     ctx.beginPath();
     ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
     ctx.fill();
 
-    // Inner shadow for 3D effect
-    const innerShadow = ctx.createRadialGradient(
-      centerX,
-      centerY,
-      radius * 0.7,
-      centerX,
-      centerY,
-      radius
+    // 외곽선
+    ctx.strokeStyle = this.hexToRgba(this.darkenColor(color, 40), 0.8);
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // 상단 하이라이트 (큰 반사광)
+    const highlightGradient = ctx.createRadialGradient(
+      centerX - radius * 0.3,
+      centerY - radius * 0.3,
+      0,
+      centerX - radius * 0.3,
+      centerY - radius * 0.3,
+      radius * 0.6
     );
-    innerShadow.addColorStop(0, 'rgba(0,0,0,0)');
-    innerShadow.addColorStop(1, 'rgba(0,0,0,0.3)');
-    ctx.fillStyle = innerShadow;
+    highlightGradient.addColorStop(0, "rgba(255, 255, 255, 0.8)");
+    highlightGradient.addColorStop(0.3, "rgba(255, 255, 255, 0.4)");
+    highlightGradient.addColorStop(1, "rgba(255, 255, 255, 0)");
+
+    ctx.fillStyle = highlightGradient;
+    ctx.beginPath();
+    ctx.arc(
+      centerX - radius * 0.3,
+      centerY - radius * 0.3,
+      radius * 0.6,
+      0,
+      2 * Math.PI
+    );
     ctx.fill();
 
-    // Top highlight
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+    // 작은 반사광
+    ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
     ctx.beginPath();
     ctx.arc(
       centerX - radius * 0.4,
-      centerY - radius * 0.5,
-      radius * 0.4,
+      centerY - radius * 0.4,
+      radius * 0.15,
       0,
-      Math.PI * 2
+      2 * Math.PI
     );
     ctx.fill();
 
-    // Smaller, sharper highlight
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+    // 하단 반사광 (바닥 반사)
+    const bottomGradient = ctx.createRadialGradient(
+      centerX + radius * 0.2,
+      centerY + radius * 0.4,
+      0,
+      centerX + radius * 0.2,
+      centerY + radius * 0.4,
+      radius * 0.3
+    );
+    bottomGradient.addColorStop(0, "rgba(255, 255, 255, 0.3)");
+    bottomGradient.addColorStop(1, "rgba(255, 255, 255, 0)");
+
+    ctx.fillStyle = bottomGradient;
     ctx.beginPath();
     ctx.arc(
-      centerX - radius * 0.5,
-      centerY - radius * 0.6,
-      radius * 0.15,
+      centerX + radius * 0.2,
+      centerY + radius * 0.4,
+      radius * 0.3,
       0,
-      Math.PI * 2
+      2 * Math.PI
     );
+    ctx.fill();
+
+    // 내부 색상 반사
+    const innerGradient = ctx.createRadialGradient(
+      centerX,
+      centerY + radius * 0.3,
+      0,
+      centerX,
+      centerY + radius * 0.3,
+      radius * 0.4
+    );
+    innerGradient.addColorStop(
+      0,
+      this.hexToRgba(this.lightenColor(color, 20), 0.4)
+    );
+    innerGradient.addColorStop(1, "rgba(255, 255, 255, 0)");
+
+    ctx.fillStyle = innerGradient;
+    ctx.beginPath();
+    ctx.arc(centerX, centerY + radius * 0.3, radius * 0.4, 0, 2 * Math.PI);
     ctx.fill();
   }
 
