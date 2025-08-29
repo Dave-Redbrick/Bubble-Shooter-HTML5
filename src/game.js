@@ -487,6 +487,7 @@ export class BubbleShooterGame {
   }
 
   onClusterRemoved(clusterSize) {
+    this.shotsWithoutPop = 0; // 연속 실패가 끊겼으므로 리셋
     this.achievements.checkAchievement('firstPop');
     this.achievements.checkAchievement('combo', clusterSize);
     this.statistics.recordBubblesPop(clusterSize);

@@ -165,6 +165,9 @@ export class PhysicsEngine {
   }
 
   handleTurnEnd() {
+    // 버블을 터뜨리지 못했으므로 실패 카운트 증가
+    this.game.shotsWithoutPop++;
+
     // 실패 횟수가 주어진 기회에 도달했는지 확인
     if (this.game.shotsWithoutPop >= this.game.chancesUntilNewRow) {
       this.addBubbles();

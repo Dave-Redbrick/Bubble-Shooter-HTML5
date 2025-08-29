@@ -57,7 +57,6 @@ export class InputHandler {
   }
 
   shootBubble() {
-    this.game.shotsWithoutPop++;
     const player = this.game.player;
 
     player.bubble.x = player.x;
