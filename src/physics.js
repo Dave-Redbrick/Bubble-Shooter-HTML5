@@ -216,14 +216,11 @@ export class PhysicsEngine {
       }
     }
 
-    // Add new top row with random colors
-    const currentLevel = this.game.levelManager.calculateLevelFromScore(this.game.score);
-    const maxColors = Math.min(3 + Math.floor(currentLevel / 3), 7);
-    
+    // Add new top row with random colors from the full range
     for (let i = 0; i < levelData.columns; i++) {
       // 80% 확률로 버블 생성
       if (Math.random() < 0.8) {
-        levelData.tiles[i][0].type = this.game.randRange(0, maxColors - 1);
+        levelData.tiles[i][0].type = this.game.randRange(0, CONFIG.BUBBLE.COLORS - 1);
       } else {
         levelData.tiles[i][0].type = -1;
       }

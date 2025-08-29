@@ -38,32 +38,20 @@ export class Renderer {
     const ctx = this.context;
     const levelData = this.game.levelData;
 
-    // 레벨 영역 배경
-    ctx.fillStyle = "#333333";
-    ctx.fillRect(
-      levelData.x - 10,
-      levelData.y - 10,
-      levelData.width + 20,
-      levelData.height + 20
-    );
-
     // 좌우 테두리만 그리기
     ctx.strokeStyle = "#555555";
     ctx.lineWidth = 3;
 
-    // 왼쪽 테두리
+    // 왼쪽 테두리 (전체 높이)
     ctx.beginPath();
-    ctx.moveTo(levelData.x - 10, levelData.y - 10);
-    ctx.lineTo(levelData.x - 10, levelData.y + levelData.height + 10);
+    ctx.moveTo(levelData.x - 10, 0);
+    ctx.lineTo(levelData.x - 10, this.canvas.height);
     ctx.stroke();
 
-    // 오른쪽 테두리
+    // 오른쪽 테두리 (전체 높이)
     ctx.beginPath();
-    ctx.moveTo(levelData.x + levelData.width + 10, levelData.y - 10);
-    ctx.lineTo(
-      levelData.x + levelData.width + 10,
-      levelData.y + levelData.height + 10
-    );
+    ctx.moveTo(levelData.x + levelData.width + 10, 0);
+    ctx.lineTo(levelData.x + levelData.width + 10, this.canvas.height);
     ctx.stroke();
   }
 

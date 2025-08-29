@@ -63,7 +63,7 @@ export class MenuManager {
 
     // 새 게임
     this.modal.querySelector('#newGame').addEventListener('click', () => {
-      this.game.newGame();
+      this.game.gameMode.showModeSelector();
       this.closeMenu();
     });
 

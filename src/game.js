@@ -438,9 +438,8 @@ export class BubbleShooterGame {
     if (existingColors.length > 0) {
       bubbleType = existingColors[this.randRange(0, existingColors.length - 1)];
     } else {
-      // 기존 색상이 없으면 현재 레벨에 맞는 색상 범위에서 랜덤 생성
-      const maxColors = Math.min(3 + Math.floor(this.currentLevel / 4), CONFIG.BUBBLE.COLORS);
-      bubbleType = this.randRange(0, maxColors - 1);
+      // 기존 색상이 없으면 전체 색상 범위에서 랜덤 생성
+      bubbleType = this.randRange(0, CONFIG.BUBBLE.COLORS - 1);
     }
     
     return bubbleType;
