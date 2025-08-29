@@ -14,8 +14,10 @@ export class UIManager {
       currentScore: document.getElementById("current-score"),
       highScore: document.getElementById("high-score"),
       currentLevel: document.getElementById("current-level"),
-      item1: document.getElementById("item1"),
-      item2: document.getElementById("item2"),
+      itemSlotAim: document.getElementById("item-slot-aim"),
+      itemSlotBomb: document.getElementById("item-slot-bomb"),
+      aimItemTimer: document.querySelector("#item-slot-aim .item-timer"),
+      bombItemTimer: document.querySelector("#item-slot-bomb .item-timer"),
       canvas: document.getElementById("viewport"),
       canvasContainer: null,
       chancesContainer: document.querySelector(".chances-container"),
@@ -49,15 +51,15 @@ export class UIManager {
     }
 
     // 아이템 슬롯 클릭
-    if (this.elements.item1) {
-      this.elements.item1.addEventListener("click", () => {
-        this.useItem(1);
+    if (this.elements.itemSlotAim) {
+      this.elements.itemSlotAim.addEventListener("click", () => {
+        this.useItem('aim');
       });
     }
 
-    if (this.elements.item2) {
-      this.elements.item2.addEventListener("click", () => {
-        this.useItem(2);
+    if (this.elements.itemSlotBomb) {
+      this.elements.itemSlotBomb.addEventListener("click", () => {
+        this.useItem('bomb');
       });
     }
 
@@ -113,60 +115,49 @@ export class UIManager {
   }
 
   updateItems(items) {
-    // 조준 가이드 아이템 업데이트
-    const item1 = this.elements.item1;
-    if (item1) {
-      const timerEl = item1.querySelector('.item-timer');
+    if (!items) return;
 
-      if (items.aimGuide.active) {
-        if (!item1.classList.contains('active')) {
-          item1.classList.add('active');
-          item1.innerHTML = "<span>AIM<br>ACTIVE</span>";
-        }
+    // Aim Item
+    const aimSlot = this.elements.itemSlotAim;
+    const aimTimer = this.elements.aimItemTimer;
+    const aimText = aimSlot.querySelector('span');
 
-        if (!timerEl) {
-          const newTimerEl = document.createElement('div');
-          newTimerEl.className = 'item-timer';
-          item1.appendChild(newTimerEl);
-        }
-
-        const remainingPercent = (items.aimGuide.remaining / items.aimGuide.duration) * 100;
-        item1.querySelector('.item-timer').style.height = `${remainingPercent}%`;
-
+    if (aimSlot && items.aimGuide) {
+      const { active, remaining, duration, available } = items.aimGuide;
+      if (active) {
+        aimSlot.classList.add('active');
+        aimText.innerHTML = "AIM<br>ACTIVE";
+        const remainingPercent = (remaining / duration) * 100;
+        aimTimer.style.height = `${remainingPercent}%`;
       } else {
-        item1.classList.remove('active');
-        if (timerEl) {
-          timerEl.remove();
-        }
-        if (items.aimGuide.available > 0) {
-          item1.style.backgroundColor = ""; // 기본 스타일로 복원
-          item1.innerHTML = `<span>AIM<br>${items.aimGuide.available}</span>`;
+        aimSlot.classList.remove('active');
+        aimTimer.style.height = '0%';
+        aimText.innerHTML = `AIM<br>${available}`;
+        if (available === 0) {
+            aimSlot.classList.add('disabled');
         } else {
-          item1.style.backgroundColor = "#888"; // 비활성화 색
-          item1.innerHTML = "<span>AIM<br>0</span>";
+            aimSlot.classList.remove('disabled');
         }
       }
     }
 
-    // 폭탄 버블 아이템 업데이트
-    const item2 = this.elements.item2;
-    if (item2) {
-      if (items.bombBubble.active) {
-        item2.style.backgroundColor = "rgba(255, 102, 0, 0.8)";
-        item2.innerHTML = "<span>BOMB<br>READY</span>";
-      } else if (items.bombBubble.available > 0) {
-        item2.style.backgroundColor = "rgba(255, 20, 147, 0.8)";
-        item2.innerHTML = `<span>BOMB<br>${items.bombBubble.available}</span>`;
-      } else {
-        item2.style.backgroundColor = "rgba(100, 100, 100, 0.5)";
-        item2.innerHTML = "<span>BOMB<br>0</span>";
-      }
+    // Bomb Item
+    const bombSlot = this.elements.itemSlotBomb;
+    const bombText = bombSlot.querySelector('span');
+    if (bombSlot && items.bombBubble) {
+        const { available } = items.bombBubble;
+        bombText.innerHTML = `BOMB<br>${available}`;
+        if (available === 0) {
+            bombSlot.classList.add('disabled');
+        } else {
+            bombSlot.classList.remove('disabled');
+        }
     }
   }
 
-  useItem(itemNumber) {
+  useItem(itemName) {
     if (this.game && typeof this.game.useItem === "function") {
-      this.game.useItem(itemNumber);
+      this.game.useItem(itemName);
     }
   }
 

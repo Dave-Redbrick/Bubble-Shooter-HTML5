@@ -202,10 +202,10 @@ export class BubbleShooterGame {
         }
         break;
       case '1':
-        this.useItem(1);
+        this.useItem('aim');
         break;
       case '2':
-        this.useItem(2);
+        this.useItem('bomb');
         break;
       case 'r':
       case 'R':
@@ -318,10 +318,10 @@ export class BubbleShooterGame {
     }
   }
 
-  useItem(itemNumber) {
-    if (itemNumber === 1) {
+  useItem(itemName) {
+    if (itemName === 'aim') {
       this.useAimGuide();
-    } else if (itemNumber === 2) {
+    } else if (itemName === 'bomb') {
       this.useBombBubble();
     }
   }
