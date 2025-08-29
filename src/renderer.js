@@ -75,13 +75,6 @@ export class Renderer {
     ctx.lineTo(levelData.x + levelData.width, lineY);
     ctx.stroke();
 
-    // 경고 텍스트
-    ctx.setLineDash([]);
-    ctx.fillStyle = "#ff4444";
-    ctx.font = "16px Arial";
-    ctx.textAlign = "center";
-    ctx.fillText("DANGER LINE", levelData.x + levelData.width / 2, lineY - 10);
-
     ctx.restore();
   }
 

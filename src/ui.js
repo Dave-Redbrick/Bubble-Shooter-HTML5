@@ -115,15 +115,35 @@ export class UIManager {
     // 조준 가이드 아이템 업데이트
     const item1 = this.elements.item1;
     if (item1) {
+      const timerEl = item1.querySelector('.item-timer');
+
       if (items.aimGuide.active) {
-        item1.style.backgroundColor = "rgba(0, 255, 136, 0.8)";
-        item1.innerHTML = "<span>AIM<br>ACTIVE</span>";
-      } else if (items.aimGuide.available > 0) {
-        item1.style.backgroundColor = "rgba(255, 20, 147, 0.8)";
-        item1.innerHTML = `<span>AIM<br>${items.aimGuide.available}</span>`;
+        if (!item1.classList.contains('active')) {
+          item1.classList.add('active');
+          item1.innerHTML = "<span>AIM<br>ACTIVE</span>";
+        }
+
+        if (!timerEl) {
+          const newTimerEl = document.createElement('div');
+          newTimerEl.className = 'item-timer';
+          item1.appendChild(newTimerEl);
+        }
+
+        const remainingPercent = (items.aimGuide.remaining / items.aimGuide.duration) * 100;
+        item1.querySelector('.item-timer').style.height = `${remainingPercent}%`;
+
       } else {
-        item1.style.backgroundColor = "rgba(100, 100, 100, 0.5)";
-        item1.innerHTML = "<span>AIM<br>0</span>";
+        item1.classList.remove('active');
+        if (timerEl) {
+          timerEl.remove();
+        }
+        if (items.aimGuide.available > 0) {
+          item1.style.backgroundColor = ""; // 기본 스타일로 복원
+          item1.innerHTML = `<span>AIM<br>${items.aimGuide.available}</span>`;
+        } else {
+          item1.style.backgroundColor = "#888"; // 비활성화 색
+          item1.innerHTML = "<span>AIM<br>0</span>";
+        }
       }
     }
 

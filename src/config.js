@@ -92,13 +92,13 @@ export function getLevelConfig(canvas) {
 }
 
 export const BUBBLE_COLORS = [
-  "#FF3B30", // 선명한 빨강 (Red)
-  "#FF9500", // 강렬한 주황 (Orange)
-  "#FFCC00", // 밝은 노랑 (Yellow)
-  "#34C759", // 선명한 청록 (Teal)
-  "#AF52DE", // 진한 보라 (Purple)
-  "#007AFF", // 선명한 파랑 (Blue)
-  "#00DDDD", // 아쿠아 (Aqua)
+  "#FF1744", // Vivid Red
+  "#FF9100", // Vivid Orange
+  "#FFD600", // Vivid Yellow
+  "#00E676", // Vivid Green
+  "#D500F9", // Vivid Purple
+  "#2979FF", // Vivid Blue
+  "#00E5FF", // Vivid Cyan
 ];
 
 // Neighbor offset table for hexagonal grid

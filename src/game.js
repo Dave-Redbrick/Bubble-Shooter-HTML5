@@ -306,10 +306,14 @@ export class BubbleShooterGame {
   updateItems(currentTime) {
     if (this.items.aimGuide.active) {
       const elapsed = currentTime - this.items.aimGuide.startTime;
+      this.items.aimGuide.remaining = this.items.aimGuide.duration - elapsed;
+
       if (elapsed >= this.items.aimGuide.duration) {
         this.items.aimGuide.active = false;
-        this.updateUI();
+        delete this.items.aimGuide.remaining;
       }
+      // 아이템이 활성화된 동안 매 프레임 UI를 업데이트하여 타이머를 표시
+      this.updateUI();
     }
   }
 
