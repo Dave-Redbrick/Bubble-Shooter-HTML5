@@ -487,7 +487,6 @@ export class BubbleShooterGame {
   }
 
   onClusterRemoved(clusterSize) {
-    this.shotsWithoutPop = 0; // 기회 카운트 리셋
     this.achievements.checkAchievement('firstPop');
     this.achievements.checkAchievement('combo', clusterSize);
     this.statistics.recordBubblesPop(clusterSize);
