@@ -160,52 +160,32 @@ export class UIManager {
     console.log(`패시브 ${passiveNumber} 정보 표시`);
   }
 
-  // 반응형 캔버스 크기 조정 - 세로 전체 사용
+  // 반응형 캔버스 크기 조정 - 컨테이너에 꽉 채우기
   resizeCanvas() {
     const canvas = this.elements.canvas;
-    const container = this.elements.canvasContainer;
+    const container = document.querySelector('.game-area');
 
     if (!container || !canvas) return;
 
-    // 캔버스 실제 크기는 1920x1080으로 고정
-    canvas.width = 1920;
-    canvas.height = 1080;
+    const newWidth = container.clientWidth;
+    const newHeight = container.clientHeight;
 
-    // 컨테이너 크기 가져오기 (전체 화면)
-    const containerWidth = window.innerWidth;
-    const containerHeight = window.innerHeight;
+    // 캔버스의 내부 해상도를 컨테이너 크기와 일치시킴
+    // 크기가 변경되었을 때만 게임 로직에 알림
+    if (canvas.width !== newWidth || canvas.height !== newHeight) {
+      canvas.width = newWidth;
+      canvas.height = newHeight;
 
-    // 세로는 전체 화면 사용, 가로는 16:9 비율 유지
-    const targetRatio = 16 / 9;
-    const containerRatio = containerWidth / containerHeight;
-
-    let scale;
-    let displayWidth, displayHeight;
-
-    // 세로를 전체 화면에 맞추고 가로는 비율에 따라 조정
-    displayHeight = containerHeight;
-    displayWidth = displayHeight * targetRatio;
-    scale = displayHeight / 1080;
-
-    // 만약 계산된 가로가 화면보다 크면 가로에 맞춤
-    if (displayWidth > containerWidth) {
-      displayWidth = containerWidth;
-      displayHeight = displayWidth / targetRatio;
-      scale = displayWidth / 1920;
-    }
-
-    // 캔버스 스케일링 적용
-    canvas.style.width = `${displayWidth}px`;
-    canvas.style.height = `${displayHeight}px`;
-
-    // 디바이스 타입 변경 감지
-    const newDeviceType = getDeviceType();
-    if (newDeviceType !== this.currentDeviceType) {
-      this.currentDeviceType = newDeviceType;
-      // 게임 레벨 재초기화
+      // 캔버스 크기가 변경되었으므로 게임에 알려서 내부 요소들을 재배치하도록 함
       if (this.game && typeof this.game.handleResize === "function") {
         this.game.handleResize();
       }
+    }
+
+    // 디바이스 타입 변경 감지 로직은 유지
+    const newDeviceType = getDeviceType();
+    if (newDeviceType !== this.currentDeviceType) {
+      this.currentDeviceType = newDeviceType;
     }
   }
 
