@@ -760,7 +760,9 @@ body {
 
 /* 튜토리얼 스타일 */
 .tutorial-overlay {
-  background-color: rgba(0, 0, 0, 0.9);
+  /* 포커싱을 위해 배경을 덜 어둡게 수정 */
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px); /* 부드러운 블러 효과 추가 */
 }
 
 .tutorial-content {

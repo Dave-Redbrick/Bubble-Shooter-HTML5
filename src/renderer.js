@@ -15,7 +15,6 @@ export class Renderer {
     this.renderAimGuide();
     this.renderPlayer();
     this.game.particles.render(this.context);
-    this.renderGameModeInfo();
     this.renderCombo();
     this.game.effects.renderLevelUpText(this.context);
     this.renderEffects();
@@ -399,12 +398,6 @@ export class Renderer {
     ctx.arc(x, y - 3, 2, 0, Math.PI * 2);
     ctx.fill();
     ctx.restore();
-  }
-
-  renderGameModeInfo() {
-    if (this.game.gameMode) {
-      this.game.gameMode.renderModeInfo(this.context);
-    }
   }
 
   renderCombo() {

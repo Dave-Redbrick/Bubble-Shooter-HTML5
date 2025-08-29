@@ -20,7 +20,6 @@ import { SettingsManager } from "./settings.js";
 import { StatisticsManager } from "./statistics.js";
 import { MenuManager } from "./menu.js";
 import { LeaderboardManager } from "./leaderboard.js";
-import { GameModeManager } from "./gamemode.js";
 import { DailyChallengeManager } from "./dailychallenge.js";
 
 export class Tile {
@@ -176,7 +175,6 @@ export class BubbleShooterGame {
     this.statistics = new StatisticsManager(this);
     this.menu = new MenuManager(this);
     this.leaderboard = new LeaderboardManager(this);
-    this.gameMode = new GameModeManager(this);
     this.dailyChallenge = new DailyChallengeManager(this);
     
     await this.sound.initialize();
@@ -259,6 +257,12 @@ export class BubbleShooterGame {
     this.newGame();
     this.initialized = true;
     this.main(0);
+
+    // 최초 실행 시 튜토리얼 자동 시작
+    if (!localStorage.getItem('tutorialCompleted')) {
+      this.tutorial.startTutorial();
+      localStorage.setItem('tutorialCompleted', 'true');
+    }
   }
 
   main(tFrame) {
@@ -286,7 +290,6 @@ export class BubbleShooterGame {
     this.powerUps.update(tFrame);
     this.effects.update(dt);
     this.combo.update(dt);
-    this.gameMode.update(dt);
 
     switch (this.gameState) {
       case CONFIG.GAME_STATES.READY:
@@ -531,7 +534,6 @@ export class BubbleShooterGame {
   }
 
   onBubbleShot() {
-    this.gameMode.onBubbleShot();
     this.dailyChallenge.updateProgress('bubbleShot');
   }
 }
