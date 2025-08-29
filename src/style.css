@@ -8,8 +8,8 @@
 
 body {
   font-family: 'Varela Round', sans-serif;
-  background-color: #7EC0EE; /* 밝은 하늘색 배경 */
-  color: #333;
+  background-color: #111;
+  color: white;
   overflow: hidden;
   height: 100vh;
   width: 100vw;
@@ -17,10 +17,10 @@ body {
 
 .game-container {
   display: flex;
-  flex-direction: row; /* 좌우 사이드바를 위한 가로 레이아웃 */
+  flex-direction: row;
   height: 100vh;
   width: 100vw;
-  background-color: #7EC0EE;
+  background-color: #111;
 }
 
 /* 사이드바 공통 스타일 */
@@ -28,44 +28,36 @@ body {
   display: flex;
   flex-direction: column;
   padding: 20px;
-  background-color: #F0F8FF; /* 앨리스 블루 */
-  flex: 0 0 250px; /* 사이드바 너비 고정 */
+  background-color: #1a1a1a;
+  flex: 0 0 280px;
   gap: 20px;
-}
-
-.left-sidebar {
-  align-items: center;
-}
-
-.right-sidebar {
-  align-items: center;
+  box-shadow: 0 0 15px rgba(0,0,0,0.5);
+  z-index: 5;
 }
 
 /* UI 패널 스타일 */
-.score-box, .high-score-box, .passive-item, .menu-button {
+.score-box, .high-score-box, .passive-item, .menu-button, .help-section {
   width: 100%;
   padding: 15px;
-  border-radius: 12px;
-  text-align: center;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  border-radius: 10px;
+  background: linear-gradient(180deg, #444, #222);
+  border: 1px solid #555;
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.1), 0 2px 4px rgba(0,0,0,0.5);
 }
 
 .score-label, .high-score-label, .passive-name, .help-title {
   font-size: 14px;
-  color: #555;
+  color: #aaa;
   margin-bottom: 8px;
   text-transform: uppercase;
-}
-
-.score-box {
-  background-color: #fff;
-  border: 2px solid #ddd;
+  letter-spacing: 1px;
 }
 
 .score-value {
-  font-size: 28px;
+  font-size: 32px;
   font-weight: bold;
-  color: #FF6347; /* 토마토 색 */
+  color: #00d9ff;
+  text-shadow: 0 0 8px #00d9ff;
 }
 
 .level-indicator {
@@ -75,7 +67,7 @@ body {
 .level-circle {
   width: 60px;
   height: 60px;
-  background-color: #FFD700; /* 골드 */
+  background: radial-gradient(circle, #ff9900, #ff5e00);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -83,42 +75,30 @@ body {
   font-size: 24px;
   font-weight: bold;
   color: #fff;
-  border: 4px solid #fff;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-}
-
-.high-score-box {
-  background-color: #fff;
-  border: 2px solid #ddd;
+  border: 2px solid rgba(255,255,255,0.8);
+  box-shadow: inset 0 2px 3px rgba(255,255,255,0.3), inset 0 -2px 3px rgba(0,0,0,0.3), 0 2px 5px rgba(0,0,0,0.5);
 }
 
 .high-score-value {
-  font-size: 22px;
+  font-size: 24px;
   font-weight: bold;
-  color: #4682B4; /* 스틸 블루 */
-}
-
-.help-section {
-  background-color: #fff;
-  border: 2px solid #ddd;
-  border-radius: 12px;
-  padding: 15px;
-  flex-grow: 1;
+  color: #eee;
 }
 
 .help-content p {
   font-size: 14px;
-  line-height: 1.5;
-  color: #666;
+  line-height: 1.6;
+  color: #ccc;
 }
 
 .menu-button {
-  background-color: #32CD32; /* 라임 그린 */
+  background: linear-gradient(180deg, #00d9ff, #0077ff);
   color: white;
   font-size: 18px;
   font-weight: bold;
   cursor: pointer;
-  border: none;
+  border: 1px solid #00aaff;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.4);
 }
 
 .passive-skills {
@@ -129,20 +109,19 @@ body {
 }
 
 .passive-item {
-  background-color: #ADD8E6; /* 라이트 블루 */
   display: flex;
   justify-content: space-between;
 }
 
 .passive-percent {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: bold;
-  color: #1E90FF; /* 다저 블루 */
+  color: #00d9ff;
 }
 
 /* 중앙 게임 영역 */
 .game-area {
-  flex: 1; /* 남은 공간 모두 차지 */
+  flex: 1;
   position: relative;
   display: flex;
   align-items: center;
@@ -171,12 +150,12 @@ body {
 }
 
 .item-slot {
-  position: relative; /* 타이머 위치의 기준점 */
-  overflow: hidden; /* 타이머가 밖으로 나가지 않도록 */
+  position: relative;
+  overflow: hidden;
   width: 60px;
   height: 60px;
-  background-color: #FFA07A; /* 라이트 살몬 */
-  border: 3px solid white;
+  background: #333;
+  border: 2px solid #555;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -185,11 +164,13 @@ body {
   font-weight: bold;
   color: white;
   cursor: pointer;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
 }
 
 .item-slot.active {
-  background-color: #32CD32; /* 활성화 시 색상 변경 */
+  background-color: #00d9ff;
+  border-color: #fff;
+  box-shadow: 0 0 15px #00d9ff;
 }
 
 .item-timer {
@@ -197,7 +178,7 @@ body {
   bottom: 0;
   left: 0;
   width: 100%;
-  background-color: rgba(255, 255, 255, 0.5); /* 반투명 흰색으로 시간 표시 */
+  background-color: rgba(0, 217, 255, 0.6);
   transition: height 0.1s linear;
 }
 
@@ -216,8 +197,8 @@ body {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(5px);
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -233,37 +214,39 @@ body {
 .mode-selector-content,
 .tutorial-content,
 .name-input-content {
-  background: #F0F8FF;
-  border-radius: 20px;
+  background: #333;
+  border-radius: 15px;
   padding: 25px;
   max-width: 500px;
   width: 90%;
-  border: 5px solid white;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-  color: #333;
+  border: 1px solid #666;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  color: #eee;
 }
 
 .menu-header {
   text-align: center;
   margin-bottom: 25px;
   padding-bottom: 15px;
-  border-bottom: 2px solid #ddd;
+  border-bottom: 1px solid #555;
 }
 
 .menu-header h1 {
-  color: #4682B4;
+  color: #fff;
   font-size: 36px;
+  text-shadow: 0 0 5px #00d9ff;
 }
 
 .menu-btn {
-  background-color: #32CD32;
+  background: linear-gradient(180deg, #00d9ff, #0077ff);
   color: white;
-  border: none;
+  border: 1px solid #00aaff;
   padding: 15px 20px;
-  border-radius: 12px;
+  border-radius: 10px;
   font-size: 18px;
   font-weight: bold;
   cursor: pointer;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.4);
 }
 
 /* 튜토리얼 스타일 */
@@ -273,13 +256,13 @@ body {
 }
 
 .tutorial-content {
-  background: #F0F8FF;
-  color: #333;
+  background: #333;
+  color: #eee;
 }
 
 .tutorial-highlight {
-  box-shadow: 0 0 20px #FFD700, 0 0 30px #FFD700;
-  border: 3px solid #FFD700;
+  box-shadow: 0 0 20px #00d9ff, 0 0 30px #00d9ff;
+  border: 3px solid #00d9ff;
   border-radius: 15px;
   z-index: 1001;
   position: relative;

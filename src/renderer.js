@@ -24,14 +24,22 @@ export class Renderer {
 
   drawBackground() {
     const ctx = this.context;
+    const canvas = this.canvas;
 
-    // 전체 배경
-    ctx.fillStyle = "#1a1a1a";
-    ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    const gradient = ctx.createRadialGradient(
+      canvas.width / 2,
+      canvas.height / 2,
+      0,
+      canvas.width / 2,
+      canvas.height / 2,
+      Math.max(canvas.width, canvas.height)
+    );
 
-    // 게임 영역 배경
-    ctx.fillStyle = "#2a2a2a";
-    ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    gradient.addColorStop(0, "#002244"); // 중심부: 딥 블루
+    gradient.addColorStop(1, "#000011"); // 가장자리: 거의 검정
+
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
   }
 
   renderLevel() {
