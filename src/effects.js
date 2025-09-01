@@ -62,7 +62,7 @@ export class EffectsManager {
     const offsetX = Math.sin(this.screenShake.time * frequency) * currentIntensity;
     const offsetY = Math.cos(this.screenShake.time * frequency * 1.3) * currentIntensity * 0.5;
     
-    // Combine centering and shake transforms on the wrapper
+    // Combine centering and shake transforms
     wrapper.style.transform = `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px))`;
   }
 

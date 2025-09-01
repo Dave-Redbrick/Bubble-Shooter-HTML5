@@ -18,9 +18,8 @@ export class UIManager {
       item2: document.getElementById("item2"),
       canvas: document.getElementById("viewport"),
       canvasContainer: null,
+      canvasWrapper: null,
     };
-
-    // 캔버스 컨테이너 생성
     this.createCanvasContainer();
   }
 
@@ -33,38 +32,31 @@ export class UIManager {
     canvasWrapper.className = "canvas-wrapper";
 
     const canvas = this.elements.canvas;
-    canvas.parentNode.removeChild(canvas);
+    if (canvas.parentNode) {
+      canvas.parentNode.removeChild(canvas);
+    }
 
     canvasWrapper.appendChild(canvas);
     canvasContainer.appendChild(canvasWrapper);
     gameArea.appendChild(canvasContainer);
 
     this.elements.canvasContainer = canvasContainer;
-    this.elements.canvasWrapper = canvasWrapper; // Store for later use
+    this.elements.canvasWrapper = canvasWrapper;
   }
 
   setupEventListeners() {
-    // 메뉴 버튼 클릭
     const menuButton = document.querySelector(".menu-button");
     if (menuButton) {
-      menuButton.addEventListener("click", () => {
-        this.showMenu();
-      });
+      menuButton.addEventListener("click", () => this.showMenu());
     }
 
-    // 아이템 슬롯 클릭
     if (this.elements.item1) {
-      this.elements.item1.addEventListener("click", () => {
-        this.useItem(1);
-      });
+      this.elements.item1.addEventListener("click", () => this.useItem(1));
     }
 
     if (this.elements.item2) {
-      this.elements.item2.addEventListener("click", () => {
-        this.useItem(2);
-      });
+      this.elements.item2.addEventListener("click", () => this.useItem(2));
     }
-
   }
 
   updateScore(score) {
@@ -86,20 +78,16 @@ export class UIManager {
   }
 
   updateLevelProgress(progress, scoreToNext) {
-    // 레벨 진행률 표시
     const levelIndicator = document.querySelector('.level-circle');
     if (levelIndicator) {
       const progressPercent = Math.floor(progress * 100);
       levelIndicator.title = `다음 레벨까지 ${scoreToNext.toLocaleString()}점`;
-      
-      // 진행률에 따른 색상 변화
-      const hue = progress * 120; // 0 (빨강) ~ 120 (초록)
+      const hue = progress * 120;
       levelIndicator.style.background = `conic-gradient(hsl(${hue}, 70%, 50%) ${progressPercent}%, #666 ${progressPercent}%)`;
     }
   }
 
   updateItems(items) {
-    // 조준 가이드 아이템 업데이트
     const item1 = this.elements.item1;
     if (item1) {
       if (items.aimGuide.active) {
@@ -114,7 +102,6 @@ export class UIManager {
       }
     }
 
-    // 폭탄 버블 아이템 업데이트
     const item2 = this.elements.item2;
     if (item2) {
       if (items.bombBubble.active) {
@@ -142,22 +129,15 @@ export class UIManager {
     }
   }
 
-
-  // 모바일 터치 이벤트 처리
   setupMobileEvents() {
     const canvas = this.elements.canvas;
-
     if (!canvas) return;
 
-    // 터치 이벤트를 마우스 이벤트로 변환
     canvas.addEventListener("touchstart", (e) => {
       e.preventDefault();
       const touch = e.touches[0];
       if (touch) {
-        const mouseEvent = new MouseEvent("mousedown", {
-          clientX: touch.clientX,
-          clientY: touch.clientY,
-        });
+        const mouseEvent = new MouseEvent("mousedown", { clientX: touch.clientX, clientY: touch.clientY });
         canvas.dispatchEvent(mouseEvent);
       }
     });
@@ -166,10 +146,7 @@ export class UIManager {
       e.preventDefault();
       const touch = e.touches[0];
       if (touch) {
-        const mouseEvent = new MouseEvent("mousemove", {
-          clientX: touch.clientX,
-          clientY: touch.clientY,
-        });
+        const mouseEvent = new MouseEvent("mousemove", { clientX: touch.clientX, clientY: touch.clientY });
         canvas.dispatchEvent(mouseEvent);
       }
     });
@@ -177,44 +154,5 @@ export class UIManager {
     canvas.addEventListener("touchend", (e) => {
       e.preventDefault();
     });
-  }
-
-  // 일일 도전 알림 표시
-  showDailyChallengeNotification() {
-    if (this.game.dailyChallenge && this.game.dailyChallenge.challenges.length > 0) {
-      const notification = document.createElement('div');
-      notification.className = 'daily-challenge-notification';
-      notification.innerHTML = `
-        <div class="notification-content">
-          <div class="notification-icon">🎯</div>
-          <div class="notification-text">
-            <div class="notification-title">새로운 일일 도전!</div>
-            <div class="notification-desc">오늘의 도전 과제를 확인해보세요</div>
-          </div>
-          <button class="notification-close">&times;</button>
-        </div>
-      `;
-      
-      document.body.appendChild(notification);
-      
-      // 클릭 시 일일 도전 모달 열기
-      notification.addEventListener('click', () => {
-        this.game.dailyChallenge.showChallengesModal();
-        notification.remove();
-      });
-      
-      // 닫기 버튼
-      notification.querySelector('.notification-close').addEventListener('click', (e) => {
-        e.stopPropagation();
-        notification.remove();
-      });
-      
-      // 10초 후 자동 제거
-      setTimeout(() => {
-        if (notification.parentNode) {
-          notification.remove();
-        }
-      }, 10000);
-    }
   }
 }
