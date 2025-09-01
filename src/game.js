@@ -327,17 +327,20 @@ export class BubbleShooterGame {
   }
 
   useBombBubble() {
-    if (
-      this.items.bombBubble.available > 0 &&
-      !this.items.bombBubble.active &&
-      this.gameState === CONFIG.GAME_STATES.READY
-    ) {
-      this.items.bombBubble.available--;
-      this.items.bombBubble.active = true;
+    if (this.items.bombBubble.available <= 0) return;
+
+    this.items.bombBubble.available--;
+    this.statistics.recordItemUse('bombBubble');
+
+    if (this.gameState === CONFIG.GAME_STATES.SHOOT_BUBBLE) {
+      // 이미 발사 중이면, 다음 버블을 폭탄으로 설정
       this.player.nextBubble.isBomb = true;
-      this.statistics.recordItemUse('bombBubble');
-      this.updateUI();
+    } else if (this.gameState === CONFIG.GAME_STATES.READY) {
+      // 조준 중이면, 현재 버블을 폭탄으로 변경
+      this.player.bubble.isBomb = true;
     }
+
+    this.updateUI();
   }
 
   watchAdForItem(itemNumber) {
@@ -411,6 +414,7 @@ export class BubbleShooterGame {
   }
 
   nextBubble() {
+    // 1. 대기 중인 버블을 현재 버블로 이동
     this.player.tileType = this.player.nextBubble.tileType;
     this.player.bubble.tileType = this.player.nextBubble.tileType;
     this.player.bubble.x = this.player.x;
@@ -418,15 +422,9 @@ export class BubbleShooterGame {
     this.player.bubble.visible = true;
     this.player.bubble.isBomb = this.player.nextBubble.isBomb;
 
-    const nextColor = this.getExistingColor();
-    this.player.nextBubble.tileType = nextColor;
-
-    if (this.items.bombBubble.active) {
-      this.player.nextBubble.isBomb = true;
-      this.items.bombBubble.active = false;
-    } else {
-      this.player.nextBubble.isBomb = false;
-    }
+    // 2. 새로운 다음 버블 준비 (기본값: 일반 버블)
+    this.player.nextBubble.isBomb = false;
+    this.player.nextBubble.tileType = this.getExistingColor();
   }
 
   getExistingColor() {

@@ -60,13 +60,6 @@ export class UIManager {
       });
     }
 
-    // 패시브 스킬 클릭
-    const passiveItems = document.querySelectorAll(".passive-item");
-    passiveItems.forEach((item, index) => {
-      item.addEventListener("click", () => {
-        this.showPassiveInfo(index + 1);
-      });
-    });
   }
 
   updateScore(score) {
@@ -97,17 +90,6 @@ export class UIManager {
       // 진행률에 따른 색상 변화
       const hue = progress * 120; // 0 (빨강) ~ 120 (초록)
       levelIndicator.style.background = `conic-gradient(hsl(${hue}, 70%, 50%) ${progressPercent}%, #666 ${progressPercent}%)`;
-    }
-  }
-
-  updatePassive(index, name, percent) {
-    const passiveItems = document.querySelectorAll(".passive-item");
-    if (passiveItems[index]) {
-      const nameElement = passiveItems[index].querySelector(".passive-name");
-      const percentElement =
-        passiveItems[index].querySelector(".passive-percent");
-      if (nameElement) nameElement.textContent = name;
-      if (percentElement) percentElement.textContent = `${percent}%`;
     }
   }
 
@@ -155,10 +137,6 @@ export class UIManager {
     }
   }
 
-  showPassiveInfo(passiveNumber) {
-    // 패시브 정보 표시 로직 (현재는 빈 함수)
-    console.log(`패시브 ${passiveNumber} 정보 표시`);
-  }
 
   // 반응형 캔버스 크기 조정 - 세로 전체 사용
   resizeCanvas() {

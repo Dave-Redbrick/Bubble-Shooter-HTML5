@@ -58,8 +58,8 @@ export class LevelManager {
     const levelData = this.game.levelData;
     const currentLevel = this.calculateLevelFromScore(this.game.score);
     
-    // 레벨에 따른 색상 수 결정 (최소 3개, 최대 7개)
-    const maxColors = Math.min(3 + Math.floor(currentLevel / 3), 7);
+    // 항상 7가지 색상을 사용
+    const maxColors = 7;
     
     // 모든 타일을 먼저 빈 상태로 초기화
     for (let i = 0; i < levelData.columns; i++) {
@@ -76,10 +76,8 @@ export class LevelManager {
     
     for (let j = 0; j < fillRows; j++) {
       for (let i = 0; i < levelData.columns; i++) {
-        // 80% 확률로 버블 생성
-        if (Math.random() < 0.8) {
-          levelData.tiles[i][j].type = this.game.randRange(0, maxColors - 1);
-        }
+        // 빈칸 없이 항상 버블 생성
+        levelData.tiles[i][j].type = this.game.randRange(0, maxColors - 1);
       }
     }
     
@@ -103,8 +101,7 @@ export class LevelManager {
             const changeCount = Math.floor(cluster.length * 0.3);
             for (let k = 0; k < changeCount; k++) {
               const randomTile = cluster[Math.floor(Math.random() * cluster.length)];
-              const currentLevel = this.calculateLevelFromScore(this.game.score);
-              const maxColors = Math.min(3 + Math.floor(currentLevel / 3), 7);
+              const maxColors = 7;
               
               // 현재 색과 다른 색으로 변경
               let newColor;
