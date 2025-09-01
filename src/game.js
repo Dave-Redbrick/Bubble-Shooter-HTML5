@@ -100,8 +100,7 @@ export class BubbleShooterGame {
   }
 
   initializeLevel() {
-    // 실제 캔버스 정보를 전달하여 레벨 설정을 가져옴
-    const levelConfig = getLevelConfig(this.canvas);
+    const levelConfig = getLevelConfig();
 
     this.levelData = {
       x: levelConfig.X,
@@ -131,8 +130,7 @@ export class BubbleShooterGame {
         this.levelData.x +
         this.levelData.width / 2 -
         this.levelData.tileWidth / 2,
-      // 캔버스 하단 기준으로 발사대 위치 조정
-      y: this.canvas.height - 150,
+      y: this.levelData.y + this.levelData.height + 80,
       angle: 90,
       tileType: 0,
       multiShotActive: false,
@@ -250,7 +248,7 @@ export class BubbleShooterGame {
       this.levelData.x +
       this.levelData.width / 2 -
       this.levelData.tileWidth / 2;
-    this.player.y = this.canvas.height - 150;
+    this.player.y = this.levelData.y + this.levelData.height + 80;
     this.player.nextBubble.x = this.player.x - 2 * this.levelData.tileWidth;
     this.player.nextBubble.y = this.player.y;
   }

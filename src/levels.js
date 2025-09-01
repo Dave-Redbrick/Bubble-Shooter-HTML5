@@ -6,34 +6,38 @@ export class LevelManager {
     this.levelMultiplier = 1.5; // 레벨당 필요 점수 증가율
   }
 
+  // 현재 점수로 레벨 계산
   calculateLevelFromScore(score) {
-    if (score < 100) return 1;
-    if (score < 500) return 2;
-    // 3레벨부터는 500 * 2^(level-3)
-    let level = 3;
-    let requiredScore = 500;
-    while (score >= requiredScore * 2) {
-      requiredScore *= 2;
+    if (score < this.baseScorePerLevel) return 1;
+
+    // 간단한 선형 증가 공식 사용
+    // level = floor(score / (baseScore * multiplier^(level-1))) + 1
+    let level = 1;
+    let requiredScore = 0;
+
+    while (requiredScore <= score) {
       level++;
+      requiredScore = this.getScoreForLevel(level);
     }
-    return level;
+
+    return level - 1;
   }
 
-  // 특정 레벨에 필요한 누적 점수
+  // 특정 레벨에 필요한 점수 계산
   getScoreForLevel(level) {
     if (level <= 1) return 0;
-    if (level === 2) return 100;
-    // 3레벨부터: 500 * 2^(n-3)
-    return 500 * Math.pow(2, level - 3);
+
+    let totalScore = 0;
+    for (let i = 2; i <= level; i++) {
+      totalScore += Math.floor(this.baseScorePerLevel * Math.pow(this.levelMultiplier, i - 2));
+    }
+    return totalScore;
   }
 
-  // 다음 레벨까지 필요한 점수 계산 (실제 점수)
+  // 다음 레벨까지 필요한 점수 계산
   getScoreToNextLevel(currentScore) {
     const currentLevel = this.calculateLevelFromScore(currentScore);
-    const nextLevelScore =
-      currentLevel < 2
-        ? 100
-        : this.getScoreForLevel(currentLevel + 1);
+    const nextLevelScore = this.getScoreForLevel(currentLevel + 1);
     return Math.max(0, nextLevelScore - currentScore);
   }
 
@@ -54,8 +58,8 @@ export class LevelManager {
     const levelData = this.game.levelData;
     const currentLevel = this.calculateLevelFromScore(this.game.score);
     
-    // 항상 7가지 색상을 사용
-    const maxColors = 7;
+    // 레벨에 따른 색상 수 결정 (최소 3개, 최대 7개)
+    const maxColors = Math.min(3 + Math.floor(currentLevel / 3), 7);
     
     // 모든 타일을 먼저 빈 상태로 초기화
     for (let i = 0; i < levelData.columns; i++) {
@@ -72,7 +76,10 @@ export class LevelManager {
     
     for (let j = 0; j < fillRows; j++) {
       for (let i = 0; i < levelData.columns; i++) {
-        levelData.tiles[i][j].type = this.game.randRange(0, maxColors - 1);
+        // 80% 확률로 버블 생성
+        if (Math.random() < 0.8) {
+          levelData.tiles[i][j].type = this.game.randRange(0, maxColors - 1);
+        }
       }
     }
     
@@ -96,7 +103,8 @@ export class LevelManager {
             const changeCount = Math.floor(cluster.length * 0.3);
             for (let k = 0; k < changeCount; k++) {
               const randomTile = cluster[Math.floor(Math.random() * cluster.length)];
-              const maxColors = 7;
+              const currentLevel = this.calculateLevelFromScore(this.game.score);
+              const maxColors = Math.min(3 + Math.floor(currentLevel / 3), 7);
               
               // 현재 색과 다른 색으로 변경
               let newColor;
