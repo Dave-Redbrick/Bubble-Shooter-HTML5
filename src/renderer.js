@@ -53,16 +53,16 @@ export class Renderer {
 
     // 왼쪽 테두리
     ctx.beginPath();
-    ctx.moveTo(levelData.x - 10, levelData.y - 10);
-    ctx.lineTo(levelData.x - 10, levelData.y + levelData.height + 10);
+    ctx.moveTo(levelData.x - 10, 0);
+    ctx.lineTo(levelData.x - 10, this.canvas.height);
     ctx.stroke();
 
     // 오른쪽 테두리
     ctx.beginPath();
-    ctx.moveTo(levelData.x + levelData.width + 10, levelData.y - 10);
+    ctx.moveTo(levelData.x + levelData.width + 10, 0);
     ctx.lineTo(
       levelData.x + levelData.width + 10,
-      levelData.y + levelData.height + 10
+      this.canvas.height
     );
     ctx.stroke();
   }
@@ -87,13 +87,7 @@ export class Renderer {
     ctx.lineTo(levelData.x + levelData.width, lineY);
     ctx.stroke();
 
-    // 경고 텍스트
-    ctx.setLineDash([]);
-    ctx.fillStyle = "#ff4444";
-    ctx.font = "16px Arial";
-    ctx.textAlign = "center";
-    ctx.fillText("DANGER LINE", levelData.x + levelData.width / 2, lineY - 10);
-
+    // 경고 텍스트는 삭제
     ctx.restore();
   }
 

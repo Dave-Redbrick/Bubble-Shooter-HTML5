@@ -1,14 +1,13 @@
 // Game configuration and constants
 export const CONFIG = {
   CANVAS: {
-    WIDTH: 1920,
-    HEIGHT: 1080,
+    WIDTH: 800, // 대표적인 세로 모드 너비
+    HEIGHT: 1200, // 대표적인 세로 모드 높이
   },
-  // 디바이스별 레벨 설정 - 캔버스 중앙 배치
+  // 디바이스별 레벨 설정
   LEVEL_CONFIGS: {
     MOBILE: {
       COLUMNS: 16,
-      ROWS: 12,
       TILE_WIDTH: 35,
       TILE_HEIGHT: 35,
       ROW_HEIGHT: 30,
@@ -16,7 +15,6 @@ export const CONFIG = {
     },
     TABLET: {
       COLUMNS: 18,
-      ROWS: 13,
       TILE_WIDTH: 38,
       TILE_HEIGHT: 38,
       ROW_HEIGHT: 32,
@@ -24,7 +22,6 @@ export const CONFIG = {
     },
     DESKTOP: {
       COLUMNS: 20,
-      ROWS: 14,
       TILE_WIDTH: 40,
       TILE_HEIGHT: 40,
       ROW_HEIGHT: 34,
@@ -60,22 +57,26 @@ export function getDeviceType() {
   return "DESKTOP";
 }
 
-// 디바이스에 맞는 레벨 설정 가져오기 - 중앙 배치 계산 포함
-export function getLevelConfig() {
+// 디바이스에 맞는 레벨 설정 가져오기
+export function getLevelConfig(canvas) {
   const deviceType = getDeviceType();
   const config = CONFIG.LEVEL_CONFIGS[deviceType];
 
-  // 레벨 영역 크기 계산
+  // 캔버스 높이에 따라 동적으로 행 수 계산
+  // 플레이어와 상단 여백을 고려하여 가용 높이 계산
+  const availableHeight = canvas.height * 0.8 - 150;
+  const rows = Math.floor(availableHeight / config.ROW_HEIGHT);
+
   const levelWidth = config.COLUMNS * config.TILE_WIDTH + config.TILE_WIDTH / 2;
-  const levelHeight =
-    (config.ROWS - 1) * config.ROW_HEIGHT + config.TILE_HEIGHT;
+  const levelHeight = (rows - 1) * config.ROW_HEIGHT + config.TILE_HEIGHT;
 
   // 캔버스 중앙에 배치
-  const x = (CONFIG.CANVAS.WIDTH - levelWidth) / 2;
-  const y = 80; // 상단 여백
+  const x = (canvas.width - levelWidth) / 2;
+  const y = 20; // 상단 여백 최소화
 
   return {
     ...config,
+    ROWS: rows, // 계산된 행 수 추가
     X: x,
     Y: y,
     WIDTH: levelWidth,
