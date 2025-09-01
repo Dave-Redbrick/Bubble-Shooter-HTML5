@@ -72,10 +72,7 @@ export class LevelManager {
     
     for (let j = 0; j < fillRows; j++) {
       for (let i = 0; i < levelData.columns; i++) {
-        // 80% 확률로 버블 생성
-        if (Math.random() < 0.8) {
-          levelData.tiles[i][j].type = this.game.randRange(0, maxColors - 1);
-        }
+        levelData.tiles[i][j].type = this.game.randRange(0, maxColors - 1);
       }
     }
     
