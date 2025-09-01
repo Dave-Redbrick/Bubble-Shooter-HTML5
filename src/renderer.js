@@ -15,8 +15,8 @@ export class Renderer {
     this.renderAimGuide();
     this.renderPlayer();
     this.game.particles.render(this.context);
+    this.renderGameModeInfo();
     this.renderCombo();
-    this.game.effects.renderLevelUpText(this.context);
     this.renderEffects();
     this.renderGameOver();
     this.renderFPS();
@@ -24,42 +24,46 @@ export class Renderer {
 
   drawBackground() {
     const ctx = this.context;
-    const canvas = this.canvas;
 
-    const gradient = ctx.createRadialGradient(
-      canvas.width / 2,
-      canvas.height / 2,
-      0,
-      canvas.width / 2,
-      canvas.height / 2,
-      Math.max(canvas.width, canvas.height)
-    );
+    // 전체 배경
+    ctx.fillStyle = "#1a1a1a";
+    ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-    gradient.addColorStop(0, "#002244"); // 중심부: 딥 블루
-    gradient.addColorStop(1, "#000011"); // 가장자리: 거의 검정
-
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    // 게임 영역 배경
+    ctx.fillStyle = "#2a2a2a";
+    ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
   }
 
   renderLevel() {
     const ctx = this.context;
     const levelData = this.game.levelData;
 
+    // 레벨 영역 배경
+    ctx.fillStyle = "#333333";
+    ctx.fillRect(
+      levelData.x - 10,
+      levelData.y - 10,
+      levelData.width + 20,
+      levelData.height + 20
+    );
+
     // 좌우 테두리만 그리기
     ctx.strokeStyle = "#555555";
     ctx.lineWidth = 3;
 
-    // 왼쪽 테두리 (전체 높이)
+    // 왼쪽 테두리
     ctx.beginPath();
-    ctx.moveTo(levelData.x - 10, 0);
-    ctx.lineTo(levelData.x - 10, this.canvas.height);
+    ctx.moveTo(levelData.x - 10, levelData.y - 10);
+    ctx.lineTo(levelData.x - 10, levelData.y + levelData.height + 10);
     ctx.stroke();
 
-    // 오른쪽 테두리 (전체 높이)
+    // 오른쪽 테두리
     ctx.beginPath();
-    ctx.moveTo(levelData.x + levelData.width + 10, 0);
-    ctx.lineTo(levelData.x + levelData.width + 10, this.canvas.height);
+    ctx.moveTo(levelData.x + levelData.width + 10, levelData.y - 10);
+    ctx.lineTo(
+      levelData.x + levelData.width + 10,
+      levelData.y + levelData.height + 10
+    );
     ctx.stroke();
   }
 
@@ -82,6 +86,13 @@ export class Renderer {
     ctx.moveTo(levelData.x, lineY);
     ctx.lineTo(levelData.x + levelData.width, lineY);
     ctx.stroke();
+
+    // 경고 텍스트
+    ctx.setLineDash([]);
+    ctx.fillStyle = "#ff4444";
+    ctx.font = "16px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText("DANGER LINE", levelData.x + levelData.width / 2, lineY - 10);
 
     ctx.restore();
   }
@@ -399,6 +410,12 @@ export class Renderer {
     ctx.arc(x, y - 3, 2, 0, Math.PI * 2);
     ctx.fill();
     ctx.restore();
+  }
+
+  renderGameModeInfo() {
+    if (this.game.gameMode) {
+      this.game.gameMode.renderModeInfo(this.context);
+    }
   }
 
   renderCombo() {

@@ -6,38 +6,34 @@ export class LevelManager {
     this.levelMultiplier = 1.5; // 레벨당 필요 점수 증가율
   }
 
-  // 현재 점수로 레벨 계산
   calculateLevelFromScore(score) {
-    if (score < this.baseScorePerLevel) return 1;
-    
-    // 간단한 선형 증가 공식 사용
-    // level = floor(score / (baseScore * multiplier^(level-1))) + 1
-    let level = 1;
-    let requiredScore = 0;
-    
-    while (requiredScore <= score) {
+    if (score < 100) return 1;
+    if (score < 500) return 2;
+    // 3레벨부터는 500 * 2^(level-3)
+    let level = 3;
+    let requiredScore = 500;
+    while (score >= requiredScore * 2) {
+      requiredScore *= 2;
       level++;
-      requiredScore = this.getScoreForLevel(level);
     }
-    
-    return level - 1;
+    return level;
   }
 
-  // 특정 레벨에 필요한 점수 계산
+  // 특정 레벨에 필요한 누적 점수
   getScoreForLevel(level) {
     if (level <= 1) return 0;
-    
-    let totalScore = 0;
-    for (let i = 2; i <= level; i++) {
-      totalScore += Math.floor(this.baseScorePerLevel * Math.pow(this.levelMultiplier, i - 2));
-    }
-    return totalScore;
+    if (level === 2) return 100;
+    // 3레벨부터: 500 * 2^(n-3)
+    return 500 * Math.pow(2, level - 3);
   }
 
-  // 다음 레벨까지 필요한 점수 계산
+  // 다음 레벨까지 필요한 점수 계산 (실제 점수)
   getScoreToNextLevel(currentScore) {
     const currentLevel = this.calculateLevelFromScore(currentScore);
-    const nextLevelScore = this.getScoreForLevel(currentLevel + 1);
+    const nextLevelScore =
+      currentLevel < 2
+        ? 100
+        : this.getScoreForLevel(currentLevel + 1);
     return Math.max(0, nextLevelScore - currentScore);
   }
 
@@ -58,8 +54,8 @@ export class LevelManager {
     const levelData = this.game.levelData;
     const currentLevel = this.calculateLevelFromScore(this.game.score);
     
-    // 레벨에 따른 색상 수 결정 (최소 3개, 최대 7개)
-    const maxColors = Math.min(3 + Math.floor(currentLevel / 3), 7);
+    // 항상 7가지 색상을 사용
+    const maxColors = 7;
     
     // 모든 타일을 먼저 빈 상태로 초기화
     for (let i = 0; i < levelData.columns; i++) {
@@ -103,8 +99,7 @@ export class LevelManager {
             const changeCount = Math.floor(cluster.length * 0.3);
             for (let k = 0; k < changeCount; k++) {
               const randomTile = cluster[Math.floor(Math.random() * cluster.length)];
-              const currentLevel = this.calculateLevelFromScore(this.game.score);
-              const maxColors = Math.min(3 + Math.floor(currentLevel / 3), 7);
+              const maxColors = 7;
               
               // 현재 색과 다른 색으로 변경
               let newColor;
@@ -150,12 +145,36 @@ export class LevelManager {
       this.game.sound.play('levelComplete');
     }
     
-    // 새로운 캔버스 기반 레벨업 효과 호출
-    if (this.game.effects) {
-      this.game.effects.showLevelUp(newLevel);
-    }
+    // 레벨업 텍스트 표시
+    this.showLevelUpText(newLevel);
     
     this.game.updateUI();
+  }
+
+  showLevelUpText(level) {
+    // 기존 레벨업 텍스트가 있으면 제거
+    const existingText = document.querySelector('.level-up-overlay');
+    if (existingText) {
+      existingText.remove();
+    }
+
+    const levelUpOverlay = document.createElement('div');
+    levelUpOverlay.className = 'level-up-overlay';
+    levelUpOverlay.innerHTML = `
+      <div class="level-up-text">
+        <div class="level-up-main">LEVEL UP!</div>
+        <div class="level-up-number">레벨 ${level}</div>
+      </div>
+    `;
+
+    document.body.appendChild(levelUpOverlay);
+
+    // 3초 후 자동 제거
+    setTimeout(() => {
+      if (levelUpOverlay.parentNode) {
+        levelUpOverlay.remove();
+      }
+    }, 3000);
   }
 
   // 게임 시작시 초기 레벨 생성

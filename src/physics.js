@@ -165,21 +165,17 @@ export class PhysicsEngine {
   }
 
   handleTurnEnd() {
-    // 버블을 터뜨리지 못했으므로 실패 카운트 증가
-    this.game.shotsWithoutPop++;
-
-    // 실패 횟수가 주어진 기회에 도달했는지 확인
-    if (this.game.shotsWithoutPop >= this.game.chancesUntilNewRow) {
+    this.game.turnCounter++;
+    if (this.game.turnCounter >= 5) {
       this.addBubbles();
-      this.game.shotsWithoutPop = 0; // 실패 카운트 리셋
-      // 다음 라운드의 기회를 1 감소 (최소 1)
-      this.game.chancesUntilNewRow = Math.max(1, this.game.chancesUntilNewRow - 1);
+      this.game.turnCounter = 0;
       this.game.rowOffset = (this.game.rowOffset + 1) % 2;
 
+      // 새 줄 추가 후 게임오버 체크
       if (this.checkGameOver()) return;
     }
 
-    // 다음 버블 준비
+    // 게임오버가 아니면 다음 버블로
     this.game.nextBubble();
     this.game.setGameState(CONFIG.GAME_STATES.READY);
   }
@@ -220,10 +216,17 @@ export class PhysicsEngine {
       }
     }
 
-    // Add new top row with random colors from the full range
+    // Add new top row with random colors
+    const currentLevel = this.game.levelManager.calculateLevelFromScore(this.game.score);
+    const maxColors = Math.min(3 + Math.floor(currentLevel / 3), 7);
+
     for (let i = 0; i < levelData.columns; i++) {
-      // 항상 버블을 생성하여 줄을 꽉 채움
-      levelData.tiles[i][0].type = this.game.randRange(0, CONFIG.BUBBLE.COLORS - 1);
+      // 80% 확률로 버블 생성
+      if (Math.random() < 0.8) {
+        levelData.tiles[i][0].type = this.game.randRange(0, maxColors - 1);
+      } else {
+        levelData.tiles[i][0].type = -1;
+      }
     }
   }
 

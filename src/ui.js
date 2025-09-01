@@ -14,13 +14,10 @@ export class UIManager {
       currentScore: document.getElementById("current-score"),
       highScore: document.getElementById("high-score"),
       currentLevel: document.getElementById("current-level"),
-      itemSlotAim: document.getElementById("item-slot-aim"),
-      itemSlotBomb: document.getElementById("item-slot-bomb"),
-      aimItemTimer: document.querySelector("#item-slot-aim .item-timer"),
-      bombItemTimer: document.querySelector("#item-slot-bomb .item-timer"),
+      item1: document.getElementById("item1"),
+      item2: document.getElementById("item2"),
       canvas: document.getElementById("viewport"),
       canvasContainer: null,
-      chancesContainer: document.querySelector(".chances-container"),
     };
 
     // 캔버스 컨테이너 생성
@@ -51,15 +48,15 @@ export class UIManager {
     }
 
     // 아이템 슬롯 클릭
-    if (this.elements.itemSlotAim) {
-      this.elements.itemSlotAim.addEventListener("click", () => {
-        this.useItem('aim');
+    if (this.elements.item1) {
+      this.elements.item1.addEventListener("click", () => {
+        this.useItem(1);
       });
     }
 
-    if (this.elements.itemSlotBomb) {
-      this.elements.itemSlotBomb.addEventListener("click", () => {
-        this.useItem('bomb');
+    if (this.elements.item2) {
+      this.elements.item2.addEventListener("click", () => {
+        this.useItem(2);
       });
     }
 
@@ -115,49 +112,40 @@ export class UIManager {
   }
 
   updateItems(items) {
-    if (!items) return;
-
-    // Aim Item
-    const aimSlot = this.elements.itemSlotAim;
-    const aimTimer = this.elements.aimItemTimer;
-    const aimText = aimSlot.querySelector('span');
-
-    if (aimSlot && items.aimGuide) {
-      const { active, remaining, duration, available } = items.aimGuide;
-      if (active) {
-        aimSlot.classList.add('active');
-        aimText.innerHTML = "AIM<br>ACTIVE";
-        const remainingPercent = (remaining / duration) * 100;
-        aimTimer.style.height = `${remainingPercent}%`;
+    // 조준 가이드 아이템 업데이트
+    const item1 = this.elements.item1;
+    if (item1) {
+      if (items.aimGuide.active) {
+        item1.style.backgroundColor = "rgba(0, 255, 136, 0.8)";
+        item1.innerHTML = "<span>AIM<br>ACTIVE</span>";
+      } else if (items.aimGuide.available > 0) {
+        item1.style.backgroundColor = "rgba(255, 20, 147, 0.8)";
+        item1.innerHTML = `<span>AIM<br>${items.aimGuide.available}</span>`;
       } else {
-        aimSlot.classList.remove('active');
-        aimTimer.style.height = '0%';
-        aimText.innerHTML = `AIM<br>${available}`;
-        if (available === 0) {
-            aimSlot.classList.add('disabled');
-        } else {
-            aimSlot.classList.remove('disabled');
-        }
+        item1.style.backgroundColor = "rgba(100, 100, 100, 0.5)";
+        item1.innerHTML = "<span>AIM<br>0</span>";
       }
     }
 
-    // Bomb Item
-    const bombSlot = this.elements.itemSlotBomb;
-    const bombText = bombSlot.querySelector('span');
-    if (bombSlot && items.bombBubble) {
-        const { available } = items.bombBubble;
-        bombText.innerHTML = `BOMB<br>${available}`;
-        if (available === 0) {
-            bombSlot.classList.add('disabled');
-        } else {
-            bombSlot.classList.remove('disabled');
-        }
+    // 폭탄 버블 아이템 업데이트
+    const item2 = this.elements.item2;
+    if (item2) {
+      if (items.bombBubble.active) {
+        item2.style.backgroundColor = "rgba(255, 102, 0, 0.8)";
+        item2.innerHTML = "<span>BOMB<br>READY</span>";
+      } else if (items.bombBubble.available > 0) {
+        item2.style.backgroundColor = "rgba(255, 20, 147, 0.8)";
+        item2.innerHTML = `<span>BOMB<br>${items.bombBubble.available}</span>`;
+      } else {
+        item2.style.backgroundColor = "rgba(100, 100, 100, 0.5)";
+        item2.innerHTML = "<span>BOMB<br>0</span>";
+      }
     }
   }
 
-  useItem(itemName) {
+  useItem(itemNumber) {
     if (this.game && typeof this.game.useItem === "function") {
-      this.game.useItem(itemName);
+      this.game.useItem(itemNumber);
     }
   }
 
@@ -172,32 +160,52 @@ export class UIManager {
     console.log(`패시브 ${passiveNumber} 정보 표시`);
   }
 
-  // 반응형 캔버스 크기 조정 - 컨테이너에 꽉 채우기
+  // 반응형 캔버스 크기 조정 - 세로 전체 사용
   resizeCanvas() {
     const canvas = this.elements.canvas;
-    const container = document.querySelector('.game-area');
+    const container = this.elements.canvasContainer;
 
     if (!container || !canvas) return;
 
-    const newWidth = container.clientWidth;
-    const newHeight = container.clientHeight;
+    // 캔버스 실제 크기는 1920x1080으로 고정
+    canvas.width = 1920;
+    canvas.height = 1080;
 
-    // 캔버스의 내부 해상도를 컨테이너 크기와 일치시킴
-    // 크기가 변경되었을 때만 게임 로직에 알림
-    if (canvas.width !== newWidth || canvas.height !== newHeight) {
-      canvas.width = newWidth;
-      canvas.height = newHeight;
+    // 컨테이너 크기 가져오기 (전체 화면)
+    const containerWidth = window.innerWidth;
+    const containerHeight = window.innerHeight;
 
-      // 캔버스 크기가 변경되었으므로 게임에 알려서 내부 요소들을 재배치하도록 함
-      if (this.game && typeof this.game.handleResize === "function") {
-        this.game.handleResize();
-      }
+    // 세로는 전체 화면 사용, 가로는 16:9 비율 유지
+    const targetRatio = 16 / 9;
+    const containerRatio = containerWidth / containerHeight;
+
+    let scale;
+    let displayWidth, displayHeight;
+
+    // 세로를 전체 화면에 맞추고 가로는 비율에 따라 조정
+    displayHeight = containerHeight;
+    displayWidth = displayHeight * targetRatio;
+    scale = displayHeight / 1080;
+
+    // 만약 계산된 가로가 화면보다 크면 가로에 맞춤
+    if (displayWidth > containerWidth) {
+      displayWidth = containerWidth;
+      displayHeight = displayWidth / targetRatio;
+      scale = displayWidth / 1920;
     }
 
-    // 디바이스 타입 변경 감지 로직은 유지
+    // 캔버스 스케일링 적용
+    canvas.style.width = `${displayWidth}px`;
+    canvas.style.height = `${displayHeight}px`;
+
+    // 디바이스 타입 변경 감지
     const newDeviceType = getDeviceType();
     if (newDeviceType !== this.currentDeviceType) {
       this.currentDeviceType = newDeviceType;
+      // 게임 레벨 재초기화
+      if (this.game && typeof this.game.handleResize === "function") {
+        this.game.handleResize();
+      }
     }
   }
 
@@ -235,23 +243,6 @@ export class UIManager {
     canvas.addEventListener("touchend", (e) => {
       e.preventDefault();
     });
-  }
-
-  updateChances(shotsWithoutPop, chancesUntilNewRow) {
-    const container = this.elements.chancesContainer;
-    if (!container) return;
-
-    container.innerHTML = ''; // 이전 아이콘들 삭제
-    const chancesLeft = chancesUntilNewRow - shotsWithoutPop;
-
-    for (let i = 0; i < chancesUntilNewRow; i++) {
-      const pip = document.createElement('div');
-      pip.className = 'chance-pip';
-      if (i < chancesLeft) {
-        pip.classList.add('full');
-      }
-      container.appendChild(pip);
-    }
   }
 
   // 일일 도전 알림 표시

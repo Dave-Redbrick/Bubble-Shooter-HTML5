@@ -20,6 +20,7 @@ import { SettingsManager } from "./settings.js";
 import { StatisticsManager } from "./statistics.js";
 import { MenuManager } from "./menu.js";
 import { LeaderboardManager } from "./leaderboard.js";
+import { GameModeManager } from "./gamemode.js";
 import { DailyChallengeManager } from "./dailychallenge.js";
 
 export class Tile {
@@ -60,9 +61,8 @@ export class BubbleShooterGame {
       localStorage.getItem("bubbleShooterHighScore") || "0"
     );
     this.currentLevel = 1;
+    this.turnCounter = 0;
     this.rowOffset = 0;
-    this.chancesUntilNewRow = 5;
-    this.shotsWithoutPop = 0;
 
     // Animation
     this.animationState = 0;
@@ -100,8 +100,7 @@ export class BubbleShooterGame {
   }
 
   initializeLevel() {
-    // 실제 캔버스 정보를 전달하여 레벨 설정을 가져옴
-    const levelConfig = getLevelConfig(this.canvas);
+    const levelConfig = getLevelConfig();
 
     this.levelData = {
       x: levelConfig.X,
@@ -131,8 +130,7 @@ export class BubbleShooterGame {
         this.levelData.x +
         this.levelData.width / 2 -
         this.levelData.tileWidth / 2,
-      // 캔버스 하단 기준으로 발사대 위치 조정
-      y: this.canvas.height - 150,
+      y: this.levelData.y + this.levelData.height + 80,
       angle: 90,
       tileType: 0,
       multiShotActive: false,
@@ -176,6 +174,7 @@ export class BubbleShooterGame {
     this.statistics = new StatisticsManager(this);
     this.menu = new MenuManager(this);
     this.leaderboard = new LeaderboardManager(this);
+    this.gameMode = new GameModeManager(this);
     this.dailyChallenge = new DailyChallengeManager(this);
     
     await this.sound.initialize();
@@ -202,10 +201,10 @@ export class BubbleShooterGame {
         }
         break;
       case '1':
-        this.useItem('aim');
+        this.useItem(1);
         break;
       case '2':
-        this.useItem('bomb');
+        this.useItem(2);
         break;
       case 'r':
       case 'R':
@@ -249,7 +248,7 @@ export class BubbleShooterGame {
       this.levelData.x +
       this.levelData.width / 2 -
       this.levelData.tileWidth / 2;
-    this.player.y = this.canvas.height - 150;
+    this.player.y = this.levelData.y + this.levelData.height + 80;
     this.player.nextBubble.x = this.player.x - 2 * this.levelData.tileWidth;
     this.player.nextBubble.y = this.player.y;
   }
@@ -258,12 +257,6 @@ export class BubbleShooterGame {
     this.newGame();
     this.initialized = true;
     this.main(0);
-
-    // 최초 실행 시 튜토리얼 자동 시작
-    if (!localStorage.getItem('tutorialCompleted')) {
-      this.tutorial.startTutorial();
-      localStorage.setItem('tutorialCompleted', 'true');
-    }
   }
 
   main(tFrame) {
@@ -291,6 +284,7 @@ export class BubbleShooterGame {
     this.powerUps.update(tFrame);
     this.effects.update(dt);
     this.combo.update(dt);
+    this.gameMode.update(dt);
 
     switch (this.gameState) {
       case CONFIG.GAME_STATES.READY:
@@ -307,21 +301,17 @@ export class BubbleShooterGame {
   updateItems(currentTime) {
     if (this.items.aimGuide.active) {
       const elapsed = currentTime - this.items.aimGuide.startTime;
-      this.items.aimGuide.remaining = this.items.aimGuide.duration - elapsed;
-
       if (elapsed >= this.items.aimGuide.duration) {
         this.items.aimGuide.active = false;
-        delete this.items.aimGuide.remaining;
+        this.updateUI();
       }
-      // 아이템이 활성화된 동안 매 프레임 UI를 업데이트하여 타이머를 표시
-      this.updateUI();
     }
   }
 
-  useItem(itemName) {
-    if (itemName === 'aim') {
+  useItem(itemNumber) {
+    if (itemNumber === 1) {
       this.useAimGuide();
-    } else if (itemName === 'bomb') {
+    } else if (itemNumber === 2) {
       this.useBombBubble();
     }
   }
@@ -368,9 +358,8 @@ export class BubbleShooterGame {
   newGame() {
     this.score = 0;
     this.currentLevel = 1;
+    this.turnCounter = 0;
     this.rowOffset = 0;
-    this.chancesUntilNewRow = 5;
-    this.shotsWithoutPop = 0;
     this.comboCount = 0;
     this.wallBounceCount = 0;
 
@@ -413,7 +402,6 @@ export class BubbleShooterGame {
       this.ui.updateHighScore(this.highScore);
       this.ui.updateLevel(this.currentLevel);
       this.ui.updateItems(this.items);
-      this.ui.updateChances(this.shotsWithoutPop, this.chancesUntilNewRow);
       
       // 레벨 진행률 업데이트
       const progress = this.levelManager.getLevelProgress(this.score);
@@ -448,8 +436,9 @@ export class BubbleShooterGame {
     if (existingColors.length > 0) {
       bubbleType = existingColors[this.randRange(0, existingColors.length - 1)];
     } else {
-      // 기존 색상이 없으면 전체 색상 범위에서 랜덤 생성
-      bubbleType = this.randRange(0, CONFIG.BUBBLE.COLORS - 1);
+      // 기존 색상이 없으면 현재 레벨에 맞는 색상 범위에서 랜덤 생성
+      const maxColors = Math.min(3 + Math.floor(this.currentLevel / 4), CONFIG.BUBBLE.COLORS);
+      bubbleType = this.randRange(0, maxColors - 1);
     }
     
     return bubbleType;
@@ -487,7 +476,6 @@ export class BubbleShooterGame {
   }
 
   onClusterRemoved(clusterSize) {
-    this.shotsWithoutPop = 0; // 연속 실패가 끊겼으므로 리셋
     this.achievements.checkAchievement('firstPop');
     this.achievements.checkAchievement('combo', clusterSize);
     this.statistics.recordBubblesPop(clusterSize);
@@ -542,6 +530,7 @@ export class BubbleShooterGame {
   }
 
   onBubbleShot() {
+    this.gameMode.onBubbleShot();
     this.dailyChallenge.updateProgress('bubbleShot');
   }
 }

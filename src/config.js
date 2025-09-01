@@ -61,29 +61,21 @@ export function getDeviceType() {
 }
 
 // 디바이스에 맞는 레벨 설정 가져오기 - 중앙 배치 계산 포함
-export function getLevelConfig(canvas) {
+export function getLevelConfig() {
   const deviceType = getDeviceType();
   const config = CONFIG.LEVEL_CONFIGS[deviceType];
 
-  // 사용 가능한 세로 공간을 기반으로 행(row) 수를 동적으로 계산
-  const topMargin = 0; // 버블 그리드 상단 여백
-  const bottomMargin = 250; // 발사대 및 하단 UI를 위한 공간
-  const availableHeight = canvas.height - topMargin - bottomMargin;
-  const calculatedRows = Math.floor(availableHeight / config.ROW_HEIGHT);
-  // 최소 행 수를 보장하면서, 계산된 행 수가 더 크면 그 값을 사용
-  const rows = Math.max(config.ROWS, calculatedRows);
-
-  // 새로운 행 수에 따라 레벨 영역 크기 다시 계산
+  // 레벨 영역 크기 계산
   const levelWidth = config.COLUMNS * config.TILE_WIDTH + config.TILE_WIDTH / 2;
-  const levelHeight = (rows - 1) * config.ROW_HEIGHT + config.TILE_HEIGHT;
+  const levelHeight =
+    (config.ROWS - 1) * config.ROW_HEIGHT + config.TILE_HEIGHT;
 
-  // 실제 캔버스 너비를 사용하여 중앙에 배치
-  const x = (canvas.width - levelWidth) / 2;
-  const y = topMargin;
+  // 캔버스 중앙에 배치
+  const x = (CONFIG.CANVAS.WIDTH - levelWidth) / 2;
+  const y = 80; // 상단 여백
 
   return {
     ...config,
-    ROWS: rows, // 동적으로 계산된 행 수로 덮어쓰기
     X: x,
     Y: y,
     WIDTH: levelWidth,
@@ -92,13 +84,13 @@ export function getLevelConfig(canvas) {
 }
 
 export const BUBBLE_COLORS = [
-  "#FF1744", // Vivid Red
-  "#FF9100", // Vivid Orange
-  "#FFD600", // Vivid Yellow
-  "#00E676", // Vivid Green
-  "#D500F9", // Vivid Purple
-  "#2979FF", // Vivid Blue
-  "#00E5FF", // Vivid Cyan
+  "#FF3B30", // 선명한 빨강 (Red)
+  "#FF9500", // 강렬한 주황 (Orange)
+  "#FFCC00", // 밝은 노랑 (Yellow)
+  "#34C759", // 선명한 청록 (Teal)
+  "#AF52DE", // 진한 보라 (Purple)
+  "#007AFF", // 선명한 파랑 (Blue)
+  "#00DDDD", // 아쿠아 (Aqua)
 ];
 
 // Neighbor offset table for hexagonal grid
