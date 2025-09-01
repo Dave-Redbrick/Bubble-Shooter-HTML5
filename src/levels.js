@@ -101,6 +101,7 @@ export class LevelManager {
             const changeCount = Math.floor(cluster.length * 0.3);
             for (let k = 0; k < changeCount; k++) {
               const randomTile = cluster[Math.floor(Math.random() * cluster.length)];
+              // 항상 7가지 색상을 사용
               const maxColors = 7;
               
               // 현재 색과 다른 색으로 변경

@@ -333,10 +333,10 @@ export class BubbleShooterGame {
     this.statistics.recordItemUse('bombBubble');
 
     if (this.gameState === CONFIG.GAME_STATES.SHOOT_BUBBLE) {
-      // 이미 발사 중이면, 다음 버블을 폭탄으로 설정
+      // If a bubble is already in flight, set the next one to be a bomb.
       this.player.nextBubble.isBomb = true;
     } else if (this.gameState === CONFIG.GAME_STATES.READY) {
-      // 조준 중이면, 현재 버블을 폭탄으로 변경
+      // If ready to shoot, change the current bubble to a bomb.
       this.player.bubble.isBomb = true;
     }
 
@@ -414,7 +414,7 @@ export class BubbleShooterGame {
   }
 
   nextBubble() {
-    // 1. 대기 중인 버블을 현재 버블로 이동
+    // 1. Move the waiting bubble to the current bubble
     this.player.tileType = this.player.nextBubble.tileType;
     this.player.bubble.tileType = this.player.nextBubble.tileType;
     this.player.bubble.x = this.player.x;
@@ -422,7 +422,7 @@ export class BubbleShooterGame {
     this.player.bubble.visible = true;
     this.player.bubble.isBomb = this.player.nextBubble.isBomb;
 
-    // 2. 새로운 다음 버블 준비 (기본값: 일반 버블)
+    // 2. Prepare the new next bubble (default: normal bubble)
     this.player.nextBubble.isBomb = false;
     this.player.nextBubble.tileType = this.getExistingColor();
   }
