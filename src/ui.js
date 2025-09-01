@@ -29,13 +29,18 @@ export class UIManager {
     const canvasContainer = document.createElement("div");
     canvasContainer.className = "canvas-container";
 
-    // 기존 캔버스를 컨테이너로 이동
+    const canvasWrapper = document.createElement("div");
+    canvasWrapper.className = "canvas-wrapper";
+
     const canvas = this.elements.canvas;
     canvas.parentNode.removeChild(canvas);
-    canvasContainer.appendChild(canvas);
+
+    canvasWrapper.appendChild(canvas);
+    canvasContainer.appendChild(canvasWrapper);
     gameArea.appendChild(canvasContainer);
 
     this.elements.canvasContainer = canvasContainer;
+    this.elements.canvasWrapper = canvasWrapper; // Store for later use
   }
 
   setupEventListeners() {
@@ -137,55 +142,6 @@ export class UIManager {
     }
   }
 
-
-  // 반응형 캔버스 크기 조정 - 세로 전체 사용
-  resizeCanvas() {
-    const canvas = this.elements.canvas;
-    const container = this.elements.canvasContainer;
-
-    if (!container || !canvas) return;
-
-    // 캔버스 실제 크기는 1920x1080으로 고정
-    canvas.width = 1920;
-    canvas.height = 1080;
-
-    // 컨테이너 크기 가져오기 (전체 화면)
-    const containerWidth = window.innerWidth;
-    const containerHeight = window.innerHeight;
-
-    // 세로는 전체 화면 사용, 가로는 16:9 비율 유지
-    const targetRatio = 16 / 9;
-    const containerRatio = containerWidth / containerHeight;
-
-    let scale;
-    let displayWidth, displayHeight;
-
-    // 세로를 전체 화면에 맞추고 가로는 비율에 따라 조정
-    displayHeight = containerHeight;
-    displayWidth = displayHeight * targetRatio;
-    scale = displayHeight / 1080;
-
-    // 만약 계산된 가로가 화면보다 크면 가로에 맞춤
-    if (displayWidth > containerWidth) {
-      displayWidth = containerWidth;
-      displayHeight = displayWidth / targetRatio;
-      scale = displayWidth / 1920;
-    }
-
-    // 캔버스 스케일링 적용
-    canvas.style.width = `${displayWidth}px`;
-    canvas.style.height = `${displayHeight}px`;
-
-    // 디바이스 타입 변경 감지
-    const newDeviceType = getDeviceType();
-    if (newDeviceType !== this.currentDeviceType) {
-      this.currentDeviceType = newDeviceType;
-      // 게임 레벨 재초기화
-      if (this.game && typeof this.game.handleResize === "function") {
-        this.game.handleResize();
-      }
-    }
-  }
 
   // 모바일 터치 이벤트 처리
   setupMobileEvents() {
