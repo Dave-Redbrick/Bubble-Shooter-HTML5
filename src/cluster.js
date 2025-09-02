@@ -170,7 +170,6 @@ export class ClusterManager {
           return; // checkGameOver에서 이미 게임오버 처리함
         }
         
-        this.game.nextBubble();
         this.game.setGameState(CONFIG.GAME_STATES.READY);
       }
     }

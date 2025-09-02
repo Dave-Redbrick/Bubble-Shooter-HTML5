@@ -245,7 +245,14 @@ export class Renderer {
       );
     }
 
-    // 현재 버블 (폭탄 버블인지 확인)
+    // Launcher Bubble (the one ready to be shot)
+    if (player.isBomb) {
+      this.drawBombBubble(player.x, player.y);
+    } else {
+      this.drawBubble(player.x, player.y, player.tileType);
+    }
+
+    // Projectile Bubble (the one in flight)
     if (player.bubble.visible) {
       if (player.bubble.isBomb) {
         this.drawBombBubble(player.bubble.x, player.bubble.y);

@@ -44,10 +44,12 @@
         <!-- 아이템 슬롯 - 게임 영역 위에 hover -->
         <div class="game-items">
           <div class="item-slot" id="item-slot-aim">
+            <div class="ad-icon">AD</div>
             <span>AIM</span>
             <div class="item-timer"></div>
           </div>
           <div class="item-slot" id="item-slot-bomb">
+            <div class="ad-icon">AD</div>
             <span>BOMB</span>
             <div class="item-timer"></div>
           </div>
@@ -90,5 +92,17 @@
     </div>
 
     <script type="module" src="src/main.js"></script>
+
+    <!-- Modal Structure -->
+    <div id="modal" class="modal-overlay">
+      <div class="modal-content">
+        <h2 id="modal-title"></h2>
+        <p id="modal-text"></p>
+        <div class="modal-buttons">
+            <button id="modal-confirm-button">확인</button>
+            <button id="modal-close-button">취소</button>
+        </div>
+      </div>
+    </div>
   </body>
 </html>

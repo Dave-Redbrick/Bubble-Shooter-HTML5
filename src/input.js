@@ -58,13 +58,21 @@ export class InputHandler {
 
   shootBubble() {
     const player = this.game.player;
+    const projectile = this.game.player.bubble;
 
-    player.bubble.x = player.x;
-    player.bubble.y = player.y;
-    player.bubble.angle = player.angle;
-    player.bubble.tileType = player.tileType;
+    // Copy launcher properties to the projectile
+    projectile.x = player.x;
+    projectile.y = player.y;
+    projectile.angle = player.angle;
+    projectile.tileType = player.tileType;
+    projectile.isBomb = player.isBomb;
+    projectile.visible = true;
 
+    this.game.onBubbleShot();
     this.game.setGameState(CONFIG.GAME_STATES.SHOOT_BUBBLE);
+
+    // Load the next bubble into the launcher
+    this.game.nextBubble();
   }
 
   getMousePos(e) {

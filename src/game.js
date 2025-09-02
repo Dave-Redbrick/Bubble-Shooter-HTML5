@@ -55,6 +55,7 @@ export class BubbleShooterGame {
 
     // Game state
     this.gameState = CONFIG.GAME_STATES.INIT;
+    this.previousGameState = null;
     this.score = 0;
     this.highScore = parseInt(
       localStorage.getItem("bubbleShooterHighScore") || "0"
@@ -63,6 +64,7 @@ export class BubbleShooterGame {
     this.rowOffset = 0;
     this.chancesUntilNewRow = 5;
     this.shotsWithoutPop = 0;
+    this.maxChances = 5;
 
     // Animation
     this.animationState = 0;
@@ -90,7 +92,6 @@ export class BubbleShooterGame {
       },
       bombBubble: {
         available: 3,
-        active: false,
       },
     };
 
@@ -135,6 +136,7 @@ export class BubbleShooterGame {
       y: this.canvas.height - 150,
       angle: 90,
       tileType: 0,
+      isBomb: false,
       multiShotActive: false,
       bubble: {
         x: 0,
@@ -225,6 +227,13 @@ export class BubbleShooterGame {
       this.gameState = CONFIG.GAME_STATES.PAUSED;
     } else if (this.gameState === CONFIG.GAME_STATES.PAUSED) {
       this.gameState = CONFIG.GAME_STATES.READY;
+    }
+  }
+
+  resumeGame() {
+    if (this.previousGameState) {
+      this.setGameState(this.previousGameState);
+      this.previousGameState = null;
     }
   }
 
@@ -332,17 +341,65 @@ export class BubbleShooterGame {
   }
 
   useBombBubble() {
+    if (this.items.bombBubble.available <= 0) return;
+
+    const targetState = (this.gameState === CONFIG.GAME_STATES.PAUSED)
+      ? this.previousGameState
+      : this.gameState;
+
     if (
-      this.items.bombBubble.available > 0 &&
-      !this.items.bombBubble.active &&
-      this.gameState === CONFIG.GAME_STATES.READY
+      (targetState === CONFIG.GAME_STATES.READY && this.player.isBomb) ||
+      this.player.nextBubble.isBomb
     ) {
-      this.items.bombBubble.available--;
-      this.items.bombBubble.active = true;
-      this.player.nextBubble.isBomb = true;
-      this.statistics.recordItemUse('bombBubble');
-      this.updateUI();
+        return;
     }
+
+    this.items.bombBubble.available--;
+
+    if (targetState === CONFIG.GAME_STATES.READY) {
+      this.player.isBomb = true;
+    } else if (targetState === CONFIG.GAME_STATES.SHOOT_BUBBLE) {
+      this.player.nextBubble.isBomb = true;
+    }
+
+    this.statistics.recordItemUse('bombBubble');
+    this.updateUI();
+  }
+
+  onItemButtonClick(itemName) {
+    if (this.gameState === CONFIG.GAME_STATES.PAUSED) return; // Do not allow using items while already paused
+
+    this.previousGameState = this.gameState;
+    this.setGameState(CONFIG.GAME_STATES.PAUSED);
+
+    const itemInfo = {
+      aim: {
+        title: "조준 가이드",
+        description: "잠시 동안 버블의 정확한 경로를 보여줍니다. 광고를 보고 아이템을 획득하시겠습니까?"
+      },
+      bomb: {
+        title: "폭탄 버블",
+        description: "다음 버블을 강력한 폭탄으로 바꿉니다. 폭탄은 주변의 버블들을 터뜨립니다. 광고를 보고 아이템을 획득하시겠습니까?"
+      }
+    };
+
+    const info = itemInfo[itemName];
+
+    this.ui.showModal(info.title, info.description, () => {
+      // This is the confirm callback.
+      // Ad integration point. e.g., pokiSDK.rewardedBreak().then((withReward) => { ... });
+      console.log("광고 시청 시작 (Poki/CrazyGames 연동 지점)");
+      alert("광고(데모)가 성공적으로 완료되었습니다!"); // Placeholder for successful ad view
+
+      if (itemName === 'aim') {
+        this.items.aimGuide.available++;
+        this.useAimGuide();
+      } else if (itemName === 'bomb') {
+        this.items.bombBubble.available++;
+        this.useBombBubble();
+      }
+      this.updateUI();
+    });
   }
 
   watchAdForItem(itemNumber) {
@@ -364,13 +421,13 @@ export class BubbleShooterGame {
     this.score = 0;
     this.currentLevel = 1;
     this.rowOffset = 0;
-    this.chancesUntilNewRow = 5;
+    this.maxChances = 5;
+    this.chancesUntilNewRow = this.maxChances;
     this.shotsWithoutPop = 0;
     this.comboCount = 0;
     this.wallBounceCount = 0;
 
     this.items.aimGuide.active = false;
-    this.items.bombBubble.active = false;
 
     // 콤보 리셋
     this.combo.resetCombo();
@@ -418,22 +475,14 @@ export class BubbleShooterGame {
   }
 
   nextBubble() {
+    // The launcher bubble takes the properties of the next bubble
     this.player.tileType = this.player.nextBubble.tileType;
-    this.player.bubble.tileType = this.player.nextBubble.tileType;
-    this.player.bubble.x = this.player.x;
-    this.player.bubble.y = this.player.y;
-    this.player.bubble.visible = true;
-    this.player.bubble.isBomb = this.player.nextBubble.isBomb;
+    this.player.isBomb = this.player.nextBubble.isBomb;
 
+    // A new "next" bubble is generated for the queue display
     const nextColor = this.getExistingColor();
     this.player.nextBubble.tileType = nextColor;
-
-    if (this.items.bombBubble.active) {
-      this.player.nextBubble.isBomb = true;
-      this.items.bombBubble.active = false;
-    } else {
-      this.player.nextBubble.isBomb = false;
-    }
+    this.player.nextBubble.isBomb = false;
   }
 
   getExistingColor() {
@@ -538,5 +587,25 @@ export class BubbleShooterGame {
 
   onBubbleShot() {
     this.dailyChallenge.updateProgress('bubbleShot');
+  }
+
+  handleMiss() {
+    this.shotsWithoutPop++;
+
+    if (this.shotsWithoutPop >= this.chancesUntilNewRow) {
+      this.levelManager.addBubbles();
+      this.shotsWithoutPop = 0;
+      if (this.chancesUntilNewRow > 1) {
+        this.chancesUntilNewRow--;
+      }
+      this.rowOffset = (this.rowOffset + 1) % 2;
+
+      if (this.physics.checkGameOver()) {
+        return;
+      }
+    }
+
+    this.updateUI();
+    this.setGameState(CONFIG.GAME_STATES.READY);
   }
 }
