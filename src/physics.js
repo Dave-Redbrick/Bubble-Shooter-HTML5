@@ -133,7 +133,6 @@ export class PhysicsEngine {
     const bombTiles = [];
 
     // 폭탄 버블을 배치하지 않고 바로 폭발 처리
-    this.game.items.bombBubble.active = false;
     this.game.player.bubble.isBomb = false;
 
     // 반경 2칸 내의 모든 버블 찾기

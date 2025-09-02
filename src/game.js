@@ -605,7 +605,6 @@ export class BubbleShooterGame {
     }
 
     this.updateUI();
-    this.nextBubble();
     this.setGameState(CONFIG.GAME_STATES.READY);
   }
 }

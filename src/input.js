@@ -64,7 +64,9 @@ export class InputHandler {
     player.bubble.angle = player.angle;
     player.bubble.tileType = player.tileType;
 
+    this.game.onBubbleShot(); // 통계 및 도전과제용
     this.game.setGameState(CONFIG.GAME_STATES.SHOOT_BUBBLE);
+    this.game.nextBubble(); // 다음 버블을 즉시 로드
   }
 
   getMousePos(e) {
