@@ -186,22 +186,209 @@ body {
   box-shadow: 0 4px 15px rgba(0,0,0,0.2), inset 0 2px 4px rgba(255,255,255,0.4);
   color: #fff;
   text-shadow: 1px 1px 2px #c71585;
+  text-align: center;
 }
-.menu-header { text-align: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid rgba(255, 255, 255, 0.5); }
-.menu-header h1 { color: #fff; font-size: 36px; text-shadow: 1px 1px 3px #c71585; }
-.menu-btn {
-  background: linear-gradient(145deg, #bd93f9, #9b59b6);
+
+/* --- Refactored Modal Styles --- */
+
+/* Generic Modal Structure */
+.modal-header {
+  position: relative;
+  text-align: center;
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.modal-header h1 { font-size: 36px; text-shadow: 1px 1px 3px #c71585; }
+.modal-header h2 { font-size: 28px; text-shadow: 1px 1px 3px #c71585; }
+
+.modal-close {
+  position: absolute;
+  top: -15px;
+  right: -15px;
+  width: 30px;
+  height: 30px;
+  background: rgba(0,0,0,0.2);
+  border: 1px solid #fff;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 20px;
+  line-height: 28px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.modal-footer {
+  margin-top: 25px;
+  padding-top: 15px;
+  border-top: 1px solid rgba(255, 255, 255, 0.5);
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* Modal Buttons */
+.modal-button {
   color: white;
   border: 1px solid rgba(255,255,255,0.8);
-  padding: 15px 20px;
-  border-radius: 10px;
-  font-size: 18px;
-  font-weight: bold;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 16px;
   cursor: pointer;
-  text-shadow: 0 1px 2px #5a189a;
+  transition: all 0.2s ease;
+}
+
+.modal-button-primary {
+  background: linear-gradient(145deg, #bd93f9, #9b59b6);
+}
+.modal-button-secondary {
+  background: linear-gradient(145deg, #6c757d, #495057);
+}
+.modal-button-success {
+  background: linear-gradient(145deg, #28a745, #218838);
+}
+.modal-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* --- Menu Modal Specifics --- */
+.menu-body { display: flex; flex-direction: column; gap: 20px; }
+.menu-buttons { display: grid; grid-template-columns: 1fr; gap: 10px; }
+.menu-btn {
+  background: linear-gradient(145deg, #bd93f9, #9b59b6);
+  color: white; border: 1px solid rgba(255,255,255,0.8); padding: 15px 20px;
+  border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer;
+  text-shadow: 0 1px 2px #5a189a; width: 100%; display: block; margin-bottom: 10px;
+  transition: all 0.2s ease;
+}
+.menu-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+.menu-info { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 10px; text-align: left; }
+.current-stats { display: flex; flex-direction: column; gap: 8px; }
+.stat { display: flex; justify-content: space-between; font-size: 16px; }
+.stat-label { opacity: 0.8; }
+.stat-value { font-weight: bold; }
+
+/* --- Achievements Modal Specifics --- */
+.achievements-list { max-height: 300px; overflow-y: auto; padding-right: 10px; text-align: left; }
+.achievement-item { display: flex; align-items: center; background: rgba(0,0,0,0.2); border-radius: 10px; padding: 10px; margin-bottom: 10px; border-left: 5px solid #666; }
+.achievement-item.unlocked { border-left-color: #50fa7b; }
+.achievement-icon { font-size: 30px; margin-right: 15px; }
+.achievement-info { text-align: left; }
+.achievement-name { font-weight: bold; font-size: 16px; margin-bottom: 3px; }
+.achievement-desc { font-size: 14px; opacity: 0.8; }
+.achievements-list::-webkit-scrollbar { width: 8px; }
+.achievements-list::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); border-radius: 10px; }
+.achievements-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.4); border-radius: 10px; }
+.achievements-list::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.6); }
+
+/* --- Settings Modal Specifics --- */
+.settings-body { display: flex; flex-direction: column; gap: 20px; text-align: left; }
+.setting-group { background: rgba(0,0,0,0.1); padding: 15px; border-radius: 10px; }
+.setting-group h3 { margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 10px; }
+.setting-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.setting-item label { display: flex; align-items: center; gap: 8px; }
+.setting-item input[type="range"] { flex-grow: 1; margin: 0 10px; }
+.setting-item select { background: #bd93f9; color: white; border: 1px solid white; border-radius: 5px; padding: 5px; }
+.volume-value { min-width: 40px; text-align: right; }
+
+/* --- Stats Modal Specifics --- */
+.stats-body { text-align: left; }
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 15px; text-align: center; }
+.stat-item { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 10px; }
+.stat-item .stat-value { font-size: 24px; font-weight: bold; color: #f8f9fa; }
+.stat-item .stat-label { font-size: 14px; opacity: 0.8; }
+.item-usage { margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.2); }
+
+/* --- Tutorial Overlay Specifics --- */
+.tutorial-overlay .tutorial-content { background: linear-gradient(145deg, #ff79c6, #e06ab6); border: 2px solid #fff; border-radius: 15px; padding: 25px; max-width: 450px; width: 90%; box-shadow: 0 4px 15px rgba(0,0,0,0.2), inset 0 2px 4px rgba(255,255,255,0.4); color: #fff; text-shadow: 1px 1px 2px #c71585; text-align: center; }
+.tutorial-title { font-size: 24px; font-weight: bold; margin-bottom: 15px; }
+.tutorial-description { font-size: 16px; margin-bottom: 25px; }
+.tutorial-controls { display: flex; justify-content: space-between; gap: 10px; }
+/* The tutorial buttons now use the generic .modal-button classes */
+.tutorial-controls .modal-button {
+  flex: 1;
+}
+
+/* Special override for the tutorial's final step button */
+.modal-button-primary.tutorial-final-step {
+  background: linear-gradient(145deg, #28a745, #218838);
+}
+
+/* --- Leaderboard Modal Specifics --- */
+.leaderboard-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.leaderboard-header-row, .leaderboard-item {
+  display: grid;
+  grid-template-columns: 50px 1fr 1fr 80px 80px;
+  align-items: center;
+  padding: 10px;
+  border-radius: 8px;
+}
+.leaderboard-header-row {
+  font-weight: bold;
+  border-bottom: 2px solid rgba(255,255,255,0.3);
+  margin-bottom: 5px;
+  padding-bottom: 10px;
+}
+.leaderboard-item {
+  background: rgba(0,0,0,0.2);
+}
+.leaderboard-item.top-three {
+  background: rgba(255, 215, 0, 0.1);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+}
+.leaderboard-item .rank {
+  font-weight: bold;
+  font-size: 18px;
+  text-align: center;
+}
+.leaderboard-item .player-name {
+  font-weight: bold;
+}
+.leaderboard-item .player-score {
+  text-align: right;
+  font-weight: bold;
+  color: #f8f9fa;
+}
+.leaderboard-item .player-level, .leaderboard-item .player-date {
+  text-align: center;
+  opacity: 0.8;
+  font-size: 14px;
+}
+.no-scores {
+  text-align: center;
+  padding: 40px;
+  font-size: 18px;
+  opacity: 0.8;
+}
+
+/* --- Name Input Modal Specifics --- */
+.name-input-content { text-align: center; }
+.name-input-content h2 { margin-bottom: 10px; }
+.name-input-content p { margin-bottom: 15px; }
+.name-input-content input[type="text"] {
   width: 100%;
-  display: block;
-  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 2px solid #bd93f9;
+  background: rgba(0,0,0,0.2);
+  color: white;
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+.name-input-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+#submitScore, #skipScore {
+  /* These will use .modal-button styles */
+  flex: 1;
 }
 
 /* Desktop Layout */

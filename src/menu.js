@@ -15,9 +15,9 @@ export class MenuManager {
     this.modal.className = 'menu-modal';
     this.modal.innerHTML = `
       <div class="menu-content">
-        <div class="menu-header">
+        <div class="modal-header">
           <h1>버블 슈터</h1>
-          <button class="menu-close">&times;</button>
+          <button class="modal-close">&times;</button>
         </div>
         
         <div class="menu-body">
@@ -28,6 +28,7 @@ export class MenuManager {
             <button class="menu-btn" id="settings">설정</button>
             <button class="menu-btn" id="tutorial">튜토리얼</button>
             <button class="menu-btn" id="achievements">업적</button>
+            <button class="menu-btn" id="leaderboard">리더보드</button>
           </div>
           
           <div class="menu-info">
@@ -57,7 +58,7 @@ export class MenuManager {
 
   setupMenuEvents() {
     // 닫기 버튼
-    this.modal.querySelector('.menu-close').addEventListener('click', () => {
+    this.modal.querySelector('.modal-close').addEventListener('click', () => {
       this.closeMenu();
     });
 
@@ -99,6 +100,13 @@ export class MenuManager {
       this.showAchievementsModal();
     });
 
+    // 리더보드
+    this.modal.querySelector('#leaderboard').addEventListener('click', () => {
+      if (this.game.leaderboard) {
+        this.game.leaderboard.showLeaderboard();
+      }
+    });
+
     // ESC 키로 닫기
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && this.isOpen) {
@@ -130,9 +138,9 @@ export class MenuManager {
 
     achievementsModal.innerHTML = `
       <div class="achievements-content">
-        <div class="achievements-header">
+        <div class="modal-header">
           <h2>업적</h2>
-          <button class="achievements-close">&times;</button>
+          <button class="modal-close">&times;</button>
         </div>
         <div class="achievements-list">
           ${achievementsList}
@@ -142,7 +150,7 @@ export class MenuManager {
 
     document.body.appendChild(achievementsModal);
 
-    achievementsModal.querySelector('.achievements-close').addEventListener('click', () => {
+    achievementsModal.querySelector('.modal-close').addEventListener('click', () => {
       achievementsModal.remove();
     });
   }

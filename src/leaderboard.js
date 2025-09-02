@@ -55,9 +55,9 @@ export class LeaderboardManager {
 
     modal.innerHTML = `
       <div class="leaderboard-content">
-        <div class="leaderboard-header">
+        <div class="modal-header">
           <h2>🏆 리더보드</h2>
-          <button class="leaderboard-close">&times;</button>
+          <button class="modal-close">&times;</button>
         </div>
         <div class="leaderboard-list">
           <div class="leaderboard-header-row">
@@ -69,8 +69,8 @@ export class LeaderboardManager {
           </div>
           ${scoresHTML}
         </div>
-        <div class="leaderboard-footer">
-          <button class="clear-leaderboard">기록 초기화</button>
+        <div class="modal-footer">
+          <button class="modal-button modal-button-secondary clear-leaderboard">기록 초기화</button>
         </div>
       </div>
     `;
@@ -78,7 +78,7 @@ export class LeaderboardManager {
     document.body.appendChild(modal);
 
     // 이벤트 리스너
-    modal.querySelector('.leaderboard-close').addEventListener('click', () => {
+    modal.querySelector('.modal-close').addEventListener('click', () => {
       modal.remove();
     });
 
@@ -101,8 +101,8 @@ export class LeaderboardManager {
         <p>레벨: ${level}</p>
         <input type="text" id="playerName" placeholder="이름을 입력하세요" maxlength="10">
         <div class="name-input-buttons">
-          <button id="submitScore">등록</button>
-          <button id="skipScore">건너뛰기</button>
+          <button id="submitScore" class="modal-button modal-button-primary">등록</button>
+          <button id="skipScore" class="modal-button modal-button-secondary">건너뛰기</button>
         </div>
       </div>
     `;

@@ -259,11 +259,6 @@ export class BubbleShooterGame {
     this.initialized = true;
     this.main(0);
 
-    // 최초 실행 시 튜토리얼 자동 시작
-    if (!localStorage.getItem('tutorialCompleted')) {
-      this.tutorial.startTutorial();
-      localStorage.setItem('tutorialCompleted', 'true');
-    }
   }
 
   main(tFrame) {
