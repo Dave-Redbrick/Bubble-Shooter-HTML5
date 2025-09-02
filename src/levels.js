@@ -7,31 +7,21 @@ export class LevelManager {
   // 현재 점수로 레벨 계산
   calculateLevelFromScore(score) {
     if (score < 100) return 1;
-
-    let level = 1;
-    let requiredScore = 0;
-
-    while (requiredScore <= score) {
-      level++;
-      requiredScore = this.getScoreForLevel(level);
-    }
-
-    return level - 1;
+    if (score < 500) return 2;
+    // For levels 3 and up, the required score threshold is 500 * 2^(level - 3)
+    // score >= 500 * 2^(level - 3)
+    // score / 500 >= 2^(level - 3)
+    // log2(score / 500) >= level - 3
+    // So, level = floor(log2(score / 500)) + 3
+    return Math.floor(Math.log2(score / 500)) + 3;
   }
 
   // 특정 레벨에 필요한 점수 계산
   getScoreForLevel(level) {
     if (level <= 1) return 0;
     if (level === 2) return 100;
-
-    // 레벨 3까지 필요한 누적 점수 (레벨 2 달성 점수)
-    let totalScore = 100;
-
-    // 레벨 3부터는 500 * 2^(i - 3) 점씩 추가
-    for (let i = 3; i <= level; i++) {
-      totalScore += 500 * Math.pow(2, i - 3);
-    }
-    return totalScore;
+    // For level 3 and up, the score is the threshold 500 * 2^(level - 3)
+    return 500 * Math.pow(2, level - 3);
   }
 
   // 다음 레벨까지 필요한 점수 계산
@@ -60,9 +50,8 @@ export class LevelManager {
     const levelData = this.game.levelData;
     const currentLevel = this.calculateLevelFromScore(this.game.score);
 
-    // 레벨에 따른 색상 수 결정 (최소 3개, 최대 7개)
-    const maxColors = Math.min(3 + Math.floor(currentLevel / 3), 7);
-
+    // 항상 7가지 색상을 사용
+    const maxColors = 7;
     // 모든 타일을 먼저 빈 상태로 초기화
     for (let i = 0; i < levelData.columns; i++) {
       for (let j = 0; j < levelData.rows; j++) {
@@ -81,55 +70,8 @@ export class LevelManager {
 
     for (let j = 0; j < fillRows; j++) {
       for (let i = 0; i < levelData.columns; i++) {
-        // 80% 확률로 버블 생성
-        if (Math.random() < 0.8) {
-          levelData.tiles[i][j].type = this.game.randRange(0, maxColors - 1);
-        }
-      }
-    }
-
-    // 클러스터가 너무 많이 생성되지 않도록 조정
-    this.balanceLevel();
-  }
-
-  // 레벨 밸런스 조정 (너무 쉽거나 어렵지 않게)
-  balanceLevel() {
-    const levelData = this.game.levelData;
-
-    // 큰 클러스터들을 찾아서 일부 분리
-    for (let i = 0; i < levelData.columns; i++) {
-      for (let j = 0; j < levelData.rows; j++) {
-        const tile = levelData.tiles[i][j];
-        if (tile.type >= 0) {
-          const cluster = this.game.physics.findCluster(
-            i,
-            j,
-            true,
-            true,
-            false
-          );
-
-          // 6개 이상의 클러스터가 있으면 일부를 다른 색으로 변경
-          if (cluster.length >= 6) {
-            const changeCount = Math.floor(cluster.length * 0.3);
-            for (let k = 0; k < changeCount; k++) {
-              const randomTile =
-                cluster[Math.floor(Math.random() * cluster.length)];
-              const currentLevel = this.calculateLevelFromScore(
-                this.game.score
-              );
-              const maxColors = Math.min(3 + Math.floor(currentLevel / 3), 7);
-
-              // 현재 색과 다른 색으로 변경
-              let newColor;
-              do {
-                newColor = this.game.randRange(0, maxColors - 1);
-              } while (newColor === randomTile.type);
-
-              randomTile.type = newColor;
-            }
-          }
-        }
+        // 항상 버블을 생성하여 꽉 채움
+        levelData.tiles[i][j].type = this.game.randRange(0, maxColors - 1);
       }
     }
   }

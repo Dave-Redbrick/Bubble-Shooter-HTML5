@@ -9,10 +9,10 @@ export class ComboManager {
     this.comboMultiplier = 1;
     this.comboDisplay = {
       visible: false,
-      text: '',
+      text: "",
       scale: 1,
       alpha: 1,
-      time: 0
+      time: 0,
     };
   }
 
@@ -28,7 +28,7 @@ export class ComboManager {
     // 콤보 표시 애니메이션 업데이트
     if (this.comboDisplay.visible) {
       this.comboDisplay.time += dt;
-      
+
       if (this.comboDisplay.time < 0.3) {
         // 확대 애니메이션
         const progress = this.comboDisplay.time / 0.3;
@@ -51,7 +51,7 @@ export class ComboManager {
   addCombo(clusterSize) {
     this.currentCombo++;
     this.comboTimer = this.comboTimeout;
-    
+
     if (this.currentCombo > this.maxCombo) {
       this.maxCombo = this.currentCombo;
     }
@@ -62,14 +62,19 @@ export class ComboManager {
     // 콤보 표시 업데이트
     this.updateComboDisplay();
 
-    // 콤보 보너스 점수 (10점 기준)
-    const bonusScore = Math.floor(clusterSize * 10 * this.comboMultiplier);
-    this.game.updateScore(bonusScore);
+    // 레벨에 따른 기본 점수 계산
+    const basePointsPerBubble = 10 + this.game.currentLevel - 1;
+
+    // 콤보를 포함한 최종 점수 계산
+    const totalScore = Math.floor(
+      clusterSize * basePointsPerBubble * this.comboMultiplier
+    );
+    this.game.updateScore(totalScore);
 
     // 특수 효과
     if (this.currentCombo >= 3) {
       this.game.effects.startScreenShake(3, 0.15);
-      this.game.effects.startColorFlash('#ffff00', 0.1);
+      this.game.effects.startColorFlash("#ffff00", 0.1);
     }
 
     if (this.currentCombo >= 5) {
@@ -79,13 +84,13 @@ export class ComboManager {
     // 사운드 재생
     if (this.game.sound) {
       if (this.currentCombo >= 3) {
-        this.game.sound.play('combo');
+        this.game.sound.play("combo");
       } else {
-        this.game.sound.play('pop');
+        this.game.sound.play("pop");
       }
     }
 
-    return bonusScore;
+    return totalScore;
   }
 
   resetCombo() {
@@ -126,25 +131,25 @@ export class ComboManager {
     ctx.scale(this.comboDisplay.scale, this.comboDisplay.scale);
 
     // 그림자
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-    ctx.font = 'bold 48px Arial';
-    ctx.textAlign = 'right'; // 오른쪽 정렬
-    ctx.textBaseline = 'bottom'; // 하단 정렬
+    ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+    ctx.font = "bold 48px Arial";
+    ctx.textAlign = "right"; // 오른쪽 정렬
+    ctx.textBaseline = "bottom"; // 하단 정렬
     ctx.fillText(this.comboDisplay.text, 2, 2);
 
     // 메인 텍스트
-    let color = '#ffff00';
+    let color = "#ffff00";
     if (this.currentCombo >= 10) {
-      color = '#ff00ff';
+      color = "#ff00ff";
     } else if (this.currentCombo >= 5) {
-      color = '#ff6600';
+      color = "#ff6600";
     }
 
     ctx.fillStyle = color;
     ctx.fillText(this.comboDisplay.text, 0, 0);
 
     // 외곽선
-    ctx.strokeStyle = '#ffffff';
+    ctx.strokeStyle = "#ffffff";
     ctx.lineWidth = 2;
     ctx.strokeText(this.comboDisplay.text, 0, 0);
 
