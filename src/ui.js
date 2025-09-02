@@ -18,6 +18,7 @@ export class UIManager {
       itemSlotAim: document.getElementById("item-slot-aim"),
       itemSlotBomb: document.getElementById("item-slot-bomb"),
       aimItemTimer: document.querySelector("#item-slot-aim .item-timer"),
+      aimItemTimerText: document.querySelector("#item-slot-aim .item-timer-text"),
       canvas: document.getElementById("viewport"),
       canvasContainer: null,
       chancesContainer: document.querySelector(".chances-container"),
@@ -138,12 +139,17 @@ export class UIManager {
         if (active) {
             aimSlot.classList.add('active');
             aimText.innerHTML = getLocalizedString("itemAimActive");
+            const remainingSeconds = remaining / 1000;
+            this.elements.aimItemTimerText.textContent = remainingSeconds.toFixed(1) + 's';
+            this.elements.aimItemTimerText.style.display = 'block';
+
             const remainingPercent = (remaining / duration) * 100;
             this.elements.aimItemTimer.style.height = `${remainingPercent}%`;
             if (adChip) adChip.style.display = 'none';
         } else {
             aimSlot.classList.remove('active');
             this.elements.aimItemTimer.style.height = '0%';
+            this.elements.aimItemTimerText.style.display = 'none';
             aimText.innerHTML = getLocalizedString("itemAim");
             if (adChip) adChip.style.display = 'block';
         }

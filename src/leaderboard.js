@@ -56,7 +56,7 @@ export class LeaderboardManager {
     modal.innerHTML = `
       <div class="leaderboard-content">
         <div class="modal-header">
-          <h2>🏆 리더보드</h2>
+          <h2>🏆 Leaderboard</h2>
           <button class="modal-close">&times;</button>
         </div>
         <div class="leaderboard-list">
