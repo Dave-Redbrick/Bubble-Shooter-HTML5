@@ -79,9 +79,9 @@ export class StatisticsManager {
     modal.className = 'stats-modal';
     modal.innerHTML = `
       <div class="stats-content">
-        <div class="stats-header">
+        <div class="modal-header">
           <h2>게임 통계</h2>
-          <button class="stats-close">&times;</button>
+          <button class="modal-close">&times;</button>
         </div>
         
         <div class="stats-body">
@@ -131,8 +131,8 @@ export class StatisticsManager {
           </div>
         </div>
         
-        <div class="stats-footer">
-          <button class="stats-reset">통계 초기화</button>
+        <div class="modal-footer">
+          <button class="modal-button modal-button-secondary stats-reset">통계 초기화</button>
         </div>
       </div>
     `;
@@ -140,7 +140,7 @@ export class StatisticsManager {
     document.body.appendChild(modal);
 
     // 이벤트 리스너
-    modal.querySelector('.stats-close').addEventListener('click', () => {
+    modal.querySelector('.modal-close').addEventListener('click', () => {
       modal.remove();
     });
 

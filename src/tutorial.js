@@ -57,8 +57,8 @@ export class TutorialManager {
         <div class="tutorial-title"></div>
         <div class="tutorial-description"></div>
         <div class="tutorial-controls">
-          <button class="tutorial-skip">건너뛰기</button>
-          <button class="tutorial-next">다음</button>
+          <button class="modal-button modal-button-secondary tutorial-skip">건너뛰기</button>
+          <button class="modal-button modal-button-primary tutorial-next">다음</button>
         </div>
       </div>
     `;
@@ -84,9 +84,19 @@ export class TutorialManager {
     const step = this.steps[this.currentStep];
     const titleEl = this.overlay.querySelector('.tutorial-title');
     const descEl = this.overlay.querySelector('.tutorial-description');
-    
+    const nextBtn = this.overlay.querySelector('.tutorial-next');
+
     titleEl.textContent = step.title;
     descEl.textContent = step.description;
+
+    // 마지막 단계에서는 '다음' 버튼을 '완료'로 변경하고 스타일을 바꿈
+    if (this.currentStep === this.steps.length - 1) {
+      nextBtn.textContent = '완료';
+      nextBtn.classList.add('tutorial-final-step');
+    } else {
+      nextBtn.textContent = '다음';
+      nextBtn.classList.remove('tutorial-final-step');
+    }
     
     // 하이라이트 효과
     this.highlightElement(step.highlight);

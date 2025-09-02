@@ -57,9 +57,9 @@ export class SettingsManager {
     this.modal.className = 'settings-modal';
     this.modal.innerHTML = `
       <div class="settings-content">
-        <div class="settings-header">
+        <div class="modal-header">
           <h2>설정</h2>
-          <button class="settings-close">&times;</button>
+          <button class="modal-close">&times;</button>
         </div>
         
         <div class="settings-body">
@@ -118,9 +118,9 @@ export class SettingsManager {
           </div>
         </div>
 
-        <div class="settings-footer">
-          <button class="settings-reset">초기화</button>
-          <button class="settings-save">저장</button>
+        <div class="modal-footer">
+          <button class="modal-button modal-button-secondary settings-reset">초기화</button>
+          <button class="modal-button modal-button-primary settings-save">저장</button>
         </div>
       </div>
     `;
@@ -131,7 +131,7 @@ export class SettingsManager {
 
   setupModalEvents() {
     // 닫기 버튼
-    this.modal.querySelector('.settings-close').addEventListener('click', () => {
+    this.modal.querySelector('.modal-close').addEventListener('click', () => {
       this.closeModal();
     });
 
