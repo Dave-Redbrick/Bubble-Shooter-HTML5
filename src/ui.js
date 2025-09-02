@@ -28,9 +28,18 @@ export class UIManager {
       modalCloseButton: document.getElementById("modal-close-button"),
     };
 
+    this.localizeStaticUI();
     this.addAdIcons();
     // 캔버스 컨테이너 생성
     this.createCanvasContainer();
+  }
+
+  localizeStaticUI() {
+    document.title = getLocalizedString("gameTitle");
+    document.querySelectorAll("[data-localize]").forEach(el => {
+        el.textContent = getLocalizedString(el.dataset.localize);
+    });
+    this.elements.modalCloseButton.textContent = getLocalizedString("cancel");
   }
 
   addAdIcons() {

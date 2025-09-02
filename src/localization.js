@@ -9,6 +9,13 @@ const translations = {
     "reset": "Reset",
     "save": "Save",
     "ad": "AD",
+    "cancel": "Cancel",
+    "menu": "MENU",
+    "chances": "CHANCES",
+    "help": "HELP",
+    "helpLine1": "Aim with the mouse and click to shoot.",
+    "helpLine2": "Match 3 or more bubbles of the same color to pop them.",
+    "helpLine3": "Clear all bubbles to advance to the next level.",
 
     // Items
     "itemAim": "AIM",
@@ -53,7 +60,10 @@ const translations = {
     "leaderboard": "Leaderboard",
 
     // Ad placeholder
-    "adPlaceholder": "Ad (demo) completed successfully!"
+    "adPlaceholder": "Ad (demo) completed successfully!",
+
+    // score to next level
+    "scoreToNextLevel": "Next level in {score} points"
 };
 
 export function getLocalizedString(key, replacements = {}) {

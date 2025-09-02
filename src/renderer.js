@@ -90,9 +90,8 @@ export class Renderer {
   renderAimGuide() {
     const isAiming = this.game.gameState === CONFIG.GAME_STATES.READY;
     const aimGuideActive = this.game.items.aimGuide.active;
-    const showTrajectory = this.game.settings.settings.showTrajectory;
 
-    if (!isAiming || (!aimGuideActive && !showTrajectory)) {
+    if (!isAiming || !aimGuideActive) {
       return;
     }
 
@@ -221,10 +220,11 @@ export class Renderer {
     ctx.strokeStyle = "#666666";
     ctx.stroke();
 
-    // Aiming line (only when aim guide is not active)
-    if (!this.game.items.aimGuide.active && this.game.settings.settings.showTrajectory) {
+    // Aiming line (basic)
+    if (this.game.settings.settings.showTrajectory && !this.game.items.aimGuide.active) {
       ctx.lineWidth = 3;
-      ctx.strokeStyle = "rgba(0, 255, 136, 0.5)"; // Slightly transparent
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.5)";
+      ctx.setLineDash([5, 10]);
       ctx.beginPath();
       ctx.moveTo(centerX, centerY);
       ctx.lineTo(
@@ -234,6 +234,7 @@ export class Renderer {
           2 * levelData.tileHeight * Math.sin(this.degToRad(player.angle))
       );
       ctx.stroke();
+      ctx.setLineDash([]); // Reset line dash
     }
 
     // 다음 버블
