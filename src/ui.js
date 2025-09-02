@@ -43,7 +43,7 @@ export class UIManager {
   }
 
   addAdIcons() {
-    const adIconHTML = `<div class="ad-icon">${getLocalizedString("ad")}</div>`;
+    const adIconHTML = `<div class="ad-chip">${getLocalizedString("ad")}</div>`;
     if (this.elements.itemSlotAim) {
         this.elements.itemSlotAim.insertAdjacentHTML('beforeend', adIconHTML);
     }
@@ -88,14 +88,6 @@ export class UIManager {
       });
     }
 
-    // 패시브 스킬 클릭
-    const passiveItems = document.querySelectorAll(".passive-item");
-    passiveItems.forEach((item, index) => {
-      item.addEventListener("click", () => {
-        this.showPassiveInfo(index + 1);
-      });
-    });
-
     // Modal close button
     this.elements.modalCloseButton.addEventListener("click", () => {
       this.hideModal();
@@ -133,17 +125,6 @@ export class UIManager {
     }
   }
 
-  updatePassive(index, name, percent) {
-    const passiveItems = document.querySelectorAll(".passive-item");
-    if (passiveItems[index]) {
-      const nameElement = passiveItems[index].querySelector(".passive-name");
-      const percentElement =
-        passiveItems[index].querySelector(".passive-percent");
-      if (nameElement) nameElement.textContent = name;
-      if (percentElement) percentElement.textContent = `${percent}%`;
-    }
-  }
-
   updateItems(items) {
     if (!items) return;
 
@@ -152,19 +133,19 @@ export class UIManager {
     if (aimSlot && items.aimGuide) {
         const { active, remaining, duration, available } = items.aimGuide;
         const aimText = aimSlot.querySelector('span');
-        const adIcon = aimSlot.querySelector('.ad-icon');
+        const adChip = aimSlot.querySelector('.ad-chip');
 
         if (active) {
             aimSlot.classList.add('active');
             aimText.innerHTML = getLocalizedString("itemAimActive");
             const remainingPercent = (remaining / duration) * 100;
             this.elements.aimItemTimer.style.height = `${remainingPercent}%`;
-            if (adIcon) adIcon.style.display = 'none';
+            if (adChip) adChip.style.display = 'none';
         } else {
             aimSlot.classList.remove('active');
             this.elements.aimItemTimer.style.height = '0%';
             aimText.innerHTML = getLocalizedString("itemAim");
-            if (adIcon) adIcon.style.display = 'block';
+            if (adChip) adChip.style.display = 'block';
         }
 
         if (available === 0 && !active) {
@@ -199,11 +180,6 @@ export class UIManager {
     if (this.game && this.game.menu) {
       this.game.menu.showMainMenu();
     }
-  }
-
-  showPassiveInfo(passiveNumber) {
-    // Passive info display logic (currently empty)
-    console.log(`Displaying info for passive ${passiveNumber}`);
   }
 
   showModal(title, text, onConfirm) {

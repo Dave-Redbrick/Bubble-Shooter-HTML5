@@ -16,33 +16,33 @@ export class MenuManager {
     this.modal.innerHTML = `
       <div class="menu-content">
         <div class="modal-header">
-          <h1>버블 슈터</h1>
+          <h1>Bubble Shooter</h1>
           <button class="modal-close">&times;</button>
         </div>
         
         <div class="menu-body">
           <div class="menu-buttons">
-            <button class="menu-btn" id="newGame">새 게임</button>
-            <button class="menu-btn" id="continueGame">계속하기</button>
-            <button class="menu-btn" id="statistics">통계</button>
-            <button class="menu-btn" id="settings">설정</button>
-            <button class="menu-btn" id="tutorial">튜토리얼</button>
-            <button class="menu-btn" id="achievements">업적</button>
-            <button class="menu-btn" id="leaderboard">리더보드</button>
+            <button class="menu-btn" id="newGame">New Game</button>
+            <button class="menu-btn" id="continueGame">Continue</button>
+            <button class="menu-btn" id="statistics">Statistics</button>
+            <button class="menu-btn" id="settings">Settings</button>
+            <button class="menu-btn" id="tutorial">Tutorial</button>
+            <button class="menu-btn" id="achievements">Achievements</button>
+            <button class="menu-btn" id="leaderboard">Leaderboard</button>
           </div>
           
           <div class="menu-info">
             <div class="current-stats">
               <div class="stat">
-                <span class="stat-label">현재 점수:</span>
+                <span class="stat-label">Current Score:</span>
                 <span class="stat-value">${this.game.score.toLocaleString()}</span>
               </div>
               <div class="stat">
-                <span class="stat-label">최고 점수:</span>
+                <span class="stat-label">High Score:</span>
                 <span class="stat-value">${this.game.highScore.toLocaleString()}</span>
               </div>
               <div class="stat">
-                <span class="stat-label">현재 레벨:</span>
+                <span class="stat-label">Current Level:</span>
                 <span class="stat-value">${this.game.currentLevel}</span>
               </div>
             </div>
@@ -139,7 +139,7 @@ export class MenuManager {
     achievementsModal.innerHTML = `
       <div class="achievements-content">
         <div class="modal-header">
-          <h2>업적</h2>
+          <h2>Achievements</h2>
           <button class="modal-close">&times;</button>
         </div>
         <div class="achievements-list">
