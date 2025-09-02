@@ -484,3 +484,17 @@ body {
 .modal-buttons button#modal-close-button {
   background-color: #ff5555;
 }
+
+.ad-icon {
+  position: absolute;
+  top: 5px;
+  right: 8px;
+  background-color: #ffc107;
+  color: #333;
+  border-radius: 5px;
+  padding: 2px 5px;
+  font-size: 12px;
+  font-weight: bold;
+  line-height: 1;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}

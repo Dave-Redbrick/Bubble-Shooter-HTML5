@@ -203,6 +203,7 @@ export class UIManager {
 
   hideModal() {
     this.elements.modal.style.display = "none";
+    this.game.resumeGame();
   }
 
   // 반응형 캔버스 크기 조정 - 컨테이너에 꽉 채우기

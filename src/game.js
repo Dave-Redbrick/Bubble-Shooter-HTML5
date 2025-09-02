@@ -55,6 +55,7 @@ export class BubbleShooterGame {
 
     // Game state
     this.gameState = CONFIG.GAME_STATES.INIT;
+    this.previousGameState = null;
     this.score = 0;
     this.highScore = parseInt(
       localStorage.getItem("bubbleShooterHighScore") || "0"
@@ -228,6 +229,13 @@ export class BubbleShooterGame {
     }
   }
 
+  resumeGame() {
+    if (this.previousGameState) {
+      this.setGameState(this.previousGameState);
+      this.previousGameState = null;
+    }
+  }
+
   handleResize() {
     const oldLevelData = { ...this.levelData };
     this.initializeLevel();
@@ -355,6 +363,11 @@ export class BubbleShooterGame {
   }
 
   onItemButtonClick(itemName) {
+    if (this.gameState === CONFIG.GAME_STATES.PAUSED) return; // Do not allow using items while already paused
+
+    this.previousGameState = this.gameState;
+    this.setGameState(CONFIG.GAME_STATES.PAUSED);
+
     const itemInfo = {
       aim: {
         title: "조준 가이드",
