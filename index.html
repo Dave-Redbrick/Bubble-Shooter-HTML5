@@ -8,35 +8,6 @@
   </head>
   <body>
     <div class="game-container">
-      <!-- Left Sidebar -->
-      <div class="left-sidebar">
-        <div class="score-section">
-          <div class="score-box">
-            <div class="score-label" data-localize="score">SCORE</div>
-            <div class="score-value" id="current-score">0</div>
-          </div>
-          <div class="level-indicator">
-            <div class="level-circle">
-              <span id="current-level">1</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="high-score-box">
-          <div class="high-score-label" data-localize="highScore">HIGH SCORE</div>
-          <div class="high-score-value" id="high-score">0</div>
-        </div>
-
-        <div class="help-section">
-          <div class="help-title" data-localize="help">HELP</div>
-          <div class="help-content">
-            <p data-localize="helpLine1">Aim with the mouse and click to shoot.</p>
-            <p data-localize="helpLine2">Match 3 or more bubbles of the same color to pop them.</p>
-            <p data-localize="helpLine3">Clear all bubbles to advance to the next level.</p>
-          </div>
-        </div>
-      </div>
-
       <!-- Center Game Area -->
       <div class="game-area">
         <canvas id="viewport"></canvas>
@@ -46,6 +17,7 @@
           <div class="item-slot" id="item-slot-aim">
             <span></span>
             <div class="item-timer"></div>
+            <div class="item-timer-text"></div>
           </div>
           <div class="item-slot" id="item-slot-bomb">
             <span></span>
@@ -64,27 +36,31 @@
           <span data-localize="menu">MENU</span>
         </div>
 
-        <!-- Passives are dynamic, no need to localize here -->
-        <div class="passive-skills">
-          <div class="passive-item">
-            <div class="passive-name">PASSIVE 1</div>
-            <div class="passive-percent">0%</div>
+        <div class="score-section">
+          <div class="score-box">
+            <div class="score-info">
+              <div class="score-label" data-localize="score">SCORE</div>
+              <div class="score-value" id="current-score">0</div>
+            </div>
+            <div class="level-indicator">
+              <div class="level-circle">
+                <span id="current-level">1</span>
+              </div>
+            </div>
           </div>
-          <div class="passive-item">
-            <div class="passive-name">PASSIVE 2</div>
-            <div class="passive-percent">0%</div>
-          </div>
-          <div class="passive-item">
-            <div class="passive-name">PASSIVE 3</div>
-            <div class="passive-percent">0%</div>
-          </div>
-          <div class="passive-item">
-            <div class="passive-name">PASSIVE 4</div>
-            <div class="passive-percent">0%</div>
-          </div>
-          <div class="passive-item">
-            <div class="passive-name">PASSIVE 5</div>
-            <div class="passive-percent">0%</div>
+        </div>
+
+        <div class="high-score-box">
+          <div class="high-score-label" data-localize="highScore">HIGH SCORE</div>
+          <div class="high-score-value" id="high-score">0</div>
+        </div>
+
+        <div class="help-section">
+          <div class="help-title" data-localize="help">HELP</div>
+          <div class="help-content">
+            <p data-localize="helpLine1">Aim with the mouse and click to shoot.</p>
+            <p data-localize="helpLine2">Match 3 or more bubbles of the same color to pop them.</p>
+            <p data-localize="helpLine3">Clear all bubbles to advance to the next level.</p>
           </div>
         </div>
       </div>

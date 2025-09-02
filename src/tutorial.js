@@ -6,26 +6,26 @@ export class TutorialManager {
     this.currentStep = 0;
     this.steps = [
       {
-        title: "게임 시작!",
-        description: "마우스로 조준하고 클릭하여 버블을 발사하세요.",
+        title: "Let's Start!",
+        description: "Aim with your mouse and click to shoot a bubble.",
         highlight: "player",
         duration: 3000
       },
       {
-        title: "같은 색 연결",
-        description: "같은 색 버블 3개 이상을 연결하면 터집니다.",
+        title: "Match Colors",
+        description: "Connect 3 or more bubbles of the same color to pop them.",
         highlight: "bubbles",
         duration: 4000
       },
       {
-        title: "아이템 사용",
-        description: "하단의 아이템을 클릭하여 특수 능력을 사용하세요.",
+        title: "Use Items",
+        description: "Click the items at the bottom to use special abilities.",
         highlight: "items",
         duration: 3000
       },
       {
-        title: "위험선 주의",
-        description: "빨간 점선을 넘으면 게임이 끝납니다!",
+        title: "Watch the Danger Line",
+        description: "If the bubbles cross the red dotted line, the game is over!",
         highlight: "dangerline",
         duration: 3000
       }
@@ -57,8 +57,8 @@ export class TutorialManager {
         <div class="tutorial-title"></div>
         <div class="tutorial-description"></div>
         <div class="tutorial-controls">
-          <button class="modal-button modal-button-secondary tutorial-skip">건너뛰기</button>
-          <button class="modal-button modal-button-primary tutorial-next">다음</button>
+          <button class="modal-button modal-button-secondary tutorial-skip">Skip</button>
+          <button class="modal-button modal-button-primary tutorial-next">Next</button>
         </div>
       </div>
     `;
@@ -91,10 +91,10 @@ export class TutorialManager {
 
     // 마지막 단계에서는 '다음' 버튼을 '완료'로 변경하고 스타일을 바꿈
     if (this.currentStep === this.steps.length - 1) {
-      nextBtn.textContent = '완료';
+      nextBtn.textContent = 'Finish';
       nextBtn.classList.add('tutorial-final-step');
     } else {
-      nextBtn.textContent = '다음';
+      nextBtn.textContent = 'Next';
       nextBtn.classList.remove('tutorial-final-step');
     }
     

@@ -80,7 +80,7 @@ export class StatisticsManager {
     modal.innerHTML = `
       <div class="stats-content">
         <div class="modal-header">
-          <h2>게임 통계</h2>
+          <h2>Game Statistics</h2>
           <button class="modal-close">&times;</button>
         </div>
         
@@ -88,51 +88,51 @@ export class StatisticsManager {
           <div class="stats-grid">
             <div class="stat-item">
               <div class="stat-value">${this.stats.totalGamesPlayed}</div>
-              <div class="stat-label">총 게임 수</div>
+              <div class="stat-label">Total Games</div>
             </div>
             <div class="stat-item">
               <div class="stat-value">${this.stats.highestScore.toLocaleString()}</div>
-              <div class="stat-label">최고 점수</div>
+              <div class="stat-label">High Score</div>
             </div>
             <div class="stat-item">
               <div class="stat-value">${this.stats.averageScore.toLocaleString()}</div>
-              <div class="stat-label">평균 점수</div>
+              <div class="stat-label">Average Score</div>
             </div>
             <div class="stat-item">
               <div class="stat-value">${this.stats.totalBubblesPopped.toLocaleString()}</div>
-              <div class="stat-label">터뜨린 버블</div>
+              <div class="stat-label">Bubbles Popped</div>
             </div>
             <div class="stat-item">
-              <div class="stat-value">${Math.round(this.stats.totalTimePlayed / 60)}분</div>
-              <div class="stat-label">총 플레이 시간</div>
+              <div class="stat-value">${Math.round(this.stats.totalTimePlayed / 60)} min</div>
+              <div class="stat-label">Total Playtime</div>
             </div>
             <div class="stat-item">
               <div class="stat-value">${this.stats.bestCombo}</div>
-              <div class="stat-label">최고 콤보</div>
+              <div class="stat-label">Best Combo</div>
             </div>
             <div class="stat-item">
               <div class="stat-value">${this.stats.levelsCompleted}</div>
-              <div class="stat-label">완료한 레벨</div>
+              <div class="stat-label">Levels Cleared</div>
             </div>
             <div class="stat-item">
               <div class="stat-value">${this.stats.achievements}</div>
-              <div class="stat-label">달성한 업적</div>
+              <div class="stat-label">Achievements Unlocked</div>
             </div>
           </div>
           
           <div class="item-usage">
-            <h3>아이템 사용 통계</h3>
+            <h3>Item Usage Statistics</h3>
             <div class="usage-item">
-              <span>조준 가이드: ${this.stats.itemsUsed.aimGuide}회</span>
+              <span>Aim Guide: ${this.stats.itemsUsed.aimGuide}</span>
             </div>
             <div class="usage-item">
-              <span>폭탄 버블: ${this.stats.itemsUsed.bombBubble}회</span>
+              <span>Bomb Bubble: ${this.stats.itemsUsed.bombBubble}</span>
             </div>
           </div>
         </div>
         
         <div class="modal-footer">
-          <button class="modal-button modal-button-secondary stats-reset">통계 초기화</button>
+          <button class="modal-button modal-button-secondary stats-reset">Reset Statistics</button>
         </div>
       </div>
     `;
@@ -145,7 +145,7 @@ export class StatisticsManager {
     });
 
     modal.querySelector('.stats-reset').addEventListener('click', () => {
-      if (confirm('정말로 모든 통계를 초기화하시겠습니까?')) {
+      if (confirm('Are you sure you want to reset all statistics?')) {
         this.resetStats();
         modal.remove();
       }
