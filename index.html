@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bubble Shooter Game</title>
+    <link rel="stylesheet" href="src/style.css" />
+  </head>
+  <body>
+    <div class="game-container">
+      <!-- 왼쪽 사이드바 -->
+      <div class="left-sidebar">
+        <div class="score-section">
+          <div class="score-box">
+            <div class="score-label">SCORE</div>
+            <div class="score-value" id="current-score">0</div>
+          </div>
+          <div class="level-indicator">
+            <div class="level-circle">
+              <span id="current-level">1</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="high-score-box">
+          <div class="high-score-label">HIGH SCORE</div>
+          <div class="high-score-value" id="high-score">0</div>
+        </div>
+
+        <div class="help-section">
+          <div class="help-title">HELP</div>
+          <div class="help-content">
+            <p>마우스로 조준하고 클릭하여 버블을 발사하세요.</p>
+            <p>같은 색 버블 3개 이상을 연결하면 제거됩니다.</p>
+            <p>모든 버블을 제거하면 다음 레벨로 진행합니다.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 중앙 게임 영역 -->
+      <div class="game-area">
+        <canvas id="viewport"></canvas>
+
+        <!-- 아이템 슬롯 - 게임 영역 위에 hover -->
+        <div class="game-items">
+          <div class="item-slot" id="item-slot-aim">
+            <span>AIM</span>
+            <div class="item-timer"></div>
+          </div>
+          <div class="item-slot" id="item-slot-bomb">
+            <span>BOMB</span>
+            <div class="item-timer"></div>
+          </div>
+        </div>
+        <div class="chances-section">
+          <div class="chances-label">CHANCES</div>
+          <div class="chances-container"></div>
+        </div>
+      </div>
+
+      <!-- 오른쪽 사이드바 -->
+      <div class="right-sidebar">
+        <div class="menu-button">
+          <span>MENU</span>
+        </div>
+
+        <div class="passive-skills">
+          <div class="passive-item">
+            <div class="passive-name">PASSIVE 1</div>
+            <div class="passive-percent">0%</div>
+          </div>
+          <div class="passive-item">
+            <div class="passive-name">PASSIVE 2</div>
+            <div class="passive-percent">0%</div>
+          </div>
+          <div class="passive-item">
+            <div class="passive-name">PASSIVE 3</div>
+            <div class="passive-percent">0%</div>
+          </div>
+          <div class="passive-item">
+            <div class="passive-name">PASSIVE 4</div>
+            <div class="passive-percent">0%</div>
+          </div>
+          <div class="passive-item">
+            <div class="passive-name">PASSIVE 5</div>
+            <div class="passive-percent">0%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="src/main.js"></script>
+  </body>
+</html>
