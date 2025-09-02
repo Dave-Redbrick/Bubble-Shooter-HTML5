@@ -1,6 +1,7 @@
 import { getDeviceType } from "./config.js";
+import { getLocalizedString } from "./localization.js";
 
-// UI 관리 클래스
+// UI Manager Class
 export class UIManager {
   constructor(game) {
     this.game = game;
@@ -17,7 +18,6 @@ export class UIManager {
       itemSlotAim: document.getElementById("item-slot-aim"),
       itemSlotBomb: document.getElementById("item-slot-bomb"),
       aimItemTimer: document.querySelector("#item-slot-aim .item-timer"),
-      bombItemTimer: document.querySelector("#item-slot-bomb .item-timer"),
       canvas: document.getElementById("viewport"),
       canvasContainer: null,
       chancesContainer: document.querySelector(".chances-container"),
@@ -28,8 +28,28 @@ export class UIManager {
       modalCloseButton: document.getElementById("modal-close-button"),
     };
 
+    this.localizeStaticUI();
+    this.addAdIcons();
     // 캔버스 컨테이너 생성
     this.createCanvasContainer();
+  }
+
+  localizeStaticUI() {
+    document.title = getLocalizedString("gameTitle");
+    document.querySelectorAll("[data-localize]").forEach(el => {
+        el.textContent = getLocalizedString(el.dataset.localize);
+    });
+    this.elements.modalCloseButton.textContent = getLocalizedString("cancel");
+  }
+
+  addAdIcons() {
+    const adIconHTML = `<div class="ad-icon">${getLocalizedString("ad")}</div>`;
+    if (this.elements.itemSlotAim) {
+        this.elements.itemSlotAim.insertAdjacentHTML('beforeend', adIconHTML);
+    }
+    if (this.elements.itemSlotBomb) {
+        this.elements.itemSlotBomb.insertAdjacentHTML('beforeend', adIconHTML);
+    }
   }
 
   createCanvasContainer() {
@@ -101,14 +121,14 @@ export class UIManager {
   }
 
   updateLevelProgress(progress, scoreToNext) {
-    // 레벨 진행률 표시
+    // Display level progress
     const levelIndicator = document.querySelector('.level-circle');
     if (levelIndicator) {
       const progressPercent = Math.floor(progress * 100);
-      levelIndicator.title = `다음 레벨까지 ${scoreToNext.toLocaleString()}점`;
+      levelIndicator.title = getLocalizedString("scoreToNextLevel", { score: scoreToNext.toLocaleString() });
       
-      // 진행률에 따른 색상 변화
-      const hue = progress * 120; // 0 (빨강) ~ 120 (초록)
+      // Color change based on progress
+      const hue = progress * 120; // 0 (red) ~ 120 (green)
       levelIndicator.style.background = `conic-gradient(hsl(${hue}, 70%, 50%) ${progressPercent}%, #666 ${progressPercent}%)`;
     }
   }
@@ -129,34 +149,38 @@ export class UIManager {
 
     // Aim Item
     const aimSlot = this.elements.itemSlotAim;
-    const aimTimer = this.elements.aimItemTimer;
-    const aimText = aimSlot.querySelector('span');
-
     if (aimSlot && items.aimGuide) {
-      const { active, remaining, duration, available } = items.aimGuide;
-      if (active) {
-        aimSlot.classList.add('active');
-        aimText.innerHTML = "AIM<br>ACTIVE";
-        const remainingPercent = (remaining / duration) * 100;
-        aimTimer.style.height = `${remainingPercent}%`;
-      } else {
-        aimSlot.classList.remove('active');
-        aimTimer.style.height = '0%';
-        aimText.innerHTML = `AIM<br>${available}`;
-        if (available === 0) {
+        const { active, remaining, duration, available } = items.aimGuide;
+        const aimText = aimSlot.querySelector('span');
+        const adIcon = aimSlot.querySelector('.ad-icon');
+
+        if (active) {
+            aimSlot.classList.add('active');
+            aimText.innerHTML = getLocalizedString("itemAimActive");
+            const remainingPercent = (remaining / duration) * 100;
+            this.elements.aimItemTimer.style.height = `${remainingPercent}%`;
+            if (adIcon) adIcon.style.display = 'none';
+        } else {
+            aimSlot.classList.remove('active');
+            this.elements.aimItemTimer.style.height = '0%';
+            aimText.innerHTML = getLocalizedString("itemAim");
+            if (adIcon) adIcon.style.display = 'block';
+        }
+
+        if (available === 0 && !active) {
             aimSlot.classList.add('disabled');
         } else {
             aimSlot.classList.remove('disabled');
         }
-      }
     }
 
     // Bomb Item
     const bombSlot = this.elements.itemSlotBomb;
-    const bombText = bombSlot.querySelector('span');
     if (bombSlot && items.bombBubble) {
         const { available } = items.bombBubble;
-        bombText.innerHTML = `BOMB<br>${available}`;
+        const bombText = bombSlot.querySelector('span');
+        bombText.innerHTML = getLocalizedString("itemBomb");
+
         if (available === 0) {
             bombSlot.classList.add('disabled');
         } else {
@@ -178,13 +202,14 @@ export class UIManager {
   }
 
   showPassiveInfo(passiveNumber) {
-    // 패시브 정보 표시 로직 (현재는 빈 함수)
-    console.log(`패시브 ${passiveNumber} 정보 표시`);
+    // Passive info display logic (currently empty)
+    console.log(`Displaying info for passive ${passiveNumber}`);
   }
 
   showModal(title, text, onConfirm) {
     this.elements.modalTitle.textContent = title;
     this.elements.modalText.textContent = text;
+    this.elements.modalConfirmButton.textContent = getLocalizedString("confirm");
 
     // Clone and replace the button to remove old event listeners
     const newConfirmButton = this.elements.modalConfirmButton.cloneNode(true);
@@ -288,7 +313,7 @@ export class UIManager {
     }
   }
 
-  // 일일 도전 알림 표시
+  // Show daily challenge notification
   showDailyChallengeNotification() {
     if (this.game.dailyChallenge && this.game.dailyChallenge.challenges.length > 0) {
       const notification = document.createElement('div');
@@ -297,8 +322,8 @@ export class UIManager {
         <div class="notification-content">
           <div class="notification-icon">🎯</div>
           <div class="notification-text">
-            <div class="notification-title">새로운 일일 도전!</div>
-            <div class="notification-desc">오늘의 도전 과제를 확인해보세요</div>
+            <div class="notification-title">${getLocalizedString("newDailyChallenge")}</div>
+            <div class="notification-desc">${getLocalizedString("checkTodaysChallenge")}</div>
           </div>
           <button class="notification-close">&times;</button>
         </div>
@@ -306,19 +331,19 @@ export class UIManager {
       
       document.body.appendChild(notification);
       
-      // 클릭 시 일일 도전 모달 열기
+      // Open daily challenge modal on click
       notification.addEventListener('click', () => {
         this.game.dailyChallenge.showChallengesModal();
         notification.remove();
       });
       
-      // 닫기 버튼
+      // Close button
       notification.querySelector('.notification-close').addEventListener('click', (e) => {
         e.stopPropagation();
         notification.remove();
       });
       
-      // 10초 후 자동 제거
+      // Auto-remove after 10 seconds
       setTimeout(() => {
         if (notification.parentNode) {
           notification.remove();
