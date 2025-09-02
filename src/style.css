@@ -199,6 +199,7 @@ body {
   z-index: 1000;
 }
 .menu-content, .settings-content, .stats-content, .achievements-content, .leaderboard-content, .challenges-content, .mode-selector-content, .tutorial-content, .name-input-content {
+  font-family: 'Varela Round', sans-serif;
   background: linear-gradient(145deg, #ff79c6, #e06ab6);
   border: 2px solid #fff;
   border-radius: 15px;

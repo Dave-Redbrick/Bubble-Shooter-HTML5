@@ -50,7 +50,7 @@ export class LeaderboardManager {
     });
 
     if (this.scores.length === 0) {
-      scoresHTML = '<div class="no-scores">아직 기록이 없습니다.</div>';
+      scoresHTML = '<div class="no-scores">No scores yet.</div>';
     }
 
     modal.innerHTML = `
@@ -61,16 +61,16 @@ export class LeaderboardManager {
         </div>
         <div class="leaderboard-list">
           <div class="leaderboard-header-row">
-            <div>순위</div>
-            <div>플레이어</div>
-            <div>점수</div>
-            <div>레벨</div>
-            <div>날짜</div>
+            <div>Rank</div>
+            <div>Player</div>
+            <div>Score</div>
+            <div>Level</div>
+            <div>Date</div>
           </div>
           ${scoresHTML}
         </div>
         <div class="modal-footer">
-          <button class="modal-button modal-button-secondary clear-leaderboard">기록 초기화</button>
+          <button class="modal-button modal-button-secondary clear-leaderboard">Clear Scores</button>
         </div>
       </div>
     `;
@@ -83,7 +83,7 @@ export class LeaderboardManager {
     });
 
     modal.querySelector('.clear-leaderboard').addEventListener('click', () => {
-      if (confirm('정말로 모든 기록을 삭제하시겠습니까?')) {
+      if (confirm('Are you sure you want to delete all scores?')) {
         this.scores = [];
         this.saveScores();
         modal.remove();
@@ -96,13 +96,13 @@ export class LeaderboardManager {
     modal.className = 'name-input-modal';
     modal.innerHTML = `
       <div class="name-input-content">
-        <h2>새로운 기록!</h2>
-        <p>점수: ${score.toLocaleString()}</p>
-        <p>레벨: ${level}</p>
-        <input type="text" id="playerName" placeholder="이름을 입력하세요" maxlength="10">
+        <h2>New High Score!</h2>
+        <p>Score: ${score.toLocaleString()}</p>
+        <p>Level: ${level}</p>
+        <input type="text" id="playerName" placeholder="Enter your name" maxlength="10">
         <div class="name-input-buttons">
-          <button id="submitScore" class="modal-button modal-button-primary">등록</button>
-          <button id="skipScore" class="modal-button modal-button-secondary">건너뛰기</button>
+          <button id="submitScore" class="modal-button modal-button-primary">Submit</button>
+          <button id="skipScore" class="modal-button modal-button-secondary">Skip</button>
         </div>
       </div>
     `;
@@ -113,7 +113,7 @@ export class LeaderboardManager {
     nameInput.focus();
 
     const submitScore = () => {
-      const name = nameInput.value.trim() || '익명';
+      const name = nameInput.value.trim() || 'Anonymous';
       this.addScore(name, score, level);
       modal.remove();
       this.showLeaderboard();

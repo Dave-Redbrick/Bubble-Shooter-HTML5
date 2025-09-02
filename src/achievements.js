@@ -4,32 +4,32 @@ export class AchievementManager {
     this.game = game;
     this.achievements = {
       firstPop: {
-        name: "첫 번째 터뜨리기",
-        description: "첫 번째 버블 클러스터를 터뜨리세요",
+        name: "First Pop",
+        description: "Pop your first cluster of bubbles.",
         unlocked: false,
         reward: { type: 'aimGuide', amount: 1 }
       },
       combo10: {
-        name: "콤보 마스터",
-        description: "10개 이상의 버블을 한 번에 터뜨리세요",
+        name: "Combo Master",
+        description: "Pop 10 or more bubbles in a single shot.",
         unlocked: false,
         reward: { type: 'bombBubble', amount: 2 }
       },
       level5: {
-        name: "초보 탈출",
-        description: "레벨 5에 도달하세요",
+        name: "Getting Started",
+        description: "Reach level 5.",
         unlocked: false,
         reward: { type: 'multiShot', amount: 1 }
       },
       perfectShot: {
-        name: "완벽한 샷",
-        description: "벽 반사를 이용해 버블을 터뜨리세요",
+        name: "Perfect Shot",
+        description: "Pop bubbles using a wall bounce.",
         unlocked: false,
         reward: { type: 'precisionAim', amount: 1 }
       },
       scoreHunter: {
-        name: "점수 사냥꾼",
-        description: "10,000점을 달성하세요",
+        name: "Score Hunter",
+        description: "Achieve a score of 10,000 points.",
         unlocked: false,
         reward: { type: 'colorBomb', amount: 1 }
       }

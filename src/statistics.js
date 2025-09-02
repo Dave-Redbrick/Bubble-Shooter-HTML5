@@ -103,7 +103,7 @@ export class StatisticsManager {
               <div class="stat-label">Bubbles Popped</div>
             </div>
             <div class="stat-item">
-              <div class="stat-value">${Math.round(this.stats.totalTimePlayed / 60)}분</div>
+              <div class="stat-value">${Math.round(this.stats.totalTimePlayed / 60)} min</div>
               <div class="stat-label">Total Playtime</div>
             </div>
             <div class="stat-item">
