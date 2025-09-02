@@ -21,6 +21,11 @@ export class UIManager {
       canvas: document.getElementById("viewport"),
       canvasContainer: null,
       chancesContainer: document.querySelector(".chances-container"),
+      modal: document.getElementById("modal"),
+      modalTitle: document.getElementById("modal-title"),
+      modalText: document.getElementById("modal-text"),
+      modalConfirmButton: document.getElementById("modal-confirm-button"),
+      modalCloseButton: document.getElementById("modal-close-button"),
     };
 
     // 캔버스 컨테이너 생성
@@ -69,6 +74,11 @@ export class UIManager {
       item.addEventListener("click", () => {
         this.showPassiveInfo(index + 1);
       });
+    });
+
+    // Modal close button
+    this.elements.modalCloseButton.addEventListener("click", () => {
+      this.hideModal();
     });
   }
 
@@ -170,6 +180,29 @@ export class UIManager {
   showPassiveInfo(passiveNumber) {
     // 패시브 정보 표시 로직 (현재는 빈 함수)
     console.log(`패시브 ${passiveNumber} 정보 표시`);
+  }
+
+  showModal(title, text, onConfirm) {
+    this.elements.modalTitle.textContent = title;
+    this.elements.modalText.textContent = text;
+
+    // Clone and replace the button to remove old event listeners
+    const newConfirmButton = this.elements.modalConfirmButton.cloneNode(true);
+    this.elements.modalConfirmButton.parentNode.replaceChild(newConfirmButton, this.elements.modalConfirmButton);
+    this.elements.modalConfirmButton = newConfirmButton;
+
+    const confirmAndHide = () => {
+      onConfirm();
+      this.hideModal();
+    };
+
+    newConfirmButton.addEventListener("click", confirmAndHide, { once: true });
+
+    this.elements.modal.style.display = "flex";
+  }
+
+  hideModal() {
+    this.elements.modal.style.display = "none";
   }
 
   // 반응형 캔버스 크기 조정 - 컨테이너에 꽉 채우기

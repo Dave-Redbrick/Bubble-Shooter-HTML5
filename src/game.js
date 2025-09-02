@@ -91,7 +91,6 @@ export class BubbleShooterGame {
       },
       bombBubble: {
         available: 3,
-        active: false,
       },
     };
 
@@ -333,40 +332,57 @@ export class BubbleShooterGame {
   }
 
   useBombBubble() {
-    if (this.items.bombBubble.available > 0 && !this.items.bombBubble.active) {
-      this.items.bombBubble.available--;
-      this.items.bombBubble.active = true;
+    if (this.items.bombBubble.available <= 0) return;
 
-      if (this.gameState === CONFIG.GAME_STATES.READY) {
-        // If player is aiming, change the current bubble to a bomb
-        this.player.bubble.isBomb = true;
-      } else if (this.gameState === CONFIG.GAME_STATES.SHOOT_BUBBLE) {
-        // If a bubble is already shot, the next bubble becomes a bomb
-        this.player.nextBubble.isBomb = true;
-      }
-
-      this.statistics.recordItemUse('bombBubble');
-      this.updateUI();
+    // Prevent using if a bomb is already active or queued to avoid wasting items
+    if (
+      (this.gameState === CONFIG.GAME_STATES.READY && this.player.bubble.isBomb) ||
+      this.player.nextBubble.isBomb
+    ) {
+        return;
     }
+
+    this.items.bombBubble.available--;
+
+    if (this.gameState === CONFIG.GAME_STATES.READY) {
+      this.player.bubble.isBomb = true;
+    } else if (this.gameState === CONFIG.GAME_STATES.SHOOT_BUBBLE) {
+      this.player.nextBubble.isBomb = true;
+    }
+
+    this.statistics.recordItemUse('bombBubble');
+    this.updateUI();
   }
 
   onItemButtonClick(itemName) {
-    const itemDescriptions = {
-      aim: "조준 가이드 아이템: 잠시 동안 버블의 정확한 경로를 보여줍니다.",
-      bomb: "폭탄 버블 아이템: 다음 버블을 강력한 폭탄으로 바꿉니다. 폭탄은 주변의 버블들을 터뜨립니다."
+    const itemInfo = {
+      aim: {
+        title: "조준 가이드",
+        description: "잠시 동안 버블의 정확한 경로를 보여줍니다. 광고를 보고 아이템을 획득하시겠습니까?"
+      },
+      bomb: {
+        title: "폭탄 버블",
+        description: "다음 버블을 강력한 폭탄으로 바꿉니다. 폭탄은 주변의 버블들을 터뜨립니다. 광고를 보고 아이템을 획득하시겠습니까?"
+      }
     };
 
-    alert(itemDescriptions[itemName]);
-    alert("광고(데모)가 재생됩니다."); // Placeholder for ad
+    const info = itemInfo[itemName];
 
-    if (itemName === 'aim') {
-      this.items.aimGuide.available++;
-      this.useAimGuide();
-    } else if (itemName === 'bomb') {
-      this.items.bombBubble.available++;
-      this.useBombBubble();
-    }
-    this.updateUI();
+    this.ui.showModal(info.title, info.description, () => {
+      // This is the confirm callback.
+      // Ad integration point. e.g., pokiSDK.rewardedBreak().then((withReward) => { ... });
+      console.log("광고 시청 시작 (Poki/CrazyGames 연동 지점)");
+      alert("광고(데모)가 성공적으로 완료되었습니다!"); // Placeholder for successful ad view
+
+      if (itemName === 'aim') {
+        this.items.aimGuide.available++;
+        this.useAimGuide();
+      } else if (itemName === 'bomb') {
+        this.items.bombBubble.available++;
+        this.useBombBubble();
+      }
+      this.updateUI();
+    });
   }
 
   watchAdForItem(itemNumber) {
@@ -395,7 +411,6 @@ export class BubbleShooterGame {
     this.wallBounceCount = 0;
 
     this.items.aimGuide.active = false;
-    this.items.bombBubble.active = false;
 
     // 콤보 리셋
     this.combo.resetCombo();
@@ -452,13 +467,8 @@ export class BubbleShooterGame {
 
     const nextColor = this.getExistingColor();
     this.player.nextBubble.tileType = nextColor;
-
-    if (this.items.bombBubble.active) {
-      this.player.nextBubble.isBomb = true;
-      this.items.bombBubble.active = false;
-    } else {
-      this.player.nextBubble.isBomb = false;
-    }
+    // The new next bubble should never be a bomb unless an item is used.
+    this.player.nextBubble.isBomb = false;
   }
 
   getExistingColor() {
@@ -567,6 +577,7 @@ export class BubbleShooterGame {
 
   handleMiss() {
     this.shotsWithoutPop++;
+
     if (this.shotsWithoutPop >= this.chancesUntilNewRow) {
       this.levelManager.addBubbles();
       this.shotsWithoutPop = 0;
@@ -579,6 +590,8 @@ export class BubbleShooterGame {
         return;
       }
     }
+
+    this.updateUI();
     this.nextBubble();
     this.setGameState(CONFIG.GAME_STATES.READY);
   }
