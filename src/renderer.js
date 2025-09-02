@@ -53,14 +53,14 @@ export class Renderer {
 
     // 왼쪽 테두리 (전체 높이)
     ctx.beginPath();
-    ctx.moveTo(levelData.x - 10, 0);
-    ctx.lineTo(levelData.x - 10, this.canvas.height);
+    ctx.moveTo(levelData.x - ctx.lineWidth / 2, 0);
+    ctx.lineTo(levelData.x - ctx.lineWidth / 2, this.canvas.height);
     ctx.stroke();
 
     // 오른쪽 테두리 (전체 높이)
     ctx.beginPath();
-    ctx.moveTo(levelData.x + levelData.width + 10, 0);
-    ctx.lineTo(levelData.x + levelData.width + 10, this.canvas.height);
+    ctx.moveTo(levelData.x + levelData.width + ctx.lineWidth / 2, 0);
+    ctx.lineTo(levelData.x + levelData.width + ctx.lineWidth / 2, this.canvas.height);
     ctx.stroke();
   }
 
