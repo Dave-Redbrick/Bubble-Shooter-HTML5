@@ -4,6 +4,7 @@ import {
   NEIGHBOR_OFFSETS,
   getLevelConfig,
 } from "./config.js";
+import { getLocalizedString } from "./localization.js";
 import { PhysicsEngine } from "./physics.js";
 import { Renderer } from "./renderer.js";
 import { InputHandler } from "./input.js";
@@ -343,24 +344,15 @@ export class BubbleShooterGame {
   useBombBubble() {
     if (this.items.bombBubble.available <= 0) return;
 
-    const targetState = (this.gameState === CONFIG.GAME_STATES.PAUSED)
-      ? this.previousGameState
-      : this.gameState;
-
-    if (
-      (targetState === CONFIG.GAME_STATES.READY && this.player.isBomb) ||
-      this.player.nextBubble.isBomb
-    ) {
+    // Prevent using if the current bubble is already a bomb
+    if (this.player.isBomb) {
         return;
     }
 
     this.items.bombBubble.available--;
 
-    if (targetState === CONFIG.GAME_STATES.READY) {
-      this.player.isBomb = true;
-    } else if (targetState === CONFIG.GAME_STATES.SHOOT_BUBBLE) {
-      this.player.nextBubble.isBomb = true;
-    }
+    // Always change the current bubble
+    this.player.isBomb = true;
 
     this.statistics.recordItemUse('bombBubble');
     this.updateUI();
@@ -374,12 +366,12 @@ export class BubbleShooterGame {
 
     const itemInfo = {
       aim: {
-        title: "조준 가이드",
-        description: "잠시 동안 버블의 정확한 경로를 보여줍니다. 광고를 보고 아이템을 획득하시겠습니까?"
+        title: getLocalizedString("itemAimTitle"),
+        description: getLocalizedString("itemAimDescription")
       },
       bomb: {
-        title: "폭탄 버블",
-        description: "다음 버블을 강력한 폭탄으로 바꿉니다. 폭탄은 주변의 버블들을 터뜨립니다. 광고를 보고 아이템을 획득하시겠습니까?"
+        title: getLocalizedString("itemBombTitle"),
+        description: getLocalizedString("itemBombDescription")
       }
     };
 
@@ -388,8 +380,8 @@ export class BubbleShooterGame {
     this.ui.showModal(info.title, info.description, () => {
       // This is the confirm callback.
       // Ad integration point. e.g., pokiSDK.rewardedBreak().then((withReward) => { ... });
-      console.log("광고 시청 시작 (Poki/CrazyGames 연동 지점)");
-      alert("광고(데모)가 성공적으로 완료되었습니다!"); // Placeholder for successful ad view
+      console.log("Starting ad (Poki/CrazyGames integration point)");
+      alert(getLocalizedString("adPlaceholder")); // Placeholder for successful ad view
 
       if (itemName === 'aim') {
         this.items.aimGuide.available++;

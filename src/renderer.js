@@ -1,4 +1,5 @@
 import { CONFIG, BUBBLE_COLORS } from "./config.js";
+import { getLocalizedString } from "./localization.js";
 
 export class Renderer {
   constructor(game) {
@@ -87,10 +88,11 @@ export class Renderer {
   }
 
   renderAimGuide() {
-    if (
-      !this.game.items.aimGuide.active ||
-      this.game.gameState !== CONFIG.GAME_STATES.READY
-    ) {
+    const isAiming = this.game.gameState === CONFIG.GAME_STATES.READY;
+    const aimGuideActive = this.game.items.aimGuide.active;
+    const showTrajectory = this.game.settings.settings.showTrajectory;
+
+    if (!isAiming || (!aimGuideActive && !showTrajectory)) {
       return;
     }
 
@@ -219,10 +221,10 @@ export class Renderer {
     ctx.strokeStyle = "#666666";
     ctx.stroke();
 
-    // 조준선 (조준 가이드가 활성화되지 않았을 때만)
-    if (!this.game.items.aimGuide.active) {
+    // Aiming line (only when aim guide is not active)
+    if (!this.game.items.aimGuide.active && this.game.settings.settings.showTrajectory) {
       ctx.lineWidth = 3;
-      ctx.strokeStyle = "#00ff88";
+      ctx.strokeStyle = "rgba(0, 255, 136, 0.5)"; // Slightly transparent
       ctx.beginPath();
       ctx.moveTo(centerX, centerY);
       ctx.lineTo(
@@ -437,48 +439,48 @@ export class Renderer {
 
     const ctx = this.context;
 
-    // 오버레이
+    // Overlay
     ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
     ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-    // 게임 오버 텍스트
+    // Game Over Text
     ctx.fillStyle = "#ffffff";
     ctx.font = "48px Arial";
     ctx.textAlign = "center";
     ctx.fillText(
-      "Game Over!",
+      getLocalizedString("gameOver"),
       this.canvas.width / 2,
       this.canvas.height / 2 - 50
     );
 
     ctx.font = "24px Arial";
     ctx.fillText(
-      "클릭하여 다시 시작",
+      getLocalizedString("clickToRestart"),
       this.canvas.width / 2,
       this.canvas.height / 2 + 20
     );
 
-    // 최종 점수 표시
+    // Final Score
     ctx.font = "32px Arial";
     ctx.fillStyle = "#00ff88";
     ctx.fillText(
-      `최종 점수: ${this.game.score.toLocaleString()}`,
+        getLocalizedString("finalScore", { score: this.game.score.toLocaleString() }),
       this.canvas.width / 2,
       this.canvas.height / 2 + 80
     );
 
-    // 최고 점수 갱신 표시
+    // New High Score
     if (this.game.score === this.game.highScore) {
       ctx.font = "24px Arial";
       ctx.fillStyle = "#ffd700";
       ctx.fillText(
-        "🏆 새로운 최고 기록! 🏆",
+        getLocalizedString("newHighScore"),
         this.canvas.width / 2,
         this.canvas.height / 2 + 120
       );
     }
 
-    ctx.textAlign = "left"; // 기본값으로 복원
+    ctx.textAlign = "left"; // Restore default
   }
 
   drawBubble(x, y, index) {
@@ -492,7 +494,7 @@ export class Renderer {
 
     const color = BUBBLE_COLORS[index];
 
-    // 그림자 효과
+    // Shadow effect
     ctx.save();
     ctx.globalAlpha = 0.3;
     ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
@@ -501,7 +503,7 @@ export class Renderer {
     ctx.fill();
     ctx.restore();
 
-    // 메인 버블 - 투명한 유리 효과
+    // Main bubble - transparent glass effect
     const mainGradient = ctx.createRadialGradient(
       centerX,
       centerY,
@@ -511,7 +513,7 @@ export class Renderer {
       radius
     );
 
-    // 투명한 색상으로 그라디언트 생성
+    // Create gradient with transparent colors
     const transparentColor = this.hexToRgba(color, 0.7);
     const edgeColor = this.hexToRgba(this.darkenColor(color, 30), 0.9);
 
@@ -524,12 +526,12 @@ export class Renderer {
     ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
     ctx.fill();
 
-    // 외곽선
+    // Outline
     ctx.strokeStyle = this.hexToRgba(this.darkenColor(color, 40), 0.8);
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    // 상단 하이라이트 (큰 반사광)
+    // Top highlight (large reflection)
     const highlightGradient = ctx.createRadialGradient(
       centerX - radius * 0.3,
       centerY - radius * 0.3,
@@ -553,7 +555,7 @@ export class Renderer {
     );
     ctx.fill();
 
-    // 작은 반사광
+    // Small reflection
     ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
     ctx.beginPath();
     ctx.arc(
@@ -565,7 +567,7 @@ export class Renderer {
     );
     ctx.fill();
 
-    // 하단 반사광 (바닥 반사)
+    // Bottom highlight (floor reflection)
     const bottomGradient = ctx.createRadialGradient(
       centerX + radius * 0.2,
       centerY + radius * 0.4,
@@ -588,7 +590,7 @@ export class Renderer {
     );
     ctx.fill();
 
-    // 내부 색상 반사
+    // Inner color reflection
     const innerGradient = ctx.createRadialGradient(
       centerX,
       centerY + radius * 0.3,
@@ -607,8 +609,84 @@ export class Renderer {
     ctx.beginPath();
     ctx.arc(centerX, centerY + radius * 0.3, radius * 0.4, 0, 2 * Math.PI);
     ctx.fill();
+
+    // Colorblind pattern
+    if (this.game.settings.settings.colorBlindMode) {
+      this.drawColorblindPattern(ctx, centerX, centerY, radius, index);
+    }
   }
 
+  drawColorblindPattern(ctx, x, y, radius, index) {
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, Math.PI * 2);
+    ctx.clip();
+
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+    ctx.lineWidth = 2;
+
+    switch (index % 6) { // Using 6 patterns for variety
+        case 0: // Horizontal lines
+            for (let i = -radius; i < radius; i += 4) {
+                ctx.beginPath();
+                ctx.moveTo(x - radius, y + i);
+                ctx.lineTo(x + radius, y + i);
+                ctx.stroke();
+            }
+            break;
+        case 1: // Vertical lines
+            for (let i = -radius; i < radius; i += 4) {
+                ctx.beginPath();
+                ctx.moveTo(x + i, y - radius);
+                ctx.lineTo(x + i, y + radius);
+                ctx.stroke();
+            }
+            break;
+        case 2: // Polka dots
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+            for (let i = -radius; i < radius; i += 8) {
+                for (let j = -radius; j < radius; j += 8) {
+                    if (i*i + j*j < radius*radius) {
+                        ctx.beginPath();
+                        ctx.arc(x + i, y + j, 1.5, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
+            }
+            break;
+        case 3: // Diagonal lines (top-left to bottom-right)
+            for (let i = -radius * 2; i < radius * 2; i += 6) {
+                ctx.beginPath();
+                ctx.moveTo(x - radius, y + i - radius);
+                ctx.lineTo(x + radius, y + i + radius);
+                ctx.stroke();
+            }
+            break;
+        case 4: // Grid
+            for (let i = -radius; i < radius; i += 6) {
+                ctx.beginPath();
+                ctx.moveTo(x - radius, y + i);
+                ctx.lineTo(x + radius, y + i);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(x + i, y - radius);
+                ctx.lineTo(x + i, y + radius);
+                ctx.stroke();
+            }
+            break;
+        case 5: // Chevron
+            ctx.lineWidth = 3;
+            for (let i = -radius; i < radius; i += 8) {
+                ctx.beginPath();
+                ctx.moveTo(x - radius, y + i);
+                ctx.lineTo(x, y + i + 4);
+                ctx.lineTo(x + radius, y + i);
+                ctx.stroke();
+            }
+            break;
+    }
+    ctx.restore();
+}
   getTileCoordinate(column, row) {
     const levelData = this.game.levelData;
     let tileX = levelData.x + column * levelData.tileWidth;

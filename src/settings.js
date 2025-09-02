@@ -1,4 +1,6 @@
-// 설정 시스템
+import { getLocalizedString } from "./localization.js";
+
+// Settings System
 export class SettingsManager {
   constructor(game) {
     this.game = game;
@@ -58,69 +60,79 @@ export class SettingsManager {
     this.modal.innerHTML = `
       <div class="settings-content">
         <div class="modal-header">
-          <h2>설정</h2>
+          <h2>${getLocalizedString("settings")}</h2>
           <button class="modal-close">&times;</button>
         </div>
         
         <div class="settings-body">
           <div class="setting-group">
-            <h3>사운드</h3>
+            <h3>${getLocalizedString("sound")}</h3>
             <div class="setting-item">
-              <label>마스터 볼륨</label>
-              <input type="range" id="masterVolume" min="0" max="1" step="0.1" value="${this.settings.masterVolume}">
+              <label>${getLocalizedString("masterVolume")}</label>
+              <div class="slider-container">
+                <input type="range" id="masterVolume" min="0" max="1" step="0.1" value="${this.settings.masterVolume}">
+                <div class="slider-track"></div>
+              </div>
               <span class="volume-value">${Math.round(this.settings.masterVolume * 100)}%</span>
             </div>
             <div class="setting-item">
-              <label>효과음 볼륨</label>
-              <input type="range" id="sfxVolume" min="0" max="1" step="0.1" value="${this.settings.sfxVolume}">
+              <label>${getLocalizedString("sfxVolume")}</label>
+              <div class="slider-container">
+                <input type="range" id="sfxVolume" min="0" max="1" step="0.1" value="${this.settings.sfxVolume}">
+                <div class="slider-track"></div>
+              </div>
               <span class="volume-value">${Math.round(this.settings.sfxVolume * 100)}%</span>
             </div>
           </div>
 
           <div class="setting-group">
-            <h3>그래픽</h3>
+            <h3>${getLocalizedString("graphics")}</h3>
             <div class="setting-item">
-              <label>파티클 품질</label>
+              <label>${getLocalizedString("particleQuality")}</label>
               <select id="particleQuality">
-                <option value="low" ${this.settings.particleQuality === 'low' ? 'selected' : ''}>낮음</option>
-                <option value="medium" ${this.settings.particleQuality === 'medium' ? 'selected' : ''}>보통</option>
-                <option value="high" ${this.settings.particleQuality === 'high' ? 'selected' : ''}>높음</option>
+                <option value="low" ${this.settings.particleQuality === 'low' ? 'selected' : ''}>${getLocalizedString("low")}</option>
+                <option value="medium" ${this.settings.particleQuality === 'medium' ? 'selected' : ''}>${getLocalizedString("medium")}</option>
+                <option value="high" ${this.settings.particleQuality === 'high' ? 'selected' : ''}>${getLocalizedString("high")}</option>
               </select>
             </div>
             <div class="setting-item">
-              <label>
+              <label class="checkbox-container" for="screenShake">
+                ${getLocalizedString("screenShake")}
                 <input type="checkbox" id="screenShake" ${this.settings.screenShake ? 'checked' : ''}>
-                화면 흔들림 효과
+                <span class="checkmark"></span>
               </label>
             </div>
             <div class="setting-item">
-              <label>
+              <label class="checkbox-container" for="showFPS">
+                ${getLocalizedString("showFPS")}
                 <input type="checkbox" id="showFPS" ${this.settings.showFPS ? 'checked' : ''}>
-                FPS 표시
+                <span class="checkmark"></span>
               </label>
             </div>
           </div>
 
           <div class="setting-group">
-            <h3>접근성</h3>
+            <h3>${getLocalizedString("accessibility")}</h3>
             <div class="setting-item">
-              <label>
+              <label class="checkbox-container" for="colorBlindMode">
+                ${getLocalizedString("colorBlindMode")}
                 <input type="checkbox" id="colorBlindMode" ${this.settings.colorBlindMode ? 'checked' : ''}>
-                색맹 지원 모드
+                <span class="checkmark"></span>
               </label>
             </div>
             <div class="setting-item">
-              <label>
+              <label class="checkbox-container" for="showTrajectory">
+                ${getLocalizedString("showTrajectory")}
                 <input type="checkbox" id="showTrajectory" ${this.settings.showTrajectory ? 'checked' : ''}>
-                궤적 표시 (기본)
+                <span class="checkmark"></span>
               </label>
             </div>
           </div>
         </div>
 
         <div class="modal-footer">
-          <button class="modal-button modal-button-secondary settings-reset">초기화</button>
-          <button class="modal-button modal-button-primary settings-save">저장</button>
+          <button class="modal-button modal-button-secondary settings-reset">${getLocalizedString("reset")}</button>
+          <button class="modal-button modal-button-primary settings-save">${getLocalizedString("save")}</button>
         </div>
       </div>
     `;
@@ -200,7 +212,7 @@ export class SettingsManager {
   }
 
   enableColorBlindMode() {
-    // 색맹 지원을 위한 패턴 추가
+    // Add patterns for colorblind support
     document.body.classList.toggle('colorblind-mode', this.settings.colorBlindMode);
   }
 }
