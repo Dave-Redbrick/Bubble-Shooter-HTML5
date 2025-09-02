@@ -63,6 +63,7 @@ export class BubbleShooterGame {
     this.rowOffset = 0;
     this.chancesUntilNewRow = 5;
     this.shotsWithoutPop = 0;
+    this.maxChances = 5;
 
     // Animation
     this.animationState = 0;
@@ -332,17 +333,40 @@ export class BubbleShooterGame {
   }
 
   useBombBubble() {
-    if (
-      this.items.bombBubble.available > 0 &&
-      !this.items.bombBubble.active &&
-      this.gameState === CONFIG.GAME_STATES.READY
-    ) {
+    if (this.items.bombBubble.available > 0 && !this.items.bombBubble.active) {
       this.items.bombBubble.available--;
       this.items.bombBubble.active = true;
-      this.player.nextBubble.isBomb = true;
+
+      if (this.gameState === CONFIG.GAME_STATES.READY) {
+        // If player is aiming, change the current bubble to a bomb
+        this.player.bubble.isBomb = true;
+      } else if (this.gameState === CONFIG.GAME_STATES.SHOOT_BUBBLE) {
+        // If a bubble is already shot, the next bubble becomes a bomb
+        this.player.nextBubble.isBomb = true;
+      }
+
       this.statistics.recordItemUse('bombBubble');
       this.updateUI();
     }
+  }
+
+  onItemButtonClick(itemName) {
+    const itemDescriptions = {
+      aim: "조준 가이드 아이템: 잠시 동안 버블의 정확한 경로를 보여줍니다.",
+      bomb: "폭탄 버블 아이템: 다음 버블을 강력한 폭탄으로 바꿉니다. 폭탄은 주변의 버블들을 터뜨립니다."
+    };
+
+    alert(itemDescriptions[itemName]);
+    alert("광고(데모)가 재생됩니다."); // Placeholder for ad
+
+    if (itemName === 'aim') {
+      this.items.aimGuide.available++;
+      this.useAimGuide();
+    } else if (itemName === 'bomb') {
+      this.items.bombBubble.available++;
+      this.useBombBubble();
+    }
+    this.updateUI();
   }
 
   watchAdForItem(itemNumber) {
@@ -364,7 +388,8 @@ export class BubbleShooterGame {
     this.score = 0;
     this.currentLevel = 1;
     this.rowOffset = 0;
-    this.chancesUntilNewRow = 5;
+    this.maxChances = 5;
+    this.chancesUntilNewRow = this.maxChances;
     this.shotsWithoutPop = 0;
     this.comboCount = 0;
     this.wallBounceCount = 0;
@@ -538,5 +563,23 @@ export class BubbleShooterGame {
 
   onBubbleShot() {
     this.dailyChallenge.updateProgress('bubbleShot');
+  }
+
+  handleMiss() {
+    this.shotsWithoutPop++;
+    if (this.shotsWithoutPop >= this.chancesUntilNewRow) {
+      this.levelManager.addBubbles();
+      this.shotsWithoutPop = 0;
+      if (this.chancesUntilNewRow > 1) {
+        this.chancesUntilNewRow--;
+      }
+      this.rowOffset = (this.rowOffset + 1) % 2;
+
+      if (this.physics.checkGameOver()) {
+        return;
+      }
+    }
+    this.nextBubble();
+    this.setGameState(CONFIG.GAME_STATES.READY);
   }
 }

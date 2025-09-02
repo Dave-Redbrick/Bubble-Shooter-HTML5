@@ -162,4 +162,22 @@ export class LevelManager {
   initializeGame() {
     this.createRandomLevel();
   }
+
+  addBubbles() {
+    const levelData = this.game.levelData;
+
+    // Move rows down
+    for (let i = 0; i < levelData.columns; i++) {
+      for (let j = 0; j < levelData.rows - 1; j++) {
+        levelData.tiles[i][levelData.rows - 1 - j].type =
+          levelData.tiles[i][levelData.rows - 1 - j - 1].type;
+      }
+    }
+
+    // Add new top row with random colors from the full range
+    for (let i = 0; i < levelData.columns; i++) {
+      // 항상 버블을 생성하여 줄을 꽉 채움
+      levelData.tiles[i][0].type = this.game.randRange(0, this.game.findColors().length - 1);
+    }
+  }
 }

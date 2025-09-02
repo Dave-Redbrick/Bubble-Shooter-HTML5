@@ -165,23 +165,7 @@ export class PhysicsEngine {
   }
 
   handleTurnEnd() {
-    // 버블을 터뜨리지 못했으므로 실패 카운트 증가
-    this.game.shotsWithoutPop++;
-
-    // 실패 횟수가 주어진 기회에 도달했는지 확인
-    if (this.game.shotsWithoutPop >= this.game.chancesUntilNewRow) {
-      this.addBubbles();
-      this.game.shotsWithoutPop = 0; // 실패 카운트 리셋
-      // 다음 라운드의 기회를 1 감소 (최소 1)
-      this.game.chancesUntilNewRow = Math.max(1, this.game.chancesUntilNewRow - 1);
-      this.game.rowOffset = (this.game.rowOffset + 1) % 2;
-
-      if (this.checkGameOver()) return;
-    }
-
-    // 다음 버블 준비
-    this.game.nextBubble();
-    this.game.setGameState(CONFIG.GAME_STATES.READY);
+    this.game.handleMiss();
   }
 
   checkGameOver() {
@@ -209,23 +193,6 @@ export class PhysicsEngine {
     return false;
   }
 
-  addBubbles() {
-    const levelData = this.game.levelData;
-
-    // Move rows down
-    for (let i = 0; i < levelData.columns; i++) {
-      for (let j = 0; j < levelData.rows - 1; j++) {
-        levelData.tiles[i][levelData.rows - 1 - j].type =
-          levelData.tiles[i][levelData.rows - 1 - j - 1].type;
-      }
-    }
-
-    // Add new top row with random colors from the full range
-    for (let i = 0; i < levelData.columns; i++) {
-      // 항상 버블을 생성하여 줄을 꽉 채움
-      levelData.tiles[i][0].type = this.game.randRange(0, CONFIG.BUBBLE.COLORS - 1);
-    }
-  }
 
   // 정확한 궤적 계산 (조준 가이드용) - 완전히 개선된 버전
   calculateTrajectory(startX, startY, angle, maxBounces = 5) {

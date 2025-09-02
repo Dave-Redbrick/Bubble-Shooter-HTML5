@@ -53,13 +53,13 @@ export class UIManager {
     // 아이템 슬롯 클릭
     if (this.elements.itemSlotAim) {
       this.elements.itemSlotAim.addEventListener("click", () => {
-        this.useItem('aim');
+        this.game.onItemButtonClick('aim');
       });
     }
 
     if (this.elements.itemSlotBomb) {
       this.elements.itemSlotBomb.addEventListener("click", () => {
-        this.useItem('bomb');
+        this.game.onItemButtonClick('bomb');
       });
     }
 
