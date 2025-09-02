@@ -28,6 +28,7 @@ export class MenuManager {
             <button class="menu-btn" id="settings">설정</button>
             <button class="menu-btn" id="tutorial">튜토리얼</button>
             <button class="menu-btn" id="achievements">업적</button>
+            <button class="menu-btn" id="leaderboard">리더보드</button>
           </div>
           
           <div class="menu-info">
@@ -97,6 +98,13 @@ export class MenuManager {
     // 업적
     this.modal.querySelector('#achievements').addEventListener('click', () => {
       this.showAchievementsModal();
+    });
+
+    // 리더보드
+    this.modal.querySelector('#leaderboard').addEventListener('click', () => {
+      if (this.game.leaderboard) {
+        this.game.leaderboard.showLeaderboard();
+      }
     });
 
     // ESC 키로 닫기

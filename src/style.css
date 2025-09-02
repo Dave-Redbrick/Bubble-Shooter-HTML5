@@ -316,6 +316,81 @@ body {
   background: linear-gradient(145deg, #28a745, #218838);
 }
 
+/* --- Leaderboard Modal Specifics --- */
+.leaderboard-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.leaderboard-header-row, .leaderboard-item {
+  display: grid;
+  grid-template-columns: 50px 1fr 1fr 80px 80px;
+  align-items: center;
+  padding: 10px;
+  border-radius: 8px;
+}
+.leaderboard-header-row {
+  font-weight: bold;
+  border-bottom: 2px solid rgba(255,255,255,0.3);
+  margin-bottom: 5px;
+  padding-bottom: 10px;
+}
+.leaderboard-item {
+  background: rgba(0,0,0,0.2);
+}
+.leaderboard-item.top-three {
+  background: rgba(255, 215, 0, 0.1);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+}
+.leaderboard-item .rank {
+  font-weight: bold;
+  font-size: 18px;
+  text-align: center;
+}
+.leaderboard-item .player-name {
+  font-weight: bold;
+}
+.leaderboard-item .player-score {
+  text-align: right;
+  font-weight: bold;
+  color: #f8f9fa;
+}
+.leaderboard-item .player-level, .leaderboard-item .player-date {
+  text-align: center;
+  opacity: 0.8;
+  font-size: 14px;
+}
+.no-scores {
+  text-align: center;
+  padding: 40px;
+  font-size: 18px;
+  opacity: 0.8;
+}
+
+/* --- Name Input Modal Specifics --- */
+.name-input-content { text-align: center; }
+.name-input-content h2 { margin-bottom: 10px; }
+.name-input-content p { margin-bottom: 15px; }
+.name-input-content input[type="text"] {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 2px solid #bd93f9;
+  background: rgba(0,0,0,0.2);
+  color: white;
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+.name-input-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+#submitScore, #skipScore {
+  /* These will use .modal-button styles */
+  flex: 1;
+}
+
 /* Desktop Layout */
 @media (min-width: 1200px) {
   .game-container {
