@@ -136,6 +136,7 @@ export class BubbleShooterGame {
       y: this.canvas.height - 150,
       angle: 90,
       tileType: 0,
+      isBomb: false,
       multiShotActive: false,
       bubble: {
         x: 0,
@@ -342,9 +343,12 @@ export class BubbleShooterGame {
   useBombBubble() {
     if (this.items.bombBubble.available <= 0) return;
 
-    // Prevent using if a bomb is already active or queued to avoid wasting items
+    const targetState = (this.gameState === CONFIG.GAME_STATES.PAUSED)
+      ? this.previousGameState
+      : this.gameState;
+
     if (
-      (this.gameState === CONFIG.GAME_STATES.READY && this.player.bubble.isBomb) ||
+      (targetState === CONFIG.GAME_STATES.READY && this.player.isBomb) ||
       this.player.nextBubble.isBomb
     ) {
         return;
@@ -352,9 +356,9 @@ export class BubbleShooterGame {
 
     this.items.bombBubble.available--;
 
-    if (this.gameState === CONFIG.GAME_STATES.READY) {
-      this.player.bubble.isBomb = true;
-    } else if (this.gameState === CONFIG.GAME_STATES.SHOOT_BUBBLE) {
+    if (targetState === CONFIG.GAME_STATES.READY) {
+      this.player.isBomb = true;
+    } else if (targetState === CONFIG.GAME_STATES.SHOOT_BUBBLE) {
       this.player.nextBubble.isBomb = true;
     }
 
@@ -471,16 +475,13 @@ export class BubbleShooterGame {
   }
 
   nextBubble() {
+    // The launcher bubble takes the properties of the next bubble
     this.player.tileType = this.player.nextBubble.tileType;
-    this.player.bubble.tileType = this.player.nextBubble.tileType;
-    this.player.bubble.x = this.player.x;
-    this.player.bubble.y = this.player.y;
-    this.player.bubble.visible = true;
-    this.player.bubble.isBomb = this.player.nextBubble.isBomb;
+    this.player.isBomb = this.player.nextBubble.isBomb;
 
+    // A new "next" bubble is generated for the queue display
     const nextColor = this.getExistingColor();
     this.player.nextBubble.tileType = nextColor;
-    // The new next bubble should never be a bomb unless an item is used.
     this.player.nextBubble.isBomb = false;
   }
 
