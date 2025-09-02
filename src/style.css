@@ -7,7 +7,7 @@
 }
 
 body {
-  font-family: 'Varela Round', sans-serif;
+  font-family: 'Varela+Round', sans-serif;
   background: #111;
   color: white;
   overflow: hidden;
@@ -16,22 +16,23 @@ body {
 }
 
 .game-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  position: relative;
   height: 100%;
   width: 100%;
   background: linear-gradient(45deg, #2c003e, #5a189a, #9d4edd);
 }
 
 .game-area {
-  position: relative;
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+  z-index: 1; /* Game area is the base layer */
 }
 
 .canvas-container {
@@ -43,6 +44,7 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  /* The shake will be applied here by JS */
 }
 
 #viewport {
@@ -51,6 +53,9 @@ body {
   min-width: 100vw;
   min-height: calc(100vw * 9 / 16);
   background-color: #2a2a2a;
+  /* The actual shake will be on the canvas itself */
+  transform: translate(0, 0);
+  transition: transform 0.1s;
 }
 
 /* --- UI Overlays --- */
@@ -58,7 +63,7 @@ body {
 .right-sidebar {
   position: absolute;
   top: 20px;
-  z-index: 100;
+  z-index: 100; /* UI is on top of the game area */
   display: flex;
   flex-direction: column;
   gap: 15px;
@@ -71,7 +76,8 @@ body {
 .score-box,
 .high-score-box,
 .help-section,
-.menu-button {
+.menu-button,
+.passive-item {
   background: linear-gradient(145deg, #ff79c6, #e06ab6);
   border: 2px solid #fff;
   border-radius: 15px;
@@ -191,6 +197,6 @@ body {
 .stat { display: flex; justify-content: space-between; padding: 5px 0; }
 .stat-label { font-weight: normal; }
 .stat-value { font-weight: bold; }
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .left-sidebar, .right-sidebar { display: none; }
 }
