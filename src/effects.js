@@ -45,25 +45,24 @@ export class EffectsManager {
   updateScreenShake(dt) {
     if (!this.screenShake.active) return;
 
+    const gameContainer = document.querySelector('.game-container');
+    if (!gameContainer) return;
+
     this.screenShake.time += dt;
     if (this.screenShake.time >= this.screenShake.duration) {
       this.screenShake.active = false;
-      // 원래 위치로 복원
-      const canvas = this.game.canvas;
-      canvas.style.transform = 'translate(0px, 0px)';
+      gameContainer.style.transform = 'translate(0, 0)'; // Reset transform
       return;
     }
 
     const progress = this.screenShake.time / this.screenShake.duration;
     const currentIntensity = this.screenShake.intensity * (1 - progress);
     
-    // 부드러운 사인파 기반 흔들림
-    const frequency = 20; // 흔들림 주파수
+    const frequency = 20;
     const offsetX = Math.sin(this.screenShake.time * frequency) * currentIntensity;
     const offsetY = Math.cos(this.screenShake.time * frequency * 1.3) * currentIntensity * 0.5;
     
-    const canvas = this.game.canvas;
-    canvas.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+    gameContainer.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
   }
 
   // 슬로우 모션 효과

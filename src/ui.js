@@ -17,31 +17,7 @@ export class UIManager {
       item1: document.getElementById("item1"),
       item2: document.getElementById("item2"),
       canvas: document.getElementById("viewport"),
-      canvasContainer: null,
-      canvasWrapper: null,
     };
-    this.createCanvasContainer();
-  }
-
-  createCanvasContainer() {
-    const gameArea = document.querySelector(".game-area");
-    const canvasContainer = document.createElement("div");
-    canvasContainer.className = "canvas-container";
-
-    const canvasWrapper = document.createElement("div");
-    canvasWrapper.className = "canvas-wrapper";
-
-    const canvas = this.elements.canvas;
-    if (canvas.parentNode) {
-      canvas.parentNode.removeChild(canvas);
-    }
-
-    canvasWrapper.appendChild(canvas);
-    canvasContainer.appendChild(canvasWrapper);
-    gameArea.appendChild(canvasContainer);
-
-    this.elements.canvasContainer = canvasContainer;
-    this.elements.canvasWrapper = canvasWrapper;
   }
 
   setupEventListeners() {
