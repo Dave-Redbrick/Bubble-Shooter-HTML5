@@ -33,6 +33,7 @@ const translations = {
   sound: "Sound",
   masterVolume: "Master Volume",
   sfxVolume: "SFX Volume",
+  musicVolume: "BGM Volume",
   graphics: "Graphics",
   particleQuality: "Particle Quality",
   low: "Low",

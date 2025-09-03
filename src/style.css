@@ -573,6 +573,11 @@ input[type="range"] {
 input[type="range"]:focus {
   outline: none;
 }
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 8px; /* Match the .slider-track div's height */
+  background: transparent;
+  border: none;
+}
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   height: 22px;
@@ -581,7 +586,7 @@ input[type="range"]::-webkit-slider-thumb {
   background: #f8f8f2;
   border: 2px solid #6272a4;
   cursor: pointer;
-  margin-top: -9px; /* You need to specify a margin in Chrome, but in Firefox and IE it is automatic */
+  margin-top: -7px; /* Vertically center thumb on track: (track-height - thumb-height) / 2 */
   box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
 }
 input[type="range"]::-moz-range-thumb {
@@ -876,4 +881,14 @@ input[type="range"]::-moz-range-thumb {
   height: 100%;
   border-radius: 50%;
   overflow: hidden;
+}
+
+/* 사운드 활성화를 위한 오버레이 */
+.sound-activation-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999; /* 다른 모든 요소 위에 오도록 설정 */
 }

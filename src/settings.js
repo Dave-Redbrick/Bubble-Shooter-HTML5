@@ -10,16 +10,16 @@ export class SettingsManager {
       musicVolume: 0.5,
       showFPS: false,
       showTrajectory: true,
-      particleQuality: 'high', // low, medium, high
+      particleQuality: "high", // low, medium, high
       screenShake: true,
-      colorBlindMode: false
+      colorBlindMode: false,
     };
     this.loadSettings();
     this.modal = null;
   }
 
   loadSettings() {
-    const saved = localStorage.getItem('bubbleShooterSettings');
+    const saved = localStorage.getItem("bubbleShooterSettings");
     if (saved) {
       this.settings = { ...this.settings, ...JSON.parse(saved) };
     }
@@ -27,7 +27,10 @@ export class SettingsManager {
   }
 
   saveSettings() {
-    localStorage.setItem('bubbleShooterSettings', JSON.stringify(this.settings));
+    localStorage.setItem(
+      "bubbleShooterSettings",
+      JSON.stringify(this.settings)
+    );
     this.applySettings();
   }
 
@@ -55,8 +58,8 @@ export class SettingsManager {
   }
 
   createModal() {
-    this.modal = document.createElement('div');
-    this.modal.className = 'settings-modal';
+    this.modal = document.createElement("div");
+    this.modal.className = "settings-modal";
     this.modal.innerHTML = `
       <div class="settings-content">
         <div class="modal-header">
@@ -70,18 +73,38 @@ export class SettingsManager {
             <div class="setting-item">
               <label>${getLocalizedString("masterVolume")}</label>
               <div class="slider-container">
-                <input type="range" id="masterVolume" min="0" max="1" step="0.1" value="${this.settings.masterVolume}">
+                <input type="range" id="masterVolume" min="0" max="1" step="0.1" value="${
+                  this.settings.masterVolume
+                }">
                 <div class="slider-track"></div>
               </div>
-              <span class="volume-value">${Math.round(this.settings.masterVolume * 100)}%</span>
+              <span class="volume-value">${Math.round(
+                this.settings.masterVolume * 100
+              )}%</span>
             </div>
             <div class="setting-item">
               <label>${getLocalizedString("sfxVolume")}</label>
               <div class="slider-container">
-                <input type="range" id="sfxVolume" min="0" max="1" step="0.1" value="${this.settings.sfxVolume}">
+                <input type="range" id="sfxVolume" min="0" max="1" step="0.1" value="${
+                  this.settings.sfxVolume
+                }">
                 <div class="slider-track"></div>
               </div>
-              <span class="volume-value">${Math.round(this.settings.sfxVolume * 100)}%</span>
+              <span class="volume-value">${Math.round(
+                this.settings.sfxVolume * 100
+              )}%</span>
+            </div>
+            <div class="setting-item">
+              <label>${getLocalizedString("musicVolume")}</label>
+              <div class="slider-container">
+                <input type="range" id="musicVolume" min="0" max="1" step="0.1" value="${
+                  this.settings.musicVolume
+                }">
+                <div class="slider-track"></div>
+              </div>
+              <span class="volume-value">${Math.round(
+                this.settings.musicVolume * 100
+              )}%</span>
             </div>
           </div>
 
@@ -90,22 +113,32 @@ export class SettingsManager {
             <div class="setting-item">
               <label>${getLocalizedString("particleQuality")}</label>
               <select id="particleQuality">
-                <option value="low" ${this.settings.particleQuality === 'low' ? 'selected' : ''}>${getLocalizedString("low")}</option>
-                <option value="medium" ${this.settings.particleQuality === 'medium' ? 'selected' : ''}>${getLocalizedString("medium")}</option>
-                <option value="high" ${this.settings.particleQuality === 'high' ? 'selected' : ''}>${getLocalizedString("high")}</option>
+                <option value="low" ${
+                  this.settings.particleQuality === "low" ? "selected" : ""
+                }>${getLocalizedString("low")}</option>
+                <option value="medium" ${
+                  this.settings.particleQuality === "medium" ? "selected" : ""
+                }>${getLocalizedString("medium")}</option>
+                <option value="high" ${
+                  this.settings.particleQuality === "high" ? "selected" : ""
+                }>${getLocalizedString("high")}</option>
               </select>
             </div>
             <div class="setting-item">
               <label class="checkbox-container" for="screenShake">
                 ${getLocalizedString("screenShake")}
-                <input type="checkbox" id="screenShake" ${this.settings.screenShake ? 'checked' : ''}>
+                <input type="checkbox" id="screenShake" ${
+                  this.settings.screenShake ? "checked" : ""
+                }>
                 <span class="checkmark"></span>
               </label>
             </div>
             <div class="setting-item">
               <label class="checkbox-container" for="showFPS">
                 ${getLocalizedString("showFPS")}
-                <input type="checkbox" id="showFPS" ${this.settings.showFPS ? 'checked' : ''}>
+                <input type="checkbox" id="showFPS" ${
+                  this.settings.showFPS ? "checked" : ""
+                }>
                 <span class="checkmark"></span>
               </label>
             </div>
@@ -116,14 +149,18 @@ export class SettingsManager {
             <div class="setting-item">
               <label class="checkbox-container" for="colorBlindMode">
                 ${getLocalizedString("colorBlindMode")}
-                <input type="checkbox" id="colorBlindMode" ${this.settings.colorBlindMode ? 'checked' : ''}>
+                <input type="checkbox" id="colorBlindMode" ${
+                  this.settings.colorBlindMode ? "checked" : ""
+                }>
                 <span class="checkmark"></span>
               </label>
             </div>
             <div class="setting-item">
               <label class="checkbox-container" for="showTrajectory">
                 ${getLocalizedString("showTrajectory")}
-                <input type="checkbox" id="showTrajectory" ${this.settings.showTrajectory ? 'checked' : ''}>
+                <input type="checkbox" id="showTrajectory" ${
+                  this.settings.showTrajectory ? "checked" : ""
+                }>
                 <span class="checkmark"></span>
               </label>
             </div>
@@ -131,8 +168,12 @@ export class SettingsManager {
         </div>
 
         <div class="modal-footer">
-          <button class="modal-button modal-button-secondary settings-reset">${getLocalizedString("reset")}</button>
-          <button class="modal-button modal-button-primary settings-save">${getLocalizedString("save")}</button>
+          <button class="modal-button modal-button-secondary settings-reset">${getLocalizedString(
+            "reset"
+          )}</button>
+          <button class="modal-button modal-button-primary settings-save">${getLocalizedString(
+            "save"
+          )}</button>
         </div>
       </div>
     `;
@@ -143,33 +184,35 @@ export class SettingsManager {
 
   setupModalEvents() {
     // 닫기 버튼
-    this.modal.querySelector('.modal-close').addEventListener('click', () => {
+    this.modal.querySelector(".modal-close").addEventListener("click", () => {
       this.closeModal();
     });
 
     // 볼륨 슬라이더
     const volumeSliders = this.modal.querySelectorAll('input[type="range"]');
-    volumeSliders.forEach(slider => {
-      slider.addEventListener('input', (e) => {
+    volumeSliders.forEach((slider) => {
+      slider.addEventListener("input", (e) => {
         const value = parseFloat(e.target.value);
-        const valueSpan = e.target.nextElementSibling;
+        const valueSpan = e.target.parentElement.nextElementSibling;
         valueSpan.textContent = `${Math.round(value * 100)}%`;
       });
     });
 
     // 저장 버튼
-    this.modal.querySelector('.settings-save').addEventListener('click', () => {
+    this.modal.querySelector(".settings-save").addEventListener("click", () => {
       this.saveSettingsFromModal();
       this.closeModal();
     });
 
     // 초기화 버튼
-    this.modal.querySelector('.settings-reset').addEventListener('click', () => {
-      this.resetSettings();
-    });
+    this.modal
+      .querySelector(".settings-reset")
+      .addEventListener("click", () => {
+        this.resetSettings();
+      });
 
     // 모달 외부 클릭시 닫기
-    this.modal.addEventListener('click', (e) => {
+    this.modal.addEventListener("click", (e) => {
       if (e.target === this.modal) {
         this.closeModal();
       }
@@ -177,13 +220,24 @@ export class SettingsManager {
   }
 
   saveSettingsFromModal() {
-    this.settings.masterVolume = parseFloat(this.modal.querySelector('#masterVolume').value);
-    this.settings.sfxVolume = parseFloat(this.modal.querySelector('#sfxVolume').value);
-    this.settings.particleQuality = this.modal.querySelector('#particleQuality').value;
-    this.settings.screenShake = this.modal.querySelector('#screenShake').checked;
-    this.settings.showFPS = this.modal.querySelector('#showFPS').checked;
-    this.settings.colorBlindMode = this.modal.querySelector('#colorBlindMode').checked;
-    this.settings.showTrajectory = this.modal.querySelector('#showTrajectory').checked;
+    this.settings.masterVolume = parseFloat(
+      this.modal.querySelector("#masterVolume").value
+    );
+    this.settings.sfxVolume = parseFloat(
+      this.modal.querySelector("#sfxVolume").value
+    );
+    this.settings.musicVolume = parseFloat(
+      this.modal.querySelector("#musicVolume").value
+    );
+    this.settings.particleQuality =
+      this.modal.querySelector("#particleQuality").value;
+    this.settings.screenShake =
+      this.modal.querySelector("#screenShake").checked;
+    this.settings.showFPS = this.modal.querySelector("#showFPS").checked;
+    this.settings.colorBlindMode =
+      this.modal.querySelector("#colorBlindMode").checked;
+    this.settings.showTrajectory =
+      this.modal.querySelector("#showTrajectory").checked;
 
     this.saveSettings();
   }
@@ -195,9 +249,9 @@ export class SettingsManager {
       musicVolume: 0.5,
       showFPS: false,
       showTrajectory: true,
-      particleQuality: 'high',
+      particleQuality: "high",
       screenShake: true,
-      colorBlindMode: false
+      colorBlindMode: false,
     };
     this.saveSettings();
     this.closeModal();
@@ -213,6 +267,9 @@ export class SettingsManager {
 
   enableColorBlindMode() {
     // Add patterns for colorblind support
-    document.body.classList.toggle('colorblind-mode', this.settings.colorBlindMode);
+    document.body.classList.toggle(
+      "colorblind-mode",
+      this.settings.colorBlindMode
+    );
   }
 }
