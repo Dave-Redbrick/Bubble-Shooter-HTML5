@@ -5,8 +5,8 @@ export class SettingsManager {
   constructor(game) {
     this.game = game;
     this.settings = {
-      masterVolume: 0.7,
-      sfxVolume: 0.8,
+      masterVolume: 0.5,
+      sfxVolume: 0.5,
       musicVolume: 0.5,
       showFPS: false,
       showTrajectory: true,
@@ -196,6 +196,7 @@ export class SettingsManager {
         const valueSpan = e.target.parentElement.nextElementSibling;
         valueSpan.textContent = `${Math.round(value * 100)}%`;
       });
+      slider.addEventListener("change", () => this.applySettings());
     });
 
     // 저장 버튼
