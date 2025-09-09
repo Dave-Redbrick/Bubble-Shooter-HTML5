@@ -120,6 +120,7 @@ export class BubbleShooterGame {
       tileHeight: levelConfig.TILE_HEIGHT,
       rowHeight: levelConfig.ROW_HEIGHT,
       radius: levelConfig.RADIUS,
+      deadlineY: levelConfig.deadlineY,
       tiles: [],
     };
 
@@ -138,7 +139,7 @@ export class BubbleShooterGame {
         this.levelData.width / 2 -
         this.levelData.tileWidth / 2,
       // 캔버스 하단 기준으로 발사대 위치 조정
-      y: this.canvas.height - 150,
+      y: this.canvas.height * 0.86,
       angle: 90,
       tileType: 0,
       isBomb: false,
@@ -283,7 +284,7 @@ export class BubbleShooterGame {
       this.levelData.x +
       this.levelData.width / 2 -
       this.levelData.tileWidth / 2;
-    this.player.y = this.canvas.height - 150;
+    this.player.y = this.canvas.height * 0.86;
     this.player.nextBubble.x = this.player.x - 2 * this.levelData.tileWidth;
     this.player.nextBubble.y = this.player.y;
   }
@@ -640,6 +641,12 @@ export class BubbleShooterGame {
     this.shotsWithoutPop++;
 
     if (this.shotsWithoutPop >= this.chancesUntilNewRow) {
+      // Check for game over before adding a new row.
+      // This is critical because addBubbles would otherwise discard the last row.
+      if (this.physics.checkGameOver()) {
+        return;
+      }
+
       this.levelManager.addBubbles();
       this.shotsWithoutPop = 0;
       if (this.chancesUntilNewRow > 1) {
@@ -647,6 +654,7 @@ export class BubbleShooterGame {
       }
       this.rowOffset = (this.rowOffset + 1) % 2;
 
+      // Check again after adding the row, in case the new row itself causes a game over.
       if (this.physics.checkGameOver()) {
         return;
       }

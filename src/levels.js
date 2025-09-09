@@ -62,11 +62,8 @@ export class LevelManager {
       }
     }
 
-    // 상위 절반에 랜덤 버블 생성
-    const fillRows = Math.min(
-      5 + Math.floor(currentLevel / 5),
-      Math.floor(levelData.rows * 0.6)
-    );
+    // 상위 1/3에 랜덤 버블 생성
+    const fillRows = Math.floor(levelData.rows / 3);
 
     for (let j = 0; j < fillRows; j++) {
       for (let i = 0; i < levelData.columns; i++) {
