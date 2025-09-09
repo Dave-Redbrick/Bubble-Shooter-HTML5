@@ -640,6 +640,13 @@ export class BubbleShooterGame {
     this.shotsWithoutPop++;
 
     if (this.shotsWithoutPop >= this.chancesUntilNewRow) {
+      // Game over check before adding new row
+      if (this.physics.isLastRowOccupied()) {
+        this.onGameOver();
+        this.setGameState(CONFIG.GAME_STATES.GAME_OVER);
+        return;
+      }
+
       this.levelManager.addBubbles();
       this.shotsWithoutPop = 0;
       if (this.chancesUntilNewRow > 1) {

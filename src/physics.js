@@ -165,6 +165,17 @@ export class PhysicsEngine {
     this.game.handleMiss();
   }
 
+  isLastRowOccupied() {
+    const levelData = this.game.levelData;
+    const lastRow = levelData.rows - 1;
+    for (let i = 0; i < levelData.columns; i++) {
+      if (levelData.tiles[i][lastRow].type !== -1) {
+        return true; // Found a bubble in the last row
+      }
+    }
+    return false;
+  }
+
   checkGameOver() {
     const levelData = this.game.levelData;
     const player = this.game.player;
