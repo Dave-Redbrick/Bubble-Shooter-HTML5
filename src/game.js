@@ -385,7 +385,15 @@ export class BubbleShooterGame {
   }
 
   onItemButtonClick(itemName) {
-    if (this.gameState === CONFIG.GAME_STATES.PAUSED) return; // Do not allow using items while already paused
+    if (this.ui && this.ui.adblockEnabled) {
+      this.ui.showAdblockerModal();
+      return;
+    }
+    if (
+      this.gameState === CONFIG.GAME_STATES.GAME_OVER ||
+      this.gameState === CONFIG.GAME_STATES.PAUSED
+    )
+      return; // Do not allow using items while already paused
 
     this.sound.setMuted(true);
     this.previousGameState = this.gameState;
@@ -458,6 +466,10 @@ export class BubbleShooterGame {
     this.nextBubble();
     this.nextBubble();
     this.updateUI();
+
+    if (this.ui) {
+      this.ui.enableItemButtons();
+    }
   }
 
   updateScore(points) {
@@ -613,6 +625,10 @@ export class BubbleShooterGame {
 
     if (this.sound) {
       this.sound.play("gameOver");
+    }
+
+    if (this.ui) {
+      this.ui.disableItemButtons();
     }
   }
 
