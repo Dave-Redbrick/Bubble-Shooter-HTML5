@@ -167,10 +167,7 @@ export class PhysicsEngine {
 
   checkGameOver() {
     const levelData = this.game.levelData;
-    const player = this.game.player;
-
-    // 위험선을 플레이어 위치에서 3칸 위로 설정
-    const dangerY = player.y - levelData.tileHeight * 3;
+    const dangerY = levelData.deadlineY;
 
     for (let i = 0; i < levelData.columns; i++) {
       for (let j = 0; j < levelData.rows; j++) {

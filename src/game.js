@@ -120,6 +120,7 @@ export class BubbleShooterGame {
       tileHeight: levelConfig.TILE_HEIGHT,
       rowHeight: levelConfig.ROW_HEIGHT,
       radius: levelConfig.RADIUS,
+      deadlineY: levelConfig.deadlineY,
       tiles: [],
     };
 

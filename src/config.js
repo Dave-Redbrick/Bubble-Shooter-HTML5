@@ -56,8 +56,8 @@ export function getLevelConfig(canvas) {
   // 캔버스 높이에 따라 타일 크기 동적 계산
   const PREFERRED_ROWS = 18; // 이 값을 기준으로 버블 크기 결정
   const topMargin = 0; // 버블 그리드 상단 여백
-  const bottomMargin = canvas.height * 0.4; // 발사대 및 하단 UI를 위한 공간
-  const availableHeight = canvas.height - topMargin - bottomMargin;
+  const deadlineY = canvas.height * 0.82;
+  const availableHeight = deadlineY - topMargin;
 
   const rowHeight = availableHeight / PREFERRED_ROWS;
   const tileHeight = rowHeight / 0.866;
@@ -95,6 +95,7 @@ export function getLevelConfig(canvas) {
     Y: y,
     WIDTH: levelWidth,
     HEIGHT: levelHeight,
+    deadlineY: deadlineY,
   };
 }
 
