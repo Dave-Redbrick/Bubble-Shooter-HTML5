@@ -933,66 +933,71 @@ input[type="range"]::-moz-range-thumb {
 }
 
 /* 로딩 전체 랩퍼 */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@600;900&display=swap");
+
+/* 로딩 전체 랩퍼 */
 #rb-loading {
   width: 100vw;
-  min-height: 100vh;
+  height: 100vh;
   background: #232323;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   position: fixed;
-  left: 0;
-  top: 0;
+  inset: 0;
   z-index: 9999;
+  padding: 0 2vw;
+  box-sizing: border-box;
 }
 
 /* 보조 문구 */
 .rb-powered-label {
   font-family: "Inter", sans-serif;
-  font-size: 1.1rem;
+  font-size: clamp(1.2rem, 3vw, 1.4rem);
   color: #e0e0e0;
   opacity: 0.62;
   letter-spacing: 0.18em;
   font-weight: 600;
-  margin-bottom: 28px;
+  margin-bottom: clamp(24px, 4vh, 32px);
+  text-align: center;
 }
 
 /* 로고+텍스트 컨테이너 */
 .rb-center-row {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 18px;
-  font-size: 2.6rem;
+  gap: clamp(16px, 2.5vw, 24px);
+  font-size: clamp(3rem, 8vw, 5rem);
   position: relative;
+  transform-origin: center center;
+  /* 뷰포트 변화에 따라 함께 크기 조절 */
 }
 
-/* SVG 로고: 애니메이션 duration 2.5s로 조정 */
-.rb-logo svg linearGradient animateTransform {
-  dur: 2.5s;
-}
-
+/* SVG 로고: font-size 기준으로 크기 조정 */
 .rb-logo svg {
-  height: 3.2em;
+  height: 1em; /* .rb-center-row font-size 기준 */
   width: auto;
 }
 
+/* 텍스트 래퍼 */
 .rb-text-wrapper {
   position: relative;
-  display: inline-block;
   line-height: 1;
 }
 
+/* 기본 텍스트 및 shine 텍스트 */
 .rb-text-wrapper .base,
 .rb-text-wrapper .shine {
   font-family: "Inter", sans-serif;
-  font-size: 2.5em;
+  font-size: 1em; /* .rb-center-row font-size 기준 */
   font-weight: 900;
   letter-spacing: 0.04em;
   margin: 0;
   padding: 0;
   display: block;
   line-height: 1;
+  white-space: nowrap;
 }
 
 /* 기본 텍스트 (회색) */
@@ -1003,16 +1008,9 @@ input[type="range"]::-moz-range-thumb {
 /* shine 텍스트 (위에 겹침) */
 .rb-text-wrapper .shine {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   pointer-events: none;
-
-  /* WebKit에서 텍스트 클리핑을 위해 필수 */
   -webkit-text-fill-color: transparent;
-
-  /* 그라디언트 텍스트 */
   background: linear-gradient(
       -45deg,
       transparent 30%,
@@ -1021,38 +1019,35 @@ input[type="range"]::-moz-range-thumb {
       transparent 70%
     )
     0 0 no-repeat;
-  background-size: 200px 100%;
+  background-size: 200% 100%;
   background-clip: text;
   -webkit-background-clip: text;
-
-  /* blend 대신 투명 텍스트로만 shine 그라디언트 보임 */
   color: transparent;
-
   animation: rb-shine-anim 3s ease-in-out infinite;
 }
 
 @keyframes rb-shine-anim {
   0% {
-    background-position: -200px 0;
+    background-position: 200% 0;
   }
   50% {
-    background-position: calc(100% + 200px) 0;
+    background-position: -100% 0;
   }
   100% {
-    background-position: 200% 0;
+    background-position: -200% 0;
   }
 }
 
 /* 하단 로딩 dots */
 .rb-dots-loading {
-  margin-top: 40px;
+  margin-top: clamp(32px, 6vh, 48px);
   display: flex;
-  gap: 0.6em;
+  gap: clamp(0.8em, 2vw, 1em);
   justify-content: center;
 }
 .rb-dots-loading span {
-  width: 0.88em;
-  height: 0.88em;
+  width: clamp(1em, 2.5vw, 1.2em);
+  height: clamp(1em, 2.5vw, 1.2em);
   background: #fff;
   border-radius: 50%;
   opacity: 0.16;
@@ -1064,6 +1059,7 @@ input[type="range"]::-moz-range-thumb {
 .rb-dots-loading span:nth-child(3) {
   animation-delay: 0.4s;
 }
+
 @keyframes dotsfade {
   0%,
   80%,
@@ -1072,5 +1068,29 @@ input[type="range"]::-moz-range-thumb {
   }
   40% {
     opacity: 1;
+  }
+}
+
+/* 반응형: 화면 작아질수록 font-size 줄어듦 */
+@media (max-width: 768px) {
+  .rb-center-row {
+    font-size: clamp(2.5rem, 12vw, 4rem);
+  }
+}
+
+@media (max-width: 480px) {
+  .rb-powered-label {
+    font-size: clamp(1rem, 4vw, 1.2rem);
+    margin-bottom: clamp(20px, 8vh, 32px);
+  }
+  .rb-center-row {
+    font-size: clamp(2rem, 16vw, 3rem);
+    flex-direction: column;
+    gap: clamp(12px, 4vh, 20px);
+  }
+  .rb-text-wrapper .base,
+  .rb-text-wrapper .shine {
+    white-space: normal;
+    text-align: center;
   }
 }
