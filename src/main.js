@@ -2,13 +2,13 @@ import { BubbleShooterGame } from "./game.js";
 import { UIManager } from "./ui.js";
 
 // for CrazyGames local testing
-// (function ensureUseLocalSdk() {
-//   const url = new URL(window.location.href);
-//   if (!url.searchParams.has("useLocalSdk")) {
-//     url.searchParams.set("useLocalSdk", "true");
-//     window.location.replace(url.toString());
-//   }
-// })();
+(function ensureUseLocalSdk() {
+  const url = new URL(window.location.href);
+  if (!url.searchParams.has("useLocalSdk")) {
+    url.searchParams.set("useLocalSdk", "true");
+    window.location.replace(url.toString());
+  }
+})();
 
 async function init() {
   try {
