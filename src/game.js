@@ -92,7 +92,8 @@ export class BubbleShooterGame {
       aimGuide: {
         available: 1,
         active: false,
-        duration: 10000,
+        duration: 999 * 1e3,
+        // duration: 20*1e3,
         startTime: 0,
       },
       bombBubble: {
