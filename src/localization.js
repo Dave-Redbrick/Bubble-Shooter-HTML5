@@ -67,6 +67,11 @@ const translations = {
 
   // score to next level
   scoreToNextLevel: "Next level in {score} points",
+
+  // Adblock
+  adblockTitle: "Adblock Detected",
+  adblockMessage: "Please disable adblock and refresh to use items.",
+  refresh: "Refresh",
 };
 
 export function getLocalizedString(key, replacements = {}) {

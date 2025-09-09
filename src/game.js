@@ -385,6 +385,10 @@ export class BubbleShooterGame {
   }
 
   onItemButtonClick(itemName) {
+    if (this.ui && this.ui.adblockEnabled) {
+      this.ui.showAdblockerModal();
+      return;
+    }
     if (this.gameState === CONFIG.GAME_STATES.PAUSED) return; // Do not allow using items while already paused
 
     this.sound.setMuted(true);
