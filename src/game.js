@@ -138,7 +138,7 @@ export class BubbleShooterGame {
         this.levelData.width / 2 -
         this.levelData.tileWidth / 2,
       // 캔버스 하단 기준으로 발사대 위치 조정
-      y: this.canvas.height - 150,
+      y: this.canvas.height * 0.86,
       angle: 90,
       tileType: 0,
       isBomb: false,
@@ -283,7 +283,7 @@ export class BubbleShooterGame {
       this.levelData.x +
       this.levelData.width / 2 -
       this.levelData.tileWidth / 2;
-    this.player.y = this.canvas.height - 150;
+    this.player.y = this.canvas.height * 0.86;
     this.player.nextBubble.x = this.player.x - 2 * this.levelData.tileWidth;
     this.player.nextBubble.y = this.player.y;
   }

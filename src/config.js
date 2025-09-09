@@ -9,26 +9,14 @@ export const CONFIG = {
     MOBILE: {
       COLUMNS: 16,
       ROWS: 12,
-      TILE_WIDTH: 35,
-      TILE_HEIGHT: 35,
-      ROW_HEIGHT: 30,
-      RADIUS: 17,
     },
     TABLET: {
       COLUMNS: 18,
       ROWS: 13,
-      TILE_WIDTH: 38,
-      TILE_HEIGHT: 38,
-      ROW_HEIGHT: 32,
-      RADIUS: 19,
     },
     DESKTOP: {
       COLUMNS: 20,
       ROWS: 14,
-      TILE_WIDTH: 40,
-      TILE_HEIGHT: 40,
-      ROW_HEIGHT: 34,
-      RADIUS: 20,
     },
   },
   BUBBLE: {
@@ -63,26 +51,44 @@ export function getDeviceType() {
 // 디바이스에 맞는 레벨 설정 가져오기 - 중앙 배치 계산 포함
 export function getLevelConfig(canvas) {
   const deviceType = getDeviceType();
-  const config = CONFIG.LEVEL_CONFIGS[deviceType];
+  const baseConfig = CONFIG.LEVEL_CONFIGS[deviceType];
+
+  // 캔버스 너비에 따라 타일 크기 동적 계산
+  const totalBubbleSpace = canvas.width * 0.95; // 화면의 95%를 버블 공간으로 사용
+  const tileWidth = totalBubbleSpace / (baseConfig.COLUMNS + 0.5);
+  const tileHeight = tileWidth;
+  const rowHeight = tileHeight * 0.866; // 정육각형 그리드 높이 비율
+  const radius = tileWidth / 2;
+
+  const dynamicConfig = {
+    ...baseConfig,
+    TILE_WIDTH: tileWidth,
+    TILE_HEIGHT: tileHeight,
+    ROW_HEIGHT: rowHeight,
+    RADIUS: radius,
+  };
 
   // 사용 가능한 세로 공간을 기반으로 행(row) 수를 동적으로 계산
   const topMargin = 0; // 버블 그리드 상단 여백
-  const bottomMargin = 250; // 발사대 및 하단 UI를 위한 공간
+  const bottomMargin = canvas.height * 0.23; // 발사대 및 하단 UI를 위한 공간
   const availableHeight = canvas.height - topMargin - bottomMargin;
-  const calculatedRows = Math.floor(availableHeight / config.ROW_HEIGHT);
+  const calculatedRows = Math.floor(availableHeight / dynamicConfig.ROW_HEIGHT);
   // 최소 행 수를 보장하면서, 계산된 행 수가 더 크면 그 값을 사용
-  const rows = Math.max(config.ROWS, calculatedRows);
+  const rows = Math.max(dynamicConfig.ROWS, calculatedRows);
 
   // 새로운 행 수에 따라 레벨 영역 크기 다시 계산
-  const levelWidth = config.COLUMNS * config.TILE_WIDTH + config.TILE_WIDTH / 2;
-  const levelHeight = (rows - 1) * config.ROW_HEIGHT + config.TILE_HEIGHT;
+  const levelWidth =
+    dynamicConfig.COLUMNS * dynamicConfig.TILE_WIDTH +
+    dynamicConfig.TILE_WIDTH / 2;
+  const levelHeight =
+    (rows - 1) * dynamicConfig.ROW_HEIGHT + dynamicConfig.TILE_HEIGHT;
 
   // 실제 캔버스 너비를 사용하여 중앙에 배치
   const x = (canvas.width - levelWidth) / 2;
   const y = topMargin;
 
   return {
-    ...config,
+    ...dynamicConfig,
     ROWS: rows, // 동적으로 계산된 행 수로 덮어쓰기
     X: x,
     Y: y,
