@@ -640,10 +640,9 @@ export class BubbleShooterGame {
     this.shotsWithoutPop++;
 
     if (this.shotsWithoutPop >= this.chancesUntilNewRow) {
-      // Game over check before adding new row
-      if (this.physics.isLastRowOccupied()) {
-        this.onGameOver();
-        this.setGameState(CONFIG.GAME_STATES.GAME_OVER);
+      // Check for game over before adding a new row.
+      // This is critical because addBubbles would otherwise discard the last row.
+      if (this.physics.checkGameOver()) {
         return;
       }
 
@@ -654,6 +653,7 @@ export class BubbleShooterGame {
       }
       this.rowOffset = (this.rowOffset + 1) % 2;
 
+      // Check again after adding the row, in case the new row itself causes a game over.
       if (this.physics.checkGameOver()) {
         return;
       }
