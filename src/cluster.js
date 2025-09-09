@@ -61,7 +61,9 @@ export class ClusterManager {
           for (const tile of cluster) {
             const dropScore = 10 + this.game.currentLevel; // 기본 10점 + 레벨당 1점 + 낙하 보너스 1점
             tile.shift = 1;
-            tile.velocity = this.game.player.bubble.dropSpeed;
+            tile.velocity =
+              (this.game.canvas.height / 1080) *
+              this.game.player.bubble.dropSpeed;
             // 떨어지는 버블 점수 추가
             this.game.updateScore(dropScore);
           }
@@ -147,7 +149,7 @@ export class ClusterManager {
             droppingTilesLeft = true;
 
             // Accelerate
-            tile.velocity += dt * 700;
+            tile.velocity += dt * 700 * (this.game.canvas.height / 1080);
             tile.shift += dt * tile.velocity;
 
             // Fade out

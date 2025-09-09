@@ -54,7 +54,7 @@ export function getLevelConfig(canvas) {
   const baseConfig = CONFIG.LEVEL_CONFIGS[deviceType];
 
   // 캔버스 너비에 따라 타일 크기 동적 계산
-  const totalBubbleSpace = canvas.width * 0.95; // 화면의 95%를 버블 공간으로 사용
+  const totalBubbleSpace = canvas.width * 0.95 * 0.75; // 화면의 95%의 75%를 버블 공간으로 사용
   const tileWidth = totalBubbleSpace / (baseConfig.COLUMNS + 0.5);
   const tileHeight = tileWidth;
   const rowHeight = tileHeight * 0.866; // 정육각형 그리드 높이 비율
@@ -70,7 +70,7 @@ export function getLevelConfig(canvas) {
 
   // 사용 가능한 세로 공간을 기반으로 행(row) 수를 동적으로 계산
   const topMargin = 0; // 버블 그리드 상단 여백
-  const bottomMargin = canvas.height * 0.23; // 발사대 및 하단 UI를 위한 공간
+  const bottomMargin = canvas.height * 0.28; // 발사대 및 하단 UI를 위한 공간
   const availableHeight = canvas.height - topMargin - bottomMargin;
   const calculatedRows = Math.floor(availableHeight / dynamicConfig.ROW_HEIGHT);
   // 최소 행 수를 보장하면서, 계산된 행 수가 더 크면 그 값을 사용
