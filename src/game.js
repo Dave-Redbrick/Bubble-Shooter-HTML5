@@ -458,6 +458,10 @@ export class BubbleShooterGame {
     this.nextBubble();
     this.nextBubble();
     this.updateUI();
+
+    if (this.ui) {
+      this.ui.enableItemButtons();
+    }
   }
 
   updateScore(points) {
@@ -613,6 +617,10 @@ export class BubbleShooterGame {
 
     if (this.sound) {
       this.sound.play("gameOver");
+    }
+
+    if (this.ui) {
+      this.ui.disableItemButtons();
     }
   }
 

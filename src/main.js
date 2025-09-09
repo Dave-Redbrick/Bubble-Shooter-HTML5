@@ -34,6 +34,16 @@ window.onload = async function () {
   const game = new BubbleShooterGame(canvas, context, user);
   const ui = new UIManager(game);
 
+  try {
+    const result = await window.CrazyGames.SDK.ad.hasAdblock();
+    console.log("Adblock usage fetched", result);
+    if (result) {
+      ui.setAdblockDetected();
+    }
+  } catch (e) {
+    console.error("Error checking for adblock:", e);
+  }
+
   // UI 매니저를 게임에 연결
   game.ui = ui;
 

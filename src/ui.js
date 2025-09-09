@@ -6,6 +6,7 @@ export class UIManager {
   constructor(game) {
     this.game = game;
     this.currentDeviceType = getDeviceType();
+    this.adblockEnabled = false;
     this.initializeElements();
     this.setupEventListeners();
   }
@@ -292,6 +293,23 @@ export class UIManager {
         pip.classList.add('full');
       }
       container.appendChild(pip);
+    }
+  }
+
+  setAdblockDetected() {
+    this.adblockEnabled = true;
+    this.disableItemButtons();
+  }
+
+  disableItemButtons() {
+    this.elements.itemSlotAim.classList.add('disabled');
+    this.elements.itemSlotBomb.classList.add('disabled');
+  }
+
+  enableItemButtons() {
+    if (!this.adblockEnabled) {
+      this.elements.itemSlotAim.classList.remove('disabled');
+      this.elements.itemSlotBomb.classList.remove('disabled');
     }
   }
 
