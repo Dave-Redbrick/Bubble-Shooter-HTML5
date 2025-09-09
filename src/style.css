@@ -13,6 +13,11 @@ body {
   height: 100vh;
   width: 100vw;
   background: linear-gradient(45deg, #2c003e, #5a189a, #9d4edd);
+  /* Prevent text selection which can be distracting during gameplay */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 .game-container {
@@ -283,6 +288,7 @@ body {
   text-align: center;
 }
 
+.menu-content,
 .settings-content {
   display: flex;
   flex-direction: column;
@@ -412,12 +418,21 @@ body {
   font-weight: bold;
 }
 
+/* --- Generic Modal Body/List for Scrolling --- */
+.menu-body,
+.settings-body,
+.stats-body,
+.achievements-list,
+.leaderboard-list {
+  flex-grow: 1; /* Allow body to fill available space */
+  overflow-y: auto; /* Add scrollbar if content overflows */
+  padding-right: 10px; /* Space for scrollbar */
+  text-align: left;
+}
+
 /* --- Achievements Modal Specifics --- */
 .achievements-list {
   max-height: 300px;
-  overflow-y: auto;
-  padding-right: 10px;
-  text-align: left;
 }
 .achievement-item {
   display: flex;
@@ -447,18 +462,34 @@ body {
   font-size: 14px;
   opacity: 0.8;
 }
-.achievements-list::-webkit-scrollbar {
+.menu-body::-webkit-scrollbar,
+.settings-body::-webkit-scrollbar,
+.stats-body::-webkit-scrollbar,
+.achievements-list::-webkit-scrollbar,
+.leaderboard-list::-webkit-scrollbar {
   width: 8px;
 }
-.achievements-list::-webkit-scrollbar-track {
+.menu-body::-webkit-scrollbar-track,
+.settings-body::-webkit-scrollbar-track,
+.stats-body::-webkit-scrollbar-track,
+.achievements-list::-webkit-scrollbar-track,
+.leaderboard-list::-webkit-scrollbar-track {
   background: rgba(0, 0, 0, 0.1);
   border-radius: 10px;
 }
-.achievements-list::-webkit-scrollbar-thumb {
+.menu-body::-webkit-scrollbar-thumb,
+.settings-body::-webkit-scrollbar-thumb,
+.stats-body::-webkit-scrollbar-thumb,
+.achievements-list::-webkit-scrollbar-thumb,
+.leaderboard-list::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.4);
   border-radius: 10px;
 }
-.achievements-list::-webkit-scrollbar-thumb:hover {
+.menu-body::-webkit-scrollbar-thumb:hover,
+.settings-body::-webkit-scrollbar-thumb:hover,
+.stats-body::-webkit-scrollbar-thumb:hover,
+.achievements-list::-webkit-scrollbar-thumb:hover,
+.leaderboard-list::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.6);
 }
 
@@ -621,7 +652,7 @@ input[type="range"]::-moz-range-thumb {
 
 /* --- Stats Modal Specifics --- */
 .stats-body {
-  text-align: left;
+  /* text-align is now handled by the generic rule */
 }
 .stats-grid {
   display: grid;
