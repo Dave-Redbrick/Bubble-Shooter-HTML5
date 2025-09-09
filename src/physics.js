@@ -180,7 +180,7 @@ export class PhysicsEngine {
         if (tile.type !== -1) {
           const coord = this.getTileCoordinate(i, j);
           const tileBottom = coord.tileY + levelData.tileHeight;
-          
+
           if (tileBottom >= dangerY) {
             this.game.onGameOver();
             this.game.setGameState(CONFIG.GAME_STATES.GAME_OVER);
@@ -191,7 +191,6 @@ export class PhysicsEngine {
     }
     return false;
   }
-
 
   // 정확한 궤적 계산 (조준 가이드용) - 완전히 개선된 버전
   calculateTrajectory(startX, startY, angle, maxBounces = 5) {

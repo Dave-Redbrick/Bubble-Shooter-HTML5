@@ -3,7 +3,7 @@ import { CONFIG } from "./config.js";
 export class InputHandler {
   constructor(game, sound) {
     this.game = game;
-		this.sound = sound;
+    this.sound = sound;
   }
 
   onMouseMove(e) {
@@ -48,9 +48,9 @@ export class InputHandler {
 
     if (gameState === CONFIG.GAME_STATES.READY) {
       this.shootBubble();
-			if(this.sound) {
-				this.sound.play('shoot');
-			}
+      if (this.sound) {
+        this.sound.play("shoot");
+      }
     } else if (gameState === CONFIG.GAME_STATES.GAME_OVER) {
       this.game.newGame();
     }

@@ -1,4 +1,4 @@
-// 업적 시스템
+// achievements system(removed)
 export class AchievementManager {
   constructor(game) {
     this.game = game;

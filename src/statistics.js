@@ -1,4 +1,4 @@
-// 통계 시스템
+// statistics system(removed)
 export class StatisticsManager {
   constructor(game) {
     this.game = game;

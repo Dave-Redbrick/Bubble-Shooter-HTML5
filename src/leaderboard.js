@@ -1,4 +1,4 @@
-// 리더보드 시스템
+// leaderboard system(removed)
 export class LeaderboardManager {
   constructor(game) {
     this.game = game;
@@ -7,39 +7,59 @@ export class LeaderboardManager {
   }
 
   loadScores() {
-    const saved = localStorage.getItem('bubbleShooterLeaderboard');
+    // const saved = localStorage.getItem('bubbleShooterLeaderboard');
+    const saved = window.CrazyGames.SDK.data.getItem("beadsShooterLeaderboard");
     if (saved) {
       this.scores = JSON.parse(saved);
     }
   }
 
   saveScores() {
-    localStorage.setItem('bubbleShooterLeaderboard', JSON.stringify(this.scores));
+    // localStorage.setItem('bubbleShooterLeaderboard', JSON.stringify(this.scores));
+    window.CrazyGames.SDK.data.setItem(
+      "beadsShooterLeaderboard",
+      JSON.stringify(this.scores)
+    );
   }
 
   addScore(playerName, score, level) {
-    const newScore = {
-      name: playerName,
-      score: score,
-      level: level,
-      date: new Date().toLocaleDateString(),
-      id: Date.now()
-    };
+    const existing = this.scores.find((s) => s.name === playerName);
 
-    this.scores.push(newScore);
+    if (existing) {
+      // 기존 플레이어: 더 높은 점수일 때만 갱신
+      if (score > existing.score) {
+        existing.score = score;
+        existing.level = level;
+        existing.date = new Date().toLocaleDateString();
+      } else {
+        return false; // 낮은 점수는 무시
+      }
+    } else {
+      // 새 플레이어: 점수 추가
+      this.scores.push({
+        name: playerName,
+        score: score,
+        level: level,
+        date: new Date().toLocaleDateString(),
+        id: Date.now(),
+      });
+    }
+
+    // 정렬 및 상위 10개 유지 후 저장
     this.scores.sort((a, b) => b.score - a.score);
-    this.scores = this.scores.slice(0, 10); // 상위 10개만 유지
+    this.scores = this.scores.slice(0, 10);
     this.saveScores();
+    return true;
   }
 
   showLeaderboard() {
-    const modal = document.createElement('div');
-    modal.className = 'leaderboard-modal';
-    
-    let scoresHTML = '';
+    const modal = document.createElement("div");
+    modal.className = "leaderboard-modal";
+
+    let scoresHTML = "";
     this.scores.forEach((score, index) => {
       scoresHTML += `
-        <div class="leaderboard-item ${index < 3 ? 'top-three' : ''}">
+        <div class="leaderboard-item ${index < 3 ? "top-three" : ""}">
           <div class="rank">${index + 1}</div>
           <div class="player-name">${score.name}</div>
           <div class="player-score">${score.score.toLocaleString()}</div>
@@ -78,12 +98,12 @@ export class LeaderboardManager {
     document.body.appendChild(modal);
 
     // 이벤트 리스너
-    modal.querySelector('.modal-close').addEventListener('click', () => {
+    modal.querySelector(".modal-close").addEventListener("click", () => {
       modal.remove();
     });
 
-    modal.querySelector('.clear-leaderboard').addEventListener('click', () => {
-      if (confirm('Are you sure you want to delete all scores?')) {
+    modal.querySelector(".clear-leaderboard").addEventListener("click", () => {
+      if (confirm("Are you sure you want to delete all scores?")) {
         this.scores = [];
         this.saveScores();
         modal.remove();
@@ -92,8 +112,8 @@ export class LeaderboardManager {
   }
 
   promptForName(score, level) {
-    const modal = document.createElement('div');
-    modal.className = 'name-input-modal';
+    const modal = document.createElement("div");
+    modal.className = "name-input-modal";
     modal.innerHTML = `
       <div class="name-input-content">
         <h2>New High Score!</h2>
@@ -109,31 +129,36 @@ export class LeaderboardManager {
 
     document.body.appendChild(modal);
 
-    const nameInput = modal.querySelector('#playerName');
+    const nameInput = modal.querySelector("#playerName");
     nameInput.focus();
 
     const submitScore = () => {
-      const name = nameInput.value.trim() || 'Anonymous';
+      const name = nameInput.value.trim() || "Anonymous";
       this.addScore(name, score, level);
       modal.remove();
       this.showLeaderboard();
     };
 
-    modal.querySelector('#submitScore').addEventListener('click', submitScore);
-    modal.querySelector('#skipScore').addEventListener('click', () => {
+    modal.querySelector("#submitScore").addEventListener("click", submitScore);
+    modal.querySelector("#skipScore").addEventListener("click", () => {
       modal.remove();
     });
 
-    nameInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
+    nameInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") {
         submitScore();
       }
     });
   }
 
   checkNewRecord(score, level) {
-    if (this.scores.length < 10 || score > this.scores[this.scores.length - 1].score) {
-      this.promptForName(score, level);
+    if (
+      this.scores.length < 10 ||
+      score > this.scores[this.scores.length - 1].score
+    ) {
+      // this.promptForName(score, level);
+      // const name = this.game.user ? this.game.user.username : "Anonymous";
+      // this.addScore(name, score, level) && this.showLeaderboard();
       return true;
     }
     return false;

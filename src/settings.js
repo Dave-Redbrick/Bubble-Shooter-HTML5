@@ -19,7 +19,8 @@ export class SettingsManager {
   }
 
   loadSettings() {
-    const saved = localStorage.getItem("bubbleShooterSettings");
+    // const saved = localStorage.getItem("bubbleShooterSettings");
+    const saved = window.CrazyGames.SDK.data.getItem("beadsShooterSettings");
     if (saved) {
       this.settings = { ...this.settings, ...JSON.parse(saved) };
     }
@@ -27,8 +28,12 @@ export class SettingsManager {
   }
 
   saveSettings() {
-    localStorage.setItem(
-      "bubbleShooterSettings",
+    // localStorage.setItem(
+    //   "bubbleShooterSettings",
+    //   JSON.stringify(this.settings)
+    // );
+    window.CrazyGames.SDK.data.setItem(
+      "beadsShooterSettings",
       JSON.stringify(this.settings)
     );
     this.applySettings();

@@ -7,7 +7,9 @@ export class MenuManager {
   }
 
   showMainMenu() {
-    this.createMainMenu();
+		window.CrazyGames.SDK.game.gameplayStop();
+    this.game.sound.setMuted(true);
+		this.createMainMenu();
   }
 
   createMainMenu() {
@@ -16,22 +18,22 @@ export class MenuManager {
     this.modal.innerHTML = `
       <div class="menu-content">
         <div class="modal-header">
-          <h1>Bubble Shooter</h1>
+          <h1>Beads Shooter</h1>
           <button class="modal-close">&times;</button>
         </div>
         
         <div class="menu-body">
           <div class="menu-buttons">
             <button class="menu-btn" id="newGame">New Game</button>
-            <button class="menu-btn" id="continueGame">Continue</button>
-            <button class="menu-btn" id="statistics">Statistics</button>
+            <!-- <button class="menu-btn" id="continueGame">Continue</button> -->
             <button class="menu-btn" id="settings">Settings</button>
+            <!-- <button class="menu-btn" id="leaderboard">Leaderboard</button> -->
+            <!-- <button class="menu-btn" id="statistics">Statistics</button> -->
+            <!-- <button class="menu-btn" id="achievements">Achievements</button> -->
             <button class="menu-btn" id="tutorial">Tutorial</button>
-            <button class="menu-btn" id="achievements">Achievements</button>
-            <button class="menu-btn" id="leaderboard">Leaderboard</button>
           </div>
           
-          <div class="menu-info">
+          <!-- <div class="menu-info">
             <div class="current-stats">
               <div class="stat">
                 <span class="stat-label">Current Score:</span>
@@ -46,7 +48,7 @@ export class MenuManager {
                 <span class="stat-value">${this.game.currentLevel}</span>
               </div>
             </div>
-          </div>
+          </div> -->
         </div>
       </div>
     `;
@@ -69,16 +71,16 @@ export class MenuManager {
     });
 
     // 계속하기
-    this.modal.querySelector('#continueGame').addEventListener('click', () => {
-      this.closeMenu();
-    });
+    // this.modal.querySelector('#continueGame').addEventListener('click', () => {
+    //   this.closeMenu();
+    // });
 
     // 통계
-    this.modal.querySelector('#statistics').addEventListener('click', () => {
-      if (this.game.statistics) {
-        this.game.statistics.showStatsModal();
-      }
-    });
+    // this.modal.querySelector('#statistics').addEventListener('click', () => {
+    //   if (this.game.statistics) {
+    //     this.game.statistics.showStatsModal();
+    //   }
+    // });
 
     // 설정
     this.modal.querySelector('#settings').addEventListener('click', () => {
@@ -96,16 +98,16 @@ export class MenuManager {
     });
 
     // 업적
-    this.modal.querySelector('#achievements').addEventListener('click', () => {
-      this.showAchievementsModal();
-    });
+    // this.modal.querySelector('#achievements').addEventListener('click', () => {
+    //   this.showAchievementsModal();
+    // });
 
     // 리더보드
-    this.modal.querySelector('#leaderboard').addEventListener('click', () => {
-      if (this.game.leaderboard) {
-        this.game.leaderboard.showLeaderboard();
-      }
-    });
+    // this.modal.querySelector('#leaderboard').addEventListener('click', () => {
+    //   if (this.game.leaderboard) {
+    //     this.game.leaderboard.showLeaderboard();
+    //   }
+    // });
 
     // ESC 키로 닫기
     document.addEventListener('keydown', (e) => {
@@ -115,51 +117,54 @@ export class MenuManager {
     });
   }
 
-  showAchievementsModal() {
-    const achievementsModal = document.createElement('div');
-    achievementsModal.className = 'achievements-modal';
+  // showAchievementsModal() {
+  //   const achievementsModal = document.createElement('div');
+  //   achievementsModal.className = 'achievements-modal';
     
-    const achievements = this.game.achievements.achievements;
-    let achievementsList = '';
+  //   const achievements = this.game.achievements.achievements;
+  //   let achievementsList = '';
     
-    Object.keys(achievements).forEach(key => {
-      const achievement = achievements[key];
-      const status = achievement.unlocked ? 'unlocked' : 'locked';
-      achievementsList += `
-        <div class="achievement-item ${status}">
-          <div class="achievement-icon">${achievement.unlocked ? '🏆' : '🔒'}</div>
-          <div class="achievement-info">
-            <div class="achievement-name">${achievement.name}</div>
-            <div class="achievement-desc">${achievement.description}</div>
-          </div>
-        </div>
-      `;
-    });
+  //   Object.keys(achievements).forEach(key => {
+  //     const achievement = achievements[key];
+  //     const status = achievement.unlocked ? 'unlocked' : 'locked';
+  //     achievementsList += `
+  //       <div class="achievement-item ${status}">
+  //         <div class="achievement-icon">${achievement.unlocked ? '🏆' : '🔒'}</div>
+  //         <div class="achievement-info">
+  //           <div class="achievement-name">${achievement.name}</div>
+  //           <div class="achievement-desc">${achievement.description}</div>
+  //         </div>
+  //       </div>
+  //     `;
+  //   });
 
-    achievementsModal.innerHTML = `
-      <div class="achievements-content">
-        <div class="modal-header">
-          <h2>Achievements</h2>
-          <button class="modal-close">&times;</button>
-        </div>
-        <div class="achievements-list">
-          ${achievementsList}
-        </div>
-      </div>
-    `;
+  //   achievementsModal.innerHTML = `
+  //     <div class="achievements-content">
+  //       <div class="modal-header">
+  //         <h2>Achievements</h2>
+  //         <button class="modal-close">&times;</button>
+  //       </div>
+  //       <div class="achievements-list">
+  //         ${achievementsList}
+  //       </div>
+  //     </div>
+  //   `;
 
-    document.body.appendChild(achievementsModal);
+  //   document.body.appendChild(achievementsModal);
 
-    achievementsModal.querySelector('.modal-close').addEventListener('click', () => {
-      achievementsModal.remove();
-    });
-  }
+  //   achievementsModal.querySelector('.modal-close').addEventListener('click', () => {
+  //     achievementsModal.remove();
+  //   });
+  // }
 
   closeMenu() {
     if (this.modal) {
       this.modal.remove();
       this.modal = null;
       this.isOpen = false;
+			
+			window.CrazyGames.SDK.game.gameplayStart();
+			this.game.sound.setMuted(false);
     }
   }
 }

@@ -1,4 +1,4 @@
-// 일일 도전 시스템
+// dailychallenge system(removed)
 export class DailyChallengeManager {
   constructor(game) {
     this.game = game;
