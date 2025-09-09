@@ -389,7 +389,11 @@ export class BubbleShooterGame {
       this.ui.showAdblockerModal();
       return;
     }
-    if (this.gameState === CONFIG.GAME_STATES.PAUSED) return; // Do not allow using items while already paused
+    if (
+      this.gameState === CONFIG.GAME_STATES.GAME_OVER ||
+      this.gameState === CONFIG.GAME_STATES.PAUSED
+    )
+      return; // Do not allow using items while already paused
 
     this.sound.setMuted(true);
     this.previousGameState = this.gameState;
