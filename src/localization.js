@@ -3,7 +3,7 @@
 
 const translations = {
   en: {
-    gameTitle: "BeadsShooter",
+    gameTitle: "Beads Shooter",
     score: "Score",
     highScore: "High Score",
     level: "Level",
@@ -15,7 +15,7 @@ const translations = {
     cancel: "Cancel",
     menu: "MENU",
     chances: "CHANCES",
-    help: "HELP",
+    help: "Help",
     helpLine1: "Aim with the mouse and click to shoot.",
     helpLine2: "Match 3 or more bubbles of the same color to pop them.",
     helpLine3: "Clear all bubbles to advance to the next level.",
@@ -23,9 +23,11 @@ const translations = {
     itemBomb: "BOMB",
     itemAimActive: "AIM\nACTIVE",
     itemAimTitle: "Aim Guide",
-    itemAimDescription: "Shows the exact path of the bubble for a short time. Watch an ad to get this item?",
+    itemAimDescription:
+      "Shows the exact path of the bubble for a short time. Watch an ad to get this item?",
     itemBombTitle: "Bomb Bubble",
-    itemBombDescription: "Changes the current bubble into a powerful bomb. The bomb will destroy nearby bubbles. Watch an ad to get this item?",
+    itemBombDescription:
+      "Changes the current bubble into a powerful bomb. The bomb will destroy nearby bubbles. Watch an ad to get this item?",
     settings: "Settings",
     sound: "Sound",
     masterVolume: "Master Volume",
@@ -59,19 +61,23 @@ const translations = {
     refresh: "Refresh",
     language: "Language",
     tutorialStartTitle: "Let's Start!",
-    tutorialStartDescription: "Aim with your mouse and click to shoot a bubble.",
+    tutorialStartDescription:
+      "Aim with your mouse and click to shoot a bubble.",
     tutorialMatchTitle: "Match Colors",
-    tutorialMatchDescription: "Connect 3 or more bubbles of the same color to pop them.",
+    tutorialMatchDescription:
+      "Connect 3 or more bubbles of the same color to pop them.",
     tutorialItemsTitle: "Use Items",
-    tutorialItemsDescription: "Click the items at the bottom to use special abilities.",
+    tutorialItemsDescription:
+      "Click the items at the bottom to use special abilities.",
     tutorialDangerLineTitle: "Watch the Danger Line",
-    tutorialDangerLineDescription: "If the bubbles cross the red dotted line, the game is over!",
+    tutorialDangerLineDescription:
+      "If the bubbles cross the red dotted line, the game is over!",
     tutorialSkip: "Skip",
     tutorialNext: "Next",
     tutorialFinish: "Finish",
   },
   fr: {
-    gameTitle: "BeadsShooter",
+    gameTitle: "Lanceur de Billes en Verre",
     score: "Score",
     highScore: "Meilleur Score",
     level: "Niveau",
@@ -83,17 +89,20 @@ const translations = {
     cancel: "Annuler",
     menu: "MENU",
     chances: "CHANCES",
-    help: "AIDE",
+    help: "Aide",
     helpLine1: "Visez avec la souris et cliquez pour tirer.",
-    helpLine2: "Associez 3 bulles ou plus de la même couleur pour les faire éclater.",
+    helpLine2:
+      "Associez 3 bulles ou plus de la même couleur pour les faire éclater.",
     helpLine3: "Éliminez toutes les bulles pour passer au niveau suivant.",
     itemAim: "VISER",
     itemBomb: "BOMBE",
     itemAimActive: "VISÉE\nACTIVE",
     itemAimTitle: "Guide de visée",
-    itemAimDescription: "Affiche la trajectoire exacte de la bulle pendant un court instant. Regarder une publicité pour obtenir cet objet ?",
+    itemAimDescription:
+      "Affiche la trajectoire exacte de la bulle pendant un court instant. Regarder une publicité pour obtenir cet objet ?",
     itemBombTitle: "Bulle Bombe",
-    itemBombDescription: "Change la bulle actuelle en une bombe puissante. La bombe détruira les bulles voisines. Regarder une publicité pour obtenir cet objet ?",
+    itemBombDescription:
+      "Change la bulle actuelle en une bombe puissante. La bombe détruira les bulles voisines. Regarder une publicité pour obtenir cet objet ?",
     settings: "Paramètres",
     sound: "Son",
     masterVolume: "Volume Principal",
@@ -123,23 +132,28 @@ const translations = {
     adPlaceholder: "Publicité (démo) terminée avec succès !",
     scoreToNextLevel: "Prochain niveau dans {score} points",
     adblockTitle: "Adblock Détecté",
-    adblockMessage: "Veuillez désactiver adblock et actualiser pour utiliser les objets.",
+    adblockMessage:
+      "Veuillez désactiver adblock et actualiser pour utiliser les objets.",
     refresh: "Actualiser",
     language: "Langue",
     tutorialStartTitle: "Commençons !",
-    tutorialStartDescription: "Visez avec votre souris et cliquez pour tirer une bulle.",
+    tutorialStartDescription:
+      "Visez avec votre souris et cliquez pour tirer une bulle.",
     tutorialMatchTitle: "Associez les couleurs",
-    tutorialMatchDescription: "Connectez 3 bulles ou plus de la même couleur pour les faire éclater.",
+    tutorialMatchDescription:
+      "Connectez 3 bulles ou plus de la même couleur pour les faire éclater.",
     tutorialItemsTitle: "Utilisez les objets",
-    tutorialItemsDescription: "Cliquez sur les objets en bas pour utiliser des capacités spéciales.",
+    tutorialItemsDescription:
+      "Cliquez sur les objets en bas pour utiliser des capacités spéciales.",
     tutorialDangerLineTitle: "Attention à la ligne de danger",
-    tutorialDangerLineDescription: "Si les bulles franchissent la ligne pointillée rouge, la partie est terminée !",
+    tutorialDangerLineDescription:
+      "Si les bulles franchissent la ligne pointillée rouge, la partie est terminée !",
     tutorialSkip: "Passer",
     tutorialNext: "Suivant",
     tutorialFinish: "Terminer",
   },
   it: {
-    gameTitle: "BeadsShooter",
+    gameTitle: "Lanceur de Billes en Verre",
     score: "Punteggio",
     highScore: "Punteggio Massimo",
     level: "Livello",
@@ -151,7 +165,7 @@ const translations = {
     cancel: "Annulla",
     menu: "MENU",
     chances: "POSSIBILITÀ",
-    help: "AIUTO",
+    help: "Aiuto",
     helpLine1: "Mira con il mouse e clicca per sparare.",
     helpLine2: "Abbina 3 o più bolle dello stesso colore per scoppiarle.",
     helpLine3: "Elimina tutte le bolle per passare al livello successivo.",
@@ -159,9 +173,11 @@ const translations = {
     itemBomb: "BOMBA",
     itemAimActive: "MIRA\nATTIVA",
     itemAimTitle: "Guida alla mira",
-    itemAimDescription: "Mostra il percorso esatto della bolla per un breve periodo. Guardare un annuncio per ottenere questo oggetto?",
+    itemAimDescription:
+      "Mostra il percorso esatto della bolla per un breve periodo. Guardare un annuncio per ottenere questo oggetto?",
     itemBombTitle: "Bolla Bomba",
-    itemBombDescription: "Trasforma la bolla attuale in una potente bomba. La bomba distruggerà le bolle vicine. Guardare un annuncio per ottenere questo oggetto?",
+    itemBombDescription:
+      "Trasforma la bolla attuale in una potente bomba. La bomba distruggerà le bolle vicine. Guardare un annuncio per ottenere questo oggetto?",
     settings: "Impostazioni",
     sound: "Suono",
     masterVolume: "Volume Principale",
@@ -195,19 +211,23 @@ const translations = {
     refresh: "Aggiorna",
     language: "Lingua",
     tutorialStartTitle: "Iniziamo!",
-    tutorialStartDescription: "Mira con il mouse e clicca per sparare una bolla.",
+    tutorialStartDescription:
+      "Mira con il mouse e clicca per sparare una bolla.",
     tutorialMatchTitle: "Abbina i colori",
-    tutorialMatchDescription: "Collega 3 o più bolle dello stesso colore per scoppiarle.",
+    tutorialMatchDescription:
+      "Collega 3 o più bolle dello stesso colore per scoppiarle.",
     tutorialItemsTitle: "Usa gli oggetti",
-    tutorialItemsDescription: "Clicca sugli oggetti in basso per usare abilità speciali.",
+    tutorialItemsDescription:
+      "Clicca sugli oggetti in basso per usare abilità speciali.",
     tutorialDangerLineTitle: "Attenzione alla linea di pericolo",
-    tutorialDangerLineDescription: "Se le bolle superano la linea tratteggiata rossa, la partita è finita!",
+    tutorialDangerLineDescription:
+      "Se le bolle superano la linea tratteggiata rossa, la partita è finita!",
     tutorialSkip: "Salta",
     tutorialNext: "Avanti",
     tutorialFinish: "Fine",
   },
   de: {
-    gameTitle: "BeadsShooter",
+    gameTitle: "Glaskugel-Shooter",
     score: "Punktzahl",
     highScore: "Highscore",
     level: "Level",
@@ -219,17 +239,20 @@ const translations = {
     cancel: "Abbrechen",
     menu: "MENÜ",
     chances: "CHANCEN",
-    help: "HILFE",
+    help: "Hilfe",
     helpLine1: "Ziele mit der Maus und klicke, um zu schießen.",
-    helpLine2: "Kombiniere 3 oder mehr gleichfarbige Blasen, um sie platzen zu lassen.",
+    helpLine2:
+      "Kombiniere 3 oder mehr gleichfarbige Blasen, um sie platzen zu lassen.",
     helpLine3: "Entferne alle Blasen, um zum nächsten Level zu gelangen.",
     itemAim: "ZIELEN",
     itemBomb: "BOMBE",
     itemAimActive: "ZIELEN\nAKTIV",
     itemAimTitle: "Zielhilfe",
-    itemAimDescription: "Zeigt den genauen Weg der Blase für kurze Zeit. Werbung ansehen, um diesen Gegenstand zu erhalten?",
+    itemAimDescription:
+      "Zeigt den genauen Weg der Blase für kurze Zeit. Werbung ansehen, um diesen Gegenstand zu erhalten?",
     itemBombTitle: "Bombenblase",
-    itemBombDescription: "Verwandelt die aktuelle Blase in eine starke Bombe. Die Bombe zerstört nahegelegene Blasen. Werbung ansehen, um diesen Gegenstand zu erhalten?",
+    itemBombDescription:
+      "Verwandelt die aktuelle Blase in eine starke Bombe. Die Bombe zerstört nahegelegene Blasen. Werbung ansehen, um diesen Gegenstand zu erhalten?",
     settings: "Einstellungen",
     sound: "Ton",
     masterVolume: "Master-Lautstärke",
@@ -259,23 +282,28 @@ const translations = {
     adPlaceholder: "Werbung (Demo) erfolgreich abgeschlossen!",
     scoreToNextLevel: "Nächstes Level in {score} Punkten",
     adblockTitle: "Adblock Entdeckt",
-    adblockMessage: "Bitte deaktiviere Adblock und aktualisiere, um Gegenstände zu verwenden.",
+    adblockMessage:
+      "Bitte deaktiviere Adblock und aktualisiere, um Gegenstände zu verwenden.",
     refresh: "Aktualisieren",
     language: "Sprache",
     tutorialStartTitle: "Fangen wir an!",
-    tutorialStartDescription: "Ziele mit der Maus und klicke, um eine Blase zu schießen.",
+    tutorialStartDescription:
+      "Ziele mit der Maus und klicke, um eine Blase zu schießen.",
     tutorialMatchTitle: "Farben kombinieren",
-    tutorialMatchDescription: "Verbinde 3 oder mehr gleichfarbige Blasen, um sie platzen zu lassen.",
+    tutorialMatchDescription:
+      "Verbinde 3 oder mehr gleichfarbige Blasen, um sie platzen zu lassen.",
     tutorialItemsTitle: "Gegenstände benutzen",
-    tutorialItemsDescription: "Klicke auf die Gegenstände unten, um Spezialfähigkeiten zu nutzen.",
+    tutorialItemsDescription:
+      "Klicke auf die Gegenstände unten, um Spezialfähigkeiten zu nutzen.",
     tutorialDangerLineTitle: "Achte auf die Gefahrenlinie",
-    tutorialDangerLineDescription: "Wenn die Blasen die rot gestrichelte Linie überqueren, ist das Spiel vorbei!",
+    tutorialDangerLineDescription:
+      "Wenn die Blasen die rot gestrichelte Linie überqueren, ist das Spiel vorbei!",
     tutorialSkip: "Überspringen",
     tutorialNext: "Weiter",
     tutorialFinish: "Fertig",
   },
   es: {
-    gameTitle: "BeadsShooter",
+    gameTitle: "Disparador de Bolas de Cristal",
     score: "Puntuación",
     highScore: "Puntuación Más Alta",
     level: "Nivel",
@@ -287,7 +315,7 @@ const translations = {
     cancel: "Cancelar",
     menu: "MENÚ",
     chances: "OPORTUNIDADES",
-    help: "AYUDA",
+    help: "Ayuda",
     helpLine1: "Apunta con el ratón y haz clic para disparar.",
     helpLine2: "Combina 3 o más burbujas del mismo color para reventarlas.",
     helpLine3: "Elimina todas las burbujas para avanzar al siguiente nivel.",
@@ -295,9 +323,11 @@ const translations = {
     itemBomb: "BOMBA",
     itemAimActive: "APUNTAR\nACTIVO",
     itemAimTitle: "Guía de Puntería",
-    itemAimDescription: "Muestra la trayectoria exacta de la burbuja por un corto tiempo. ¿Ver un anuncio para obtener este objeto?",
+    itemAimDescription:
+      "Muestra la trayectoria exacta de la burbuja por un corto tiempo. ¿Ver un anuncio para obtener este objeto?",
     itemBombTitle: "Burbuja Bomba",
-    itemBombDescription: "Cambia la burbuja actual por una bomba poderosa. La bomba destruirá las burbujas cercanas. ¿Ver un anuncio para obtener este objeto?",
+    itemBombDescription:
+      "Cambia la burbuja actual por una bomba poderosa. La bomba destruirá las burbujas cercanas. ¿Ver un anuncio para obtener este objeto?",
     settings: "Ajustes",
     sound: "Sonido",
     masterVolume: "Volumen Principal",
@@ -327,17 +357,22 @@ const translations = {
     adPlaceholder: "¡Anuncio (demo) completado con éxito!",
     scoreToNextLevel: "Siguiente nivel en {score} puntos",
     adblockTitle: "Adblock Detectado",
-    adblockMessage: "Por favor, deshabilita adblock y actualiza para usar los objetos.",
+    adblockMessage:
+      "Por favor, deshabilita adblock y actualiza para usar los objetos.",
     refresh: "Actualizar",
     language: "Idioma",
     tutorialStartTitle: "¡Empecemos!",
-    tutorialStartDescription: "Apunta con el ratón y haz clic para disparar una burbuja.",
+    tutorialStartDescription:
+      "Apunta con el ratón y haz clic para disparar una burbuja.",
     tutorialMatchTitle: "Combina colores",
-    tutorialMatchDescription: "Conecta 3 o más burbujas del mismo color para reventarlas.",
+    tutorialMatchDescription:
+      "Conecta 3 o más burbujas del mismo color para reventarlas.",
     tutorialItemsTitle: "Usa objetos",
-    tutorialItemsDescription: "Haz clic en los objetos de abajo para usar habilidades especiales.",
+    tutorialItemsDescription:
+      "Haz clic en los objetos de abajo para usar habilidades especiales.",
     tutorialDangerLineTitle: "Cuidado con la línea de peligro",
-    tutorialDangerLineDescription: "Si las burbujas cruzan la línea de puntos roja, ¡el juego termina!",
+    tutorialDangerLineDescription:
+      "Si las burbujas cruzan la línea de puntos roja, ¡el juego termina!",
     tutorialSkip: "Saltar",
     tutorialNext: "Siguiente",
     tutorialFinish: "Finalizar",
@@ -365,7 +400,8 @@ const translations = {
     itemAimTitle: "瞄准指南",
     itemAimDescription: "短时间内显示泡泡的精确路径。观看广告以获得此物品？",
     itemBombTitle: "炸弹泡泡",
-    itemBombDescription: "将当前泡泡变成一个强大的炸弹。炸弹会摧毁附近的泡泡。观看广告以获得此物品？",
+    itemBombDescription:
+      "将当前泡泡变成一个强大的炸弹。炸弹会摧毁附近的泡泡。观看广告以获得此物品？",
     settings: "设置",
     sound: "声音",
     masterVolume: "主音量",
@@ -431,9 +467,11 @@ const translations = {
     itemBomb: "爆弾",
     itemAimActive: "照準\n有効",
     itemAimTitle: "照準ガイド",
-    itemAimDescription: "短時間、バブルの正確な軌道を表示します。広告を見てこのアイテムを入手しますか？",
+    itemAimDescription:
+      "短時間、バブルの正確な軌道を表示します。広告を見てこのアイテムを入手しますか？",
     itemBombTitle: "爆弾バブル",
-    itemBombDescription: "現在のバブルを強力な爆弾に変えます。爆弾は近くのバブルを破壊します。広告を見てこのアイテムを入手しますか？",
+    itemBombDescription:
+      "現在のバブルを強力な爆弾に変えます。爆弾は近くのバブルを破壊します。広告を見てこのアイテムを入手しますか？",
     settings: "設定",
     sound: "サウンド",
     masterVolume: "マスター音量",
@@ -463,23 +501,27 @@ const translations = {
     adPlaceholder: "広告（デモ）が正常に完了しました！",
     scoreToNextLevel: "次のレベルまであと{score}ポイント",
     adblockTitle: "広告ブロッカーが検出されました",
-    adblockMessage: "アイテムを使用するには、広告ブロッカーを無効にして更新してください。",
+    adblockMessage:
+      "アイテムを使用するには、広告ブロッカーを無効にして更新してください。",
     refresh: "更新",
     language: "言語",
     tutorialStartTitle: "始めましょう！",
-    tutorialStartDescription: "マウスで狙いを定めてクリックし、バブルを発射します。",
+    tutorialStartDescription:
+      "マウスで狙いを定めてクリックし、バブルを発射します。",
     tutorialMatchTitle: "色を合わせる",
     tutorialMatchDescription: "同じ色のバブルを3つ以上つなげて消します。",
     tutorialItemsTitle: "アイテムを使用する",
-    tutorialItemsDescription: "下部のアイテムをクリックして特殊能力を使用します。",
+    tutorialItemsDescription:
+      "下部のアイテムをクリックして特殊能力を使用します。",
     tutorialDangerLineTitle: "危険なラインに注意",
-    tutorialDangerLineDescription: "バブルが赤い点線を越えるとゲームオーバーです！",
+    tutorialDangerLineDescription:
+      "バブルが赤い点線を越えるとゲームオーバーです！",
     tutorialSkip: "スキップ",
     tutorialNext: "次へ",
     tutorialFinish: "終了",
   },
   ko: {
-    gameTitle: "BeadsShooter",
+    gameTitle: "비즈 슈터",
     score: "점수",
     highScore: "최고 점수",
     level: "레벨",
@@ -499,9 +541,11 @@ const translations = {
     itemBomb: "폭탄",
     itemAimActive: "조준\n활성",
     itemAimTitle: "조준 가이드",
-    itemAimDescription: "짧은 시간 동안 버블의 정확한 경로를 보여줍니다. 광고를 보고 이 아이템을 얻으시겠습니까?",
+    itemAimDescription:
+      "짧은 시간 동안 버블의 정확한 경로를 보여줍니다. 광고를 보고 이 아이템을 얻으시겠습니까?",
     itemBombTitle: "폭탄 버블",
-    itemBombDescription: "현재 버블을 강력한 폭탄으로 바꿉니다. 폭탄은 주변 버블을 파괴합니다. 광고를 보고 이 아이템을 얻으시겠습니까?",
+    itemBombDescription:
+      "현재 버블을 강력한 폭탄으로 바꿉니다. 폭탄은 주변 버블을 파괴합니다. 광고를 보고 이 아이템을 얻으시겠습니까?",
     settings: "설정",
     sound: "사운드",
     masterVolume: "마스터 볼륨",
@@ -531,7 +575,8 @@ const translations = {
     adPlaceholder: "광고(데모)가 성공적으로 완료되었습니다!",
     scoreToNextLevel: "{score}점 후 다음 레벨",
     adblockTitle: "애드블록 감지됨",
-    adblockMessage: "아이템을 사용하려면 애드블록을 비활성화하고 새로고침하세요.",
+    adblockMessage:
+      "아이템을 사용하려면 애드블록을 비활성화하고 새로고침하세요.",
     refresh: "새로고침",
     language: "언어",
     tutorialStartTitle: "시작합시다!",
@@ -541,7 +586,8 @@ const translations = {
     tutorialItemsTitle: "아이템 사용하기",
     tutorialItemsDescription: "아래 아이템을 클릭하여 특수 능력을 사용하세요.",
     tutorialDangerLineTitle: "데인저 라인을 조심하세요",
-    tutorialDangerLineDescription: "버블이 빨간 점선을 넘으면 게임이 종료됩니다!",
+    tutorialDangerLineDescription:
+      "버블이 빨간 점선을 넘으면 게임이 종료됩니다!",
     tutorialSkip: "건너뛰기",
     tutorialNext: "다음",
     tutorialFinish: "완료",
@@ -554,7 +600,7 @@ const languageChangeListeners = [];
 export function setLanguage(lang) {
   if (translations[lang]) {
     currentLanguage = lang;
-    languageChangeListeners.forEach(listener => listener(lang));
+    languageChangeListeners.forEach((listener) => listener(lang));
   } else {
     console.warn(`Language '${lang}' not found. Falling back to English.`);
     currentLanguage = "en";
@@ -571,5 +617,5 @@ export function getLocalizedString(key, replacements = {}) {
 }
 
 export function onLanguageChange(listener) {
-    languageChangeListeners.push(listener);
+  languageChangeListeners.push(listener);
 }

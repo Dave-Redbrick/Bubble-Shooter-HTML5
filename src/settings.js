@@ -72,9 +72,10 @@ export class SettingsManager {
         
         <div class="settings-body">
           <div class="setting-group">
-            <h3>${getLocalizedString("language")}</h3>
             <div class="setting-item">
-              <label>${getLocalizedString("language")}</label>
+              <label style="font-size: 1.17em; font-weight: bold;">${getLocalizedString(
+                "language"
+              )}</label>
               <select id="language">
                 <option value="en" ${
                   this.settings.language === "en" ? "selected" : ""
@@ -220,7 +221,9 @@ export class SettingsManager {
 
   setupModalEvents() {
     const closeModal = () => this.closeModal();
-    this.modal.querySelectorAll(".modal-close").forEach(btn => btn.addEventListener("click", closeModal));
+    this.modal
+      .querySelectorAll(".modal-close")
+      .forEach((btn) => btn.addEventListener("click", closeModal));
 
     this.modal.addEventListener("click", (e) => {
       if (e.target === this.modal) {
@@ -236,35 +239,37 @@ export class SettingsManager {
     });
 
     const sliders = this.modal.querySelectorAll('input[type="range"]');
-    sliders.forEach(slider => {
-        slider.addEventListener('input', (e) => {
-            const valueSpan = e.target.parentElement.nextElementSibling;
-            valueSpan.textContent = `${Math.round(e.target.value * 100)}%`;
-            this.settings[e.target.id] = parseFloat(e.target.value);
-            this.saveSettings();
-        });
+    sliders.forEach((slider) => {
+      slider.addEventListener("input", (e) => {
+        const valueSpan = e.target.parentElement.nextElementSibling;
+        valueSpan.textContent = `${Math.round(e.target.value * 100)}%`;
+        this.settings[e.target.id] = parseFloat(e.target.value);
+        this.saveSettings();
+      });
     });
 
-    const selects = this.modal.querySelectorAll('select');
-    selects.forEach(select => {
-        if(select.id === 'language') return;
-        select.addEventListener('change', (e) => {
-            this.settings[e.target.id] = e.target.value;
-            this.saveSettings();
-        });
+    const selects = this.modal.querySelectorAll("select");
+    selects.forEach((select) => {
+      if (select.id === "language") return;
+      select.addEventListener("change", (e) => {
+        this.settings[e.target.id] = e.target.value;
+        this.saveSettings();
+      });
     });
 
     const checkboxes = this.modal.querySelectorAll('input[type="checkbox"]');
-    checkboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', (e) => {
-            this.settings[e.target.id] = e.target.checked;
-            this.saveSettings();
-        });
+    checkboxes.forEach((checkbox) => {
+      checkbox.addEventListener("change", (e) => {
+        this.settings[e.target.id] = e.target.checked;
+        this.saveSettings();
+      });
     });
 
-    this.modal.querySelector(".settings-reset").addEventListener("click", () => {
+    this.modal
+      .querySelector(".settings-reset")
+      .addEventListener("click", () => {
         this.resetSettings();
-    });
+      });
   }
 
   resetSettings() {
