@@ -60,15 +60,22 @@ export function getLevelConfig(canvas) {
   const availableHeight = deadlineY - topMargin;
 
   const rowHeight = availableHeight / PREFERRED_ROWS;
-  const tileHeight = rowHeight / 0.866;
-  const tileWidth = tileHeight;
+  const tileHeightFromHeight = rowHeight / 0.866; // 0.866 is sin(60deg) for hex grid
+
+  // Calculate tile width based on canvas width as well
+  const tileWidthFromWidth = canvas.width / (baseConfig.COLUMNS + 0.5);
+
+  // Use the smaller of the two to ensure the grid fits both vertically and horizontally
+  const tileWidth = Math.min(tileHeightFromHeight, tileWidthFromWidth);
+  const tileHeight = tileWidth; // Keep bubbles circular
+  const rowHeight = tileHeight * 0.866; // Recalculate rowHeight based on the final tileHeight
   const radius = tileWidth / 2;
 
   const dynamicConfig = {
     ...baseConfig,
     TILE_WIDTH: tileWidth,
     TILE_HEIGHT: tileHeight,
-    ROW_HEIGHT: rowHeight,
+    ROW_HEIGHT: rowHeight, // Use the recalculated rowHeight
     RADIUS: radius,
   };
 

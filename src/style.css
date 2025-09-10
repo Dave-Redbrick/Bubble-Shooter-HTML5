@@ -844,15 +844,17 @@ input[type="range"]::-moz-range-thumb {
   }
 
   .right-sidebar {
-    position: relative; /* absolute 해제 */
+    position: relative;
     flex-direction: row;
     justify-content: space-around;
     align-items: center;
     width: 100%;
-    /* bottom, top, left, right 속성 제거됨 */
-    border-radius: 15px 15px 0 0; /* 상단 모서리만 둥글게 */
-    padding: 8px; /* 패딩 약간 줄임 */
+    border-radius: 15px 15px 0 0;
+    padding: 8px;
     gap: 8px;
+    background: linear-gradient(145deg, #ff79c6, #e06ab6);
+    border-top: 2px solid rgba(255, 255, 255, 0.7);
+    box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.2);
   }
 
   .high-score-box {
@@ -869,6 +871,15 @@ input[type="range"]::-moz-range-thumb {
 
   .help-section {
     display: none;
+  }
+
+  /* Make buttons inside the bottom bar transparent to blend in */
+  .score-box,
+  .high-score-box,
+  .menu-button {
+    background: transparent;
+    border: none;
+    box-shadow: none;
   }
 }
 
