@@ -242,29 +242,48 @@ export class UIManager {
     this.elements.modal.style.display = "flex";
   }
 
-  // 반응형 캔버스 크기 조정 - 컨테이너에 꽉 채우기
+  // 반응형 캔버스 크기 조정 - 화면 비율을 유지하며 컨테이너에 맞춤
   resizeCanvas() {
     const canvas = this.elements.canvas;
-    const container = document.querySelector('.game-area');
+    const container = document.querySelector(".game-area");
+    const canvasContainer = this.elements.canvasContainer;
 
-    if (!container || !canvas) return;
+    if (!container || !canvas || !canvasContainer) return;
 
-    const newWidth = container.clientWidth;
-    const newHeight = container.clientHeight;
+    const containerWidth = container.clientWidth;
+    const containerHeight = container.clientHeight;
 
-    // 캔버스의 내부 해상도를 컨테이너 크기와 일치시킴
-    // 크기가 변경되었을 때만 게임 로직에 알림
+    // 게임의 기본 가로세로 비율(9:16)
+    const ASPECT_RATIO = 9 / 16;
+
+    let newWidth;
+    let newHeight;
+
+    // 가로세로 비율에 따라 새 차원 계산
+    if (containerWidth / containerHeight > ASPECT_RATIO) {
+      // 컨테이너가 게임 가로세로 비율보다 넓으므로 높이가 제한 요소임
+      newHeight = containerHeight;
+      newWidth = newHeight * ASPECT_RATIO;
+    } else {
+      // 컨테이너가 게임 가로세로 비율보다 높거나 같으므로 너비가 제한 요소임
+      newWidth = containerWidth;
+      newHeight = newWidth / ASPECT_RATIO;
+    }
+
+    // 레이아웃을 위해 캔버스 컨테이너에 크기 적용
+    canvasContainer.style.width = `${newWidth}px`;
+    canvasContainer.style.height = `${newHeight}px`;
+
+    // 캔버스 해상도 업데이트
     if (canvas.width !== newWidth || canvas.height !== newHeight) {
       canvas.width = newWidth;
       canvas.height = newHeight;
 
-      // 캔버스 크기가 변경되었으므로 게임에 알려서 내부 요소들을 재배치하도록 함
       if (this.game && typeof this.game.handleResize === "function") {
         this.game.handleResize();
       }
     }
 
-    // 디바이스 타입 변경 감지 로직은 유지
     const newDeviceType = getDeviceType();
     if (newDeviceType !== this.currentDeviceType) {
       this.currentDeviceType = newDeviceType;
