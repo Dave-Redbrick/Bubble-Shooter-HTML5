@@ -6,6 +6,7 @@ export class UIManager {
   constructor(game) {
     this.game = game;
     this.currentDeviceType = getDeviceType();
+    this.adblockEnabled = false;
     this.initializeElements();
     this.setupEventListeners();
   }
@@ -213,6 +214,39 @@ export class UIManager {
     this.game.resumeGame();
   }
 
+  showAdblockerModal() {
+    this.elements.modalTitle.textContent = getLocalizedString("adblockTitle");
+    this.elements.modalText.textContent = getLocalizedString("adblockMessage");
+    this.elements.modalConfirmButton.textContent = getLocalizedString("refresh");
+    this.elements.modalCloseButton.textContent = getLocalizedString("close");
+
+    const newConfirmButton = this.elements.modalConfirmButton.cloneNode(true);
+    this.elements.modalConfirmButton.parentNode.replaceChild(
+      newConfirmButton,
+      this.elements.modalConfirmButton
+    );
+    this.elements.modalConfirmButton = newConfirmButton;
+
+    const refresh = () => {
+      location.reload();
+    };
+    newConfirmButton.addEventListener("click", refresh, { once: true });
+
+    const newCloseButton = this.elements.modalCloseButton.cloneNode(true);
+    this.elements.modalCloseButton.parentNode.replaceChild(
+      newCloseButton,
+      this.elements.modalCloseButton
+    );
+    this.elements.modalCloseButton = newCloseButton;
+
+    const justHide = () => {
+      this.elements.modal.style.display = "none";
+    };
+    newCloseButton.addEventListener("click", justHide, { once: true });
+
+    this.elements.modal.style.display = "flex";
+  }
+
   // 반응형 캔버스 크기 조정 - 컨테이너에 꽉 채우기
   resizeCanvas() {
     const canvas = this.elements.canvas;
@@ -293,6 +327,20 @@ export class UIManager {
       }
       container.appendChild(pip);
     }
+  }
+
+  setAdblockDetected() {
+    this.adblockEnabled = true;
+  }
+
+  disableItemButtons() {
+    this.elements.itemSlotAim.classList.add('disabled');
+    this.elements.itemSlotBomb.classList.add('disabled');
+  }
+
+  enableItemButtons() {
+    this.elements.itemSlotAim.classList.remove('disabled');
+    this.elements.itemSlotBomb.classList.remove('disabled');
   }
 
   // Show daily challenge notification

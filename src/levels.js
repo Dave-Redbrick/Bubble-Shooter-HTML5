@@ -48,7 +48,7 @@ export class LevelManager {
   // 랜덤 버블 패턴 생성
   createRandomLevel() {
     const levelData = this.game.levelData;
-    const currentLevel = this.calculateLevelFromScore(this.game.score);
+    // const currentLevel = this.calculateLevelFromScore(this.game.score);
 
     // 항상 7가지 색상을 사용
     const maxColors = 7;
@@ -62,11 +62,8 @@ export class LevelManager {
       }
     }
 
-    // 상위 절반에 랜덤 버블 생성
-    const fillRows = Math.min(
-      5 + Math.floor(currentLevel / 5),
-      Math.floor(levelData.rows * 0.6)
-    );
+    // 상위 1/3에 랜덤 버블 생성
+    const fillRows = Math.floor(levelData.rows / 3);
 
     for (let j = 0; j < fillRows; j++) {
       for (let i = 0; i < levelData.columns; i++) {

@@ -1,12 +1,48 @@
 import { BubbleShooterGame } from "./game.js";
 import { UIManager } from "./ui.js";
 
-window.onload = function () {
+// for CrazyGames local testing
+// (function ensureUseLocalSdk() {
+//   const url = new URL(window.location.href);
+//   if (!url.searchParams.has("useLocalSdk")) {
+//     url.searchParams.set("useLocalSdk", "true");
+//     window.location.replace(url.toString());
+//   }
+// })();
+
+async function init() {
+  try {
+    const user = await window.CrazyGames.SDK.user.getUser();
+    return user;
+  } catch (e) {
+    console.log("Get user error: ", e);
+  }
+}
+
+window.onload = async function () {
+  const loading = document.getElementById("rb-loading");
+
+  await window.CrazyGames.SDK.init();
+  window.CrazyGames.SDK.game.loadingStart();
+  const user = await init();
+  loading.style.display = "none";
+  window.CrazyGames.SDK.game.loadingStop();
+
   const canvas = document.getElementById("viewport");
   const context = canvas.getContext("2d");
 
-  const game = new BubbleShooterGame(canvas, context);
+  const game = new BubbleShooterGame(canvas, context, user);
   const ui = new UIManager(game);
+
+  try {
+    const result = await window.CrazyGames.SDK.ad.hasAdblock();
+    console.log("Adblock usage fetched", result);
+    if (result) {
+      ui.setAdblockDetected();
+    }
+  } catch (e) {
+    console.error("Error checking for adblock:", e);
+  }
 
   // UI 매니저를 게임에 연결
   game.ui = ui;

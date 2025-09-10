@@ -1,4 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Varela+Round&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@600;900&display=swap");
 
 * {
   margin: 0;
@@ -13,6 +14,11 @@ body {
   height: 100vh;
   width: 100vw;
   background: linear-gradient(45deg, #2c003e, #5a189a, #9d4edd);
+  /* Prevent text selection which can be distracting during gameplay */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 .game-container {
@@ -283,6 +289,13 @@ body {
   text-align: center;
 }
 
+.menu-content,
+.settings-content {
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+}
+
 /* --- Refactored Modal Styles --- */
 
 /* Generic Modal Structure */
@@ -406,12 +419,21 @@ body {
   font-weight: bold;
 }
 
+/* --- Generic Modal Body/List for Scrolling --- */
+.menu-body,
+.settings-body,
+.stats-body,
+.achievements-list,
+.leaderboard-list {
+  flex-grow: 1; /* Allow body to fill available space */
+  overflow-y: auto; /* Add scrollbar if content overflows */
+  padding-right: 10px; /* Space for scrollbar */
+  text-align: left;
+}
+
 /* --- Achievements Modal Specifics --- */
 .achievements-list {
   max-height: 300px;
-  overflow-y: auto;
-  padding-right: 10px;
-  text-align: left;
 }
 .achievement-item {
   display: flex;
@@ -441,18 +463,34 @@ body {
   font-size: 14px;
   opacity: 0.8;
 }
-.achievements-list::-webkit-scrollbar {
+.menu-body::-webkit-scrollbar,
+.settings-body::-webkit-scrollbar,
+.stats-body::-webkit-scrollbar,
+.achievements-list::-webkit-scrollbar,
+.leaderboard-list::-webkit-scrollbar {
   width: 8px;
 }
-.achievements-list::-webkit-scrollbar-track {
+.menu-body::-webkit-scrollbar-track,
+.settings-body::-webkit-scrollbar-track,
+.stats-body::-webkit-scrollbar-track,
+.achievements-list::-webkit-scrollbar-track,
+.leaderboard-list::-webkit-scrollbar-track {
   background: rgba(0, 0, 0, 0.1);
   border-radius: 10px;
 }
-.achievements-list::-webkit-scrollbar-thumb {
+.menu-body::-webkit-scrollbar-thumb,
+.settings-body::-webkit-scrollbar-thumb,
+.stats-body::-webkit-scrollbar-thumb,
+.achievements-list::-webkit-scrollbar-thumb,
+.leaderboard-list::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.4);
   border-radius: 10px;
 }
-.achievements-list::-webkit-scrollbar-thumb:hover {
+.menu-body::-webkit-scrollbar-thumb:hover,
+.settings-body::-webkit-scrollbar-thumb:hover,
+.stats-body::-webkit-scrollbar-thumb:hover,
+.achievements-list::-webkit-scrollbar-thumb:hover,
+.leaderboard-list::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.6);
 }
 
@@ -462,6 +500,8 @@ body {
   flex-direction: column;
   gap: 20px;
   text-align: left;
+  overflow-y: auto; /* 내용이 많을 경우 스크롤 생성 */
+  padding-right: 15px; /* 스크롤바 공간 확보 */
 }
 .setting-group {
   background: rgba(0, 0, 0, 0.1);
@@ -613,7 +653,7 @@ input[type="range"]::-moz-range-thumb {
 
 /* --- Stats Modal Specifics --- */
 .stats-body {
-  text-align: left;
+  /* text-align is now handled by the generic rule */
 }
 .stats-grid {
   display: grid;
@@ -884,11 +924,171 @@ input[type="range"]::-moz-range-thumb {
 }
 
 /* 사운드 활성화를 위한 오버레이 */
-.sound-activation-overlay {
+#sound-activation-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  z-index: 9999; /* 다른 모든 요소 위에 오도록 설정 */
+  z-index: 9998; /* 다른 모든 요소 위에 오도록 설정 */
+}
+
+/* 로딩 전체 랩퍼 */
+#rb-loading {
+  width: 100vw;
+  height: 100vh;
+  background: #232323;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  padding: 0 2vw;
+  box-sizing: border-box;
+}
+
+/* 보조 문구 */
+.rb-powered-label {
+  font-family: "Inter", sans-serif;
+  font-size: clamp(1.2rem, 3vw, 1.4rem);
+  color: #e0e0e0;
+  opacity: 0.62;
+  letter-spacing: 0.18em;
+  font-weight: 600;
+  margin-bottom: clamp(24px, 4vh, 32px);
+  text-align: center;
+}
+
+/* 로고+텍스트 컨테이너 */
+.rb-center-row {
+  display: inline-flex;
+  align-items: center;
+  gap: clamp(16px, 2.5vw, 24px);
+  font-size: clamp(3rem, 8vw, 5rem);
+  position: relative;
+  transform-origin: center center;
+  /* 뷰포트 변화에 따라 함께 크기 조절 */
+}
+
+/* SVG 로고: font-size 기준으로 크기 조정 */
+.rb-logo svg {
+  height: 1em; /* .rb-center-row font-size 기준 */
+  width: auto;
+}
+
+/* 텍스트 래퍼 */
+.rb-text-wrapper {
+  position: relative;
+  line-height: 1;
+}
+
+/* 기본 텍스트 및 shine 텍스트 */
+.rb-text-wrapper .base,
+.rb-text-wrapper .shine {
+  font-family: "Inter", sans-serif;
+  font-size: 1em; /* .rb-center-row font-size 기준 */
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  margin: 0;
+  padding: 0;
+  display: block;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* 기본 텍스트 (회색) */
+.rb-text-wrapper .base {
+  color: #aaaaaa;
+}
+
+/* shine 텍스트 (위에 겹침) */
+.rb-text-wrapper .shine {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  -webkit-text-fill-color: transparent;
+  background: linear-gradient(
+      -45deg,
+      transparent 30%,
+      #ffffff 45%,
+      #ffffff 55%,
+      transparent 70%
+    )
+    0 0 no-repeat;
+  background-size: 200% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: rb-shine-anim 3s ease-in-out infinite;
+}
+
+@keyframes rb-shine-anim {
+  0% {
+    background-position: 200% 0;
+  }
+  50% {
+    background-position: -100% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* 하단 로딩 dots */
+.rb-dots-loading {
+  margin-top: clamp(32px, 6vh, 48px);
+  display: flex;
+  gap: clamp(0.8em, 2vw, 1em);
+  justify-content: center;
+}
+.rb-dots-loading span {
+  width: clamp(1em, 2.5vw, 1.2em);
+  height: clamp(1em, 2.5vw, 1.2em);
+  background: #fff;
+  border-radius: 50%;
+  opacity: 0.16;
+  animation: dotsfade 1s infinite;
+}
+.rb-dots-loading span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.rb-dots-loading span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes dotsfade {
+  0%,
+  80%,
+  100% {
+    opacity: 0.16;
+  }
+  40% {
+    opacity: 1;
+  }
+}
+
+/* 반응형: 화면 작아질수록 font-size 줄어듦 */
+@media (max-width: 768px) {
+  .rb-center-row {
+    font-size: clamp(2.5rem, 12vw, 4rem);
+  }
+}
+
+@media (max-width: 480px) {
+  .rb-powered-label {
+    font-size: clamp(1rem, 4vw, 1.2rem);
+    margin-bottom: clamp(20px, 8vh, 32px);
+  }
+  .rb-center-row {
+    font-size: clamp(2rem, 16vw, 3rem);
+    flex-direction: column;
+    gap: clamp(12px, 4vh, 20px);
+  }
+  .rb-text-wrapper .base,
+  .rb-text-wrapper .shine {
+    white-space: normal;
+    text-align: center;
+  }
 }

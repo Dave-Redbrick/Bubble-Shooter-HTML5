@@ -12,16 +12,13 @@ import { ClusterManager } from "./cluster.js";
 import { ParticleSystem } from "./particles.js";
 import { LevelManager } from "./levels.js";
 import { PowerUpManager } from "./powerups.js";
-import { AchievementManager } from "./achievements.js";
 import { EffectsManager } from "./effects.js";
 import { SoundManager } from "./sound.js";
 import { ComboManager } from "./combo.js";
 import { TutorialManager } from "./tutorial.js";
 import { SettingsManager } from "./settings.js";
-import { StatisticsManager } from "./statistics.js";
 import { MenuManager } from "./menu.js";
-import { LeaderboardManager } from "./leaderboard.js";
-import { DailyChallengeManager } from "./dailychallenge.js";
+// import { LeaderboardManager } from "./leaderboard.js";
 
 export class Tile {
   constructor(x, y, type, shift = 0) {
@@ -42,9 +39,10 @@ export class Tile {
 }
 
 export class BubbleShooterGame {
-  constructor(canvas, context) {
+  constructor(canvas, context, user) {
     this.canvas = canvas;
     this.context = context;
+    this.user = user;
     this.initialized = false;
     this.ui = null;
 
@@ -59,7 +57,8 @@ export class BubbleShooterGame {
     this.previousGameState = null;
     this.score = 0;
     this.highScore = parseInt(
-      localStorage.getItem("bubbleShooterHighScore") || "0"
+      // localStorage.getItem("bubbleShooterHighScore") || "0"
+      window.CrazyGames.SDK.data.getItem("beadsShooterHighScore") || "0"
     );
     this.currentLevel = 1;
     this.rowOffset = 0;
@@ -83,16 +82,18 @@ export class BubbleShooterGame {
     this.precisionAimActive = false;
     this.slowMotionActive = false;
 
+    this.hasHappytime = false;
+
     // Items
     this.items = {
       aimGuide: {
-        available: 3,
+        available: 1,
         active: false,
-        duration: 10000,
+        duration: 10 * 1e3,
         startTime: 0,
       },
       bombBubble: {
-        available: 3,
+        available: 1,
       },
     };
 
@@ -116,6 +117,7 @@ export class BubbleShooterGame {
       tileHeight: levelConfig.TILE_HEIGHT,
       rowHeight: levelConfig.ROW_HEIGHT,
       radius: levelConfig.RADIUS,
+      deadlineY: levelConfig.deadlineY,
       tiles: [],
     };
 
@@ -134,7 +136,7 @@ export class BubbleShooterGame {
         this.levelData.width / 2 -
         this.levelData.tileWidth / 2,
       // 캔버스 하단 기준으로 발사대 위치 조정
-      y: this.canvas.height - 150,
+      y: this.canvas.height * 0.86,
       angle: 90,
       tileType: 0,
       isBomb: false,
@@ -171,25 +173,22 @@ export class BubbleShooterGame {
     this.particles = new ParticleSystem(this);
     this.levelManager = new LevelManager(this);
     this.powerUps = new PowerUpManager(this);
-    this.achievements = new AchievementManager(this);
     this.effects = new EffectsManager(this);
     this.combo = new ComboManager(this);
     this.tutorial = new TutorialManager(this);
     this.settings = new SettingsManager(this);
-    this.statistics = new StatisticsManager(this);
     this.menu = new MenuManager(this);
-    this.leaderboard = new LeaderboardManager(this);
-    this.dailyChallenge = new DailyChallengeManager(this);
+    // this.leaderboard = new LeaderboardManager(this);
 
     await this.sound.initialize();
 
     this.canvas.addEventListener("mousemove", (e) => this.input.onMouseMove(e));
     this.canvas.addEventListener("mousedown", (e) => this.input.onMouseDown(e));
 
-    // 사운드 활성화를 위한 전체 화면 오버레이 생성
-    const soundActivationOverlay = document.createElement("div");
-    soundActivationOverlay.className = "sound-activation-overlay";
-    document.body.appendChild(soundActivationOverlay);
+    // 사운드 활성화를 위한 전체 화면 오버레이
+    const soundActivationOverlay = document.getElementById(
+      "sound-activation-overlay"
+    );
 
     const activateSound = () => {
       if (
@@ -204,39 +203,44 @@ export class BubbleShooterGame {
       soundActivationOverlay.remove();
     };
 
-    soundActivationOverlay.addEventListener("click", activateSound, {
-      once: true,
-    });
+    soundActivationOverlay.addEventListener(
+      "click",
+      () => {
+        activateSound();
+        window.CrazyGames.SDK.game.gameplayStart();
+      },
+      { once: true }
+    );
 
     // 키보드 이벤트 추가
-    document.addEventListener("keydown", (e) => this.handleKeyDown(e));
+    // document.addEventListener("keydown", (e) => {this.handleKeyDown(e)});
   }
 
-  handleKeyDown(e) {
-    switch (e.key) {
-      case "Escape":
-        if (this.gameState === CONFIG.GAME_STATES.READY) {
-          this.menu.showMainMenu();
-        }
-        break;
-      case "1":
-        this.useItem("aim");
-        break;
-      case "2":
-        this.useItem("bomb");
-        break;
-      case "r":
-      case "R":
-        if (this.gameState === CONFIG.GAME_STATES.GAME_OVER) {
-          this.newGame();
-        }
-        break;
-      case "p":
-      case "P":
-        this.togglePause();
-        break;
-    }
-  }
+  // handleKeyDown(e) {
+  //   switch (e.key) {
+  //     case "Escape":
+  //       if (this.gameState === CONFIG.GAME_STATES.READY) {
+  //         this.menu.showMainMenu();
+  //       }
+  //       break;
+  //     case "1":
+  //       this.useItem("aim");
+  //       break;
+  //     case "2":
+  //       this.useItem("bomb");
+  //       break;
+  //     case "r":
+  //     case "R":
+  //       if (this.gameState === CONFIG.GAME_STATES.GAME_OVER) {
+  //         this.newGame();
+  //       }
+  //       break;
+  //     case "p":
+  //     case "P":
+  //       this.togglePause();
+  //       break;
+  //   }
+  // }
 
   togglePause() {
     if (this.gameState === CONFIG.GAME_STATES.READY) {
@@ -274,7 +278,7 @@ export class BubbleShooterGame {
       this.levelData.x +
       this.levelData.width / 2 -
       this.levelData.tileWidth / 2;
-    this.player.y = this.canvas.height - 150;
+    this.player.y = this.canvas.height * 0.86;
     this.player.nextBubble.x = this.player.x - 2 * this.levelData.tileWidth;
     this.player.nextBubble.y = this.player.y;
   }
@@ -282,7 +286,9 @@ export class BubbleShooterGame {
   start() {
     this.newGame();
     this.initialized = true;
+    this.hasHappytime = false;
     this.main(0);
+    window.CrazyGames.SDK.game.gameplayStart();
   }
 
   main(tFrame) {
@@ -343,6 +349,7 @@ export class BubbleShooterGame {
     } else if (itemName === "bomb") {
       this.useBombBubble();
     }
+    this.sound.setMuted(false);
   }
 
   useAimGuide() {
@@ -350,7 +357,6 @@ export class BubbleShooterGame {
       this.items.aimGuide.available--;
       this.items.aimGuide.active = true;
       this.items.aimGuide.startTime = performance.now();
-      this.statistics.recordItemUse("aimGuide");
       this.updateUI();
     }
   }
@@ -368,13 +374,21 @@ export class BubbleShooterGame {
     // Always change the current bubble
     this.player.isBomb = true;
 
-    this.statistics.recordItemUse("bombBubble");
     this.updateUI();
   }
 
   onItemButtonClick(itemName) {
-    if (this.gameState === CONFIG.GAME_STATES.PAUSED) return; // Do not allow using items while already paused
+    if (this.ui && this.ui.adblockEnabled) {
+      this.ui.showAdblockerModal();
+      return;
+    }
+    if (
+      this.gameState === CONFIG.GAME_STATES.GAME_OVER ||
+      this.gameState === CONFIG.GAME_STATES.PAUSED
+    )
+      return; // Do not allow using items while already paused
 
+    this.sound.setMuted(true);
     this.previousGameState = this.gameState;
     this.setGameState(CONFIG.GAME_STATES.PAUSED);
 
@@ -399,11 +413,10 @@ export class BubbleShooterGame {
 
       if (itemName === "aim") {
         this.items.aimGuide.available++;
-        this.useAimGuide();
       } else if (itemName === "bomb") {
         this.items.bombBubble.available++;
-        this.useBombBubble();
       }
+      this.useItem(itemName);
       this.updateUI();
     });
   }
@@ -438,14 +451,15 @@ export class BubbleShooterGame {
     // 콤보 리셋
     this.combo.resetCombo();
 
-    // 통계 기록
-    this.statistics.recordGameStart();
-
     this.setGameState(CONFIG.GAME_STATES.READY);
     this.levelManager.initializeGame(); // 랜덤 레벨 생성
     this.nextBubble();
     this.nextBubble();
     this.updateUI();
+
+    if (this.ui) {
+      this.ui.enableItemButtons();
+    }
   }
 
   updateScore(points) {
@@ -454,14 +468,15 @@ export class BubbleShooterGame {
 
     if (this.score > this.highScore) {
       this.highScore = this.score;
-      localStorage.setItem("bubbleShooterHighScore", this.highScore.toString());
+      // localStorage.setItem("bubbleShooterHighScore", this.highScore.toString());
+      window.CrazyGames.SDK.data.setItem(
+        "beadsShooterHighScore",
+        this.highScore.toString()
+      );
     }
 
     // 레벨업 체크
     this.levelManager.checkLevelUp(this.score);
-
-    this.achievements.checkAchievement("score", this.score);
-    this.dailyChallenge.updateProgress("score", { score: this.score });
     this.updateUI();
   }
 
@@ -541,21 +556,12 @@ export class BubbleShooterGame {
   }
 
   onClusterRemoved(clusterSize) {
-    this.shotsWithoutPop = 0; // 연속 실패가 끊겼으므로 리셋
-    this.achievements.checkAchievement("firstPop");
-    this.achievements.checkAchievement("combo", clusterSize);
-    this.statistics.recordBubblesPop(clusterSize);
-    this.dailyChallenge.updateProgress("bubblesPopped", { count: clusterSize });
+    // this.shotsWithoutPop = 0; // 연속 실패가 끊겼으므로 리셋
 
     // 콤보 추가
     const bonusScore = this.combo.addCombo(clusterSize);
-    this.statistics.recordCombo(this.combo.currentCombo);
-    this.dailyChallenge.updateProgress("combo", {
-      count: this.combo.currentCombo,
-    });
 
     if (this.wallBounceCount > 0) {
-      this.achievements.checkAchievement("wallBounce");
       this.wallBounceCount = 0;
     }
 
@@ -571,11 +577,6 @@ export class BubbleShooterGame {
   onLevelComplete() {
     // 모든 버블이 제거되었을 때 새로운 랜덤 레벨 생성
     this.levelManager.createRandomLevel();
-    this.achievements.checkAchievement("level", this.currentLevel);
-    this.statistics.recordLevelComplete();
-    this.dailyChallenge.updateProgress("levelReached", {
-      level: this.currentLevel,
-    });
 
     // 레벨 완료 효과
     this.effects.startColorFlash("#00ff88", 0.2);
@@ -585,28 +586,36 @@ export class BubbleShooterGame {
   }
 
   onGameOver() {
+    window.CrazyGames.SDK.game.gameplayStop();
     this.combo.resetCombo();
     this.effects.startColorFlash("#ff0000", 0.15);
 
-    // 통계 기록
-    this.statistics.recordGameEnd(this.score);
-
     // 리더보드 체크
-    this.leaderboard.checkNewRecord(this.score, this.currentLevel);
+    // this.leaderboard.checkNewRecord(this.score, this.currentLevel);
 
     if (this.sound) {
       this.sound.play("gameOver");
     }
+
+    if (this.ui) {
+      this.ui.disableItemButtons();
+    }
   }
 
   onBubbleShot() {
-    this.dailyChallenge.updateProgress("bubbleShot");
+    // this.dailyChallenge.updateProgress("bubbleShot");
   }
 
   handleMiss() {
     this.shotsWithoutPop++;
 
     if (this.shotsWithoutPop >= this.chancesUntilNewRow) {
+      // Check for game over before adding a new row.
+      // This is critical because addBubbles would otherwise discard the last row.
+      if (this.physics.checkGameOver()) {
+        return;
+      }
+
       this.levelManager.addBubbles();
       this.shotsWithoutPop = 0;
       if (this.chancesUntilNewRow > 1) {
@@ -614,6 +623,7 @@ export class BubbleShooterGame {
       }
       this.rowOffset = (this.rowOffset + 1) % 2;
 
+      // Check again after adding the row, in case the new row itself causes a game over.
       if (this.physics.checkGameOver()) {
         return;
       }
