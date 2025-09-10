@@ -207,8 +207,8 @@ export class SettingsManager {
           <button class="modal-button modal-button-secondary settings-reset">${getLocalizedString(
             "reset"
           )}</button>
-          <button class="modal-button modal-button-primary settings-save">${getLocalizedString(
-            "save"
+          <button class="modal-button modal-button-primary modal-close">${getLocalizedString(
+            "close"
           )}</button>
         </div>
       </div>
@@ -219,12 +219,15 @@ export class SettingsManager {
   }
 
   setupModalEvents() {
-    // 닫기 버튼
-    this.modal.querySelector(".modal-close").addEventListener("click", () => {
-      this.closeModal();
+    const closeModal = () => this.closeModal();
+    this.modal.querySelectorAll(".modal-close").forEach(btn => btn.addEventListener("click", closeModal));
+
+    this.modal.addEventListener("click", (e) => {
+      if (e.target === this.modal) {
+        closeModal();
+      }
     });
 
-    // 언어 변경
     this.modal.querySelector("#language").addEventListener("change", (e) => {
       this.settings.language = e.target.value;
       this.saveSettings();
@@ -232,60 +235,36 @@ export class SettingsManager {
       this.showSettingsModal();
     });
 
-    // 볼륨 슬라이더
-    const volumeSliders = this.modal.querySelectorAll('input[type="range"]');
-    volumeSliders.forEach((slider) => {
-      slider.addEventListener("input", (e) => {
-        const value = parseFloat(e.target.value);
-        const valueSpan = e.target.parentElement.nextElementSibling;
-        valueSpan.textContent = `${Math.round(value * 100)}%`;
-      });
-      slider.addEventListener("change", () => this.applySettings());
+    const sliders = this.modal.querySelectorAll('input[type="range"]');
+    sliders.forEach(slider => {
+        slider.addEventListener('input', (e) => {
+            const valueSpan = e.target.parentElement.nextElementSibling;
+            valueSpan.textContent = `${Math.round(e.target.value * 100)}%`;
+            this.settings[e.target.id] = parseFloat(e.target.value);
+            this.saveSettings();
+        });
     });
 
-    // 저장 버튼
-    this.modal.querySelector(".settings-save").addEventListener("click", () => {
-      this.saveSettingsFromModal();
-      this.closeModal();
+    const selects = this.modal.querySelectorAll('select');
+    selects.forEach(select => {
+        if(select.id === 'language') return;
+        select.addEventListener('change', (e) => {
+            this.settings[e.target.id] = e.target.value;
+            this.saveSettings();
+        });
     });
 
-    // 초기화 버튼
-    this.modal
-      .querySelector(".settings-reset")
-      .addEventListener("click", () => {
+    const checkboxes = this.modal.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', (e) => {
+            this.settings[e.target.id] = e.target.checked;
+            this.saveSettings();
+        });
+    });
+
+    this.modal.querySelector(".settings-reset").addEventListener("click", () => {
         this.resetSettings();
-      });
-
-    // 모달 외부 클릭시 닫기
-    this.modal.addEventListener("click", (e) => {
-      if (e.target === this.modal) {
-        this.closeModal();
-      }
     });
-  }
-
-  saveSettingsFromModal() {
-    this.settings.language = this.modal.querySelector("#language").value;
-    this.settings.masterVolume = parseFloat(
-      this.modal.querySelector("#masterVolume").value
-    );
-    this.settings.sfxVolume = parseFloat(
-      this.modal.querySelector("#sfxVolume").value
-    );
-    this.settings.musicVolume = parseFloat(
-      this.modal.querySelector("#musicVolume").value
-    );
-    this.settings.particleQuality =
-      this.modal.querySelector("#particleQuality").value;
-    this.settings.screenShake =
-      this.modal.querySelector("#screenShake").checked;
-    this.settings.showFPS = this.modal.querySelector("#showFPS").checked;
-    this.settings.colorBlindMode =
-      this.modal.querySelector("#colorBlindMode").checked;
-    this.settings.showTrajectory =
-      this.modal.querySelector("#showTrajectory").checked;
-
-    this.saveSettings();
   }
 
   resetSettings() {
