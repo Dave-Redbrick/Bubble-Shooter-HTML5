@@ -1,3 +1,5 @@
+import { getLocalizedString } from "./localization.js";
+
 export class TutorialManager {
   constructor(game) {
     this.game = game;
@@ -5,24 +7,23 @@ export class TutorialManager {
     this.currentStep = 0;
     this.steps = [
       {
-        title: "Let's Start!",
-        description: "Aim with your mouse and click to shoot a bubble.",
+        titleKey: "tutorialStartTitle",
+        descriptionKey: "tutorialStartDescription",
         highlight: "player",
       },
       {
-        title: "Match Colors",
-        description: "Connect 3 or more bubbles of the same color to pop them.",
+        titleKey: "tutorialMatchTitle",
+        descriptionKey: "tutorialMatchDescription",
         highlight: "bubbles",
       },
       {
-        title: "Use Items",
-        description: "Click the items at the bottom to use special abilities.",
+        titleKey: "tutorialItemsTitle",
+        descriptionKey: "tutorialItemsDescription",
         highlight: "items",
       },
       {
-        title: "Watch the Danger Line",
-        description:
-          "If the bubbles cross the red dotted line, the game is over!",
+        titleKey: "tutorialDangerLineTitle",
+        descriptionKey: "tutorialDangerLineDescription",
         highlight: "dangerline",
       },
     ];
@@ -53,8 +54,8 @@ export class TutorialManager {
         <div class="tutorial-title"></div>
         <div class="tutorial-description"></div>
         <div class="tutorial-controls">
-          <button class="modal-button modal-button-secondary tutorial-skip">Skip</button>
-          <button class="modal-button modal-button-primary tutorial-next">Next</button>
+          <button class="modal-button modal-button-secondary tutorial-skip">${getLocalizedString("tutorialSkip")}</button>
+          <button class="modal-button modal-button-primary tutorial-next">${getLocalizedString("tutorialNext")}</button>
         </div>
       </div>
     `;
@@ -79,14 +80,14 @@ export class TutorialManager {
     const descEl = this.overlay.querySelector(".tutorial-description");
     const nextBtn = this.overlay.querySelector(".tutorial-next");
 
-    titleEl.textContent = step.title;
-    descEl.textContent = step.description;
+    titleEl.textContent = getLocalizedString(step.titleKey);
+    descEl.textContent = getLocalizedString(step.descriptionKey);
 
     if (this.currentStep === this.steps.length - 1) {
-      nextBtn.textContent = "Finish";
+      nextBtn.textContent = getLocalizedString("tutorialFinish");
       nextBtn.classList.add("tutorial-final-step");
     } else {
-      nextBtn.textContent = "Next";
+      nextBtn.textContent = getLocalizedString("tutorialNext");
       nextBtn.classList.remove("tutorial-final-step");
     }
 

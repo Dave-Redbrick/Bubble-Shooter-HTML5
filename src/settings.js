@@ -1,4 +1,4 @@
-import { getLocalizedString } from "./localization.js";
+import { getLocalizedString, setLanguage } from "./localization.js";
 
 // Settings System
 export class SettingsManager {
@@ -13,6 +13,7 @@ export class SettingsManager {
       particleQuality: "high", // low, medium, high
       screenShake: true,
       colorBlindMode: false,
+      language: "en",
     };
     this.loadSettings();
     this.modal = null;
@@ -35,6 +36,8 @@ export class SettingsManager {
   }
 
   applySettings() {
+    setLanguage(this.settings.language);
+
     // 사운드 설정 적용
     if (this.game.sound) {
       this.game.sound.setMasterVolume(this.settings.masterVolume);
@@ -68,6 +71,39 @@ export class SettingsManager {
         </div>
         
         <div class="settings-body">
+          <div class="setting-group">
+            <h3>${getLocalizedString("language")}</h3>
+            <div class="setting-item">
+              <label>${getLocalizedString("language")}</label>
+              <select id="language">
+                <option value="en" ${
+                  this.settings.language === "en" ? "selected" : ""
+                }>English</option>
+                <option value="fr" ${
+                  this.settings.language === "fr" ? "selected" : ""
+                }>Français</option>
+                <option value="it" ${
+                  this.settings.language === "it" ? "selected" : ""
+                }>Italiano</option>
+                <option value="de" ${
+                  this.settings.language === "de" ? "selected" : ""
+                }>Deutsch</option>
+                <option value="es" ${
+                  this.settings.language === "es" ? "selected" : ""
+                }>Español</option>
+                <option value="zh-CN" ${
+                  this.settings.language === "zh-CN" ? "selected" : ""
+                }>简体中文</option>
+                <option value="ja" ${
+                  this.settings.language === "ja" ? "selected" : ""
+                }>日本語</option>
+                <option value="ko" ${
+                  this.settings.language === "ko" ? "selected" : ""
+                }>한국어</option>
+              </select>
+            </div>
+          </div>
+
           <div class="setting-group">
             <h3>${getLocalizedString("sound")}</h3>
             <div class="setting-item">
@@ -188,6 +224,14 @@ export class SettingsManager {
       this.closeModal();
     });
 
+    // 언어 변경
+    this.modal.querySelector("#language").addEventListener("change", (e) => {
+      this.settings.language = e.target.value;
+      this.saveSettings();
+      this.closeModal();
+      this.showSettingsModal();
+    });
+
     // 볼륨 슬라이더
     const volumeSliders = this.modal.querySelectorAll('input[type="range"]');
     volumeSliders.forEach((slider) => {
@@ -221,6 +265,7 @@ export class SettingsManager {
   }
 
   saveSettingsFromModal() {
+    this.settings.language = this.modal.querySelector("#language").value;
     this.settings.masterVolume = parseFloat(
       this.modal.querySelector("#masterVolume").value
     );
@@ -253,6 +298,7 @@ export class SettingsManager {
       particleQuality: "high",
       screenShake: true,
       colorBlindMode: false,
+      language: "en",
     };
     this.saveSettings();
     this.closeModal();

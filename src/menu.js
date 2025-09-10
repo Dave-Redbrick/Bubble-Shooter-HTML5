@@ -1,3 +1,5 @@
+import { getLocalizedString } from "./localization.js";
+
 // 메뉴 시스템
 export class MenuManager {
   constructor(game) {
@@ -18,16 +20,16 @@ export class MenuManager {
     this.modal.innerHTML = `
       <div class="menu-content">
         <div class="modal-header">
-          <h1>Beads Shooter</h1>
+          <h1>${getLocalizedString("gameTitle")}</h1>
           <button class="modal-close">&times;</button>
         </div>
         
         <div class="menu-body">
           <div class="menu-buttons">
-            <button class="menu-btn" id="newGame">New Game</button>
-            <button class="menu-btn" id="settings">Settings</button>
-            <!-- <button class="menu-btn" id="leaderboard">Leaderboard</button> -->
-            <button class="menu-btn" id="tutorial">Tutorial</button>
+            <button class="menu-btn" id="newGame">${getLocalizedString("newGame")}</button>
+            <button class="menu-btn" id="settings">${getLocalizedString("settings")}</button>
+            <!-- <button class="menu-btn" id="leaderboard">${getLocalizedString("leaderboard")}</button> -->
+            <button class="menu-btn" id="tutorial">${getLocalizedString("help")}</button>
           </div>
         </div>
       </div>
@@ -66,11 +68,14 @@ export class MenuManager {
     });
 
     // 리더보드
-    this.modal.querySelector("#leaderboard").addEventListener("click", () => {
-      if (this.game.leaderboard) {
-        this.game.leaderboard.showLeaderboard();
-      }
-    });
+    const leaderboardButton = this.modal.querySelector("#leaderboard");
+    if (leaderboardButton) {
+      leaderboardButton.addEventListener("click", () => {
+        if (this.game.leaderboard) {
+          this.game.leaderboard.showLeaderboard();
+        }
+      });
+    }
 
     // ESC 키로 닫기
     document.addEventListener("keydown", (e) => {
@@ -89,5 +94,18 @@ export class MenuManager {
       // onGameUnpause
       // window.CrazyGames.SDK.game.gameplayStart();
     }
+  }
+
+  updateButtonLabels() {
+    if (!this.isOpen) return;
+
+    this.modal.querySelector("h1").textContent = getLocalizedString("gameTitle");
+    this.modal.querySelector("#newGame").textContent = getLocalizedString("newGame");
+    this.modal.querySelector("#settings").textContent = getLocalizedString("settings");
+    const leaderboardButton = this.modal.querySelector("#leaderboard");
+    if (leaderboardButton) {
+        leaderboardButton.textContent = getLocalizedString("leaderboard");
+    }
+    this.modal.querySelector("#tutorial").textContent = getLocalizedString("help");
   }
 }

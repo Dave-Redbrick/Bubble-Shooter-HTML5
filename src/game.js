@@ -4,7 +4,7 @@ import {
   NEIGHBOR_OFFSETS,
   getLevelConfig,
 } from "./config.js";
-import { getLocalizedString } from "./localization.js";
+import { getLocalizedString, onLanguageChange } from "./localization.js";
 import { PhysicsEngine } from "./physics.js";
 import { Renderer } from "./renderer.js";
 import { InputHandler } from "./input.js";
@@ -214,6 +214,8 @@ export class BubbleShooterGame {
 
     // 키보드 이벤트 추가
     // document.addEventListener("keydown", (e) => {this.handleKeyDown(e)});
+
+    onLanguageChange(() => this.relocalizeUI());
   }
 
   // handleKeyDown(e) {
@@ -492,6 +494,16 @@ export class BubbleShooterGame {
       const progress = this.levelManager.getLevelProgress(this.score);
       const scoreToNext = this.levelManager.getScoreToNextLevel(this.score);
       this.ui.updateLevelProgress(progress, scoreToNext);
+    }
+  }
+
+  relocalizeUI() {
+    if (this.ui) {
+      this.ui.localizeStaticUI();
+    }
+    this.updateUI();
+    if (this.menu) {
+      this.menu.updateButtonLabels();
     }
   }
 
