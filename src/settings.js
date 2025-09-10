@@ -1,4 +1,4 @@
-import { getLocalizedString } from "./localization.js";
+import { getLocalizedString, setLanguage } from "./localization.js";
 
 // Settings System
 export class SettingsManager {
@@ -13,6 +13,7 @@ export class SettingsManager {
       particleQuality: "high", // low, medium, high
       screenShake: true,
       colorBlindMode: false,
+      language: "en",
     };
     this.loadSettings();
     this.modal = null;
@@ -35,6 +36,8 @@ export class SettingsManager {
   }
 
   applySettings() {
+    setLanguage(this.settings.language);
+
     // 사운드 설정 적용
     if (this.game.sound) {
       this.game.sound.setMasterVolume(this.settings.masterVolume);
@@ -68,6 +71,39 @@ export class SettingsManager {
         </div>
         
         <div class="settings-body">
+          <div class="setting-group">
+            <h3>${getLocalizedString("language")}</h3>
+            <div class="setting-item">
+              <label>${getLocalizedString("language")}</label>
+              <select id="language">
+                <option value="en" ${
+                  this.settings.language === "en" ? "selected" : ""
+                }>English</option>
+                <option value="fr" ${
+                  this.settings.language === "fr" ? "selected" : ""
+                }>Français</option>
+                <option value="it" ${
+                  this.settings.language === "it" ? "selected" : ""
+                }>Italiano</option>
+                <option value="de" ${
+                  this.settings.language === "de" ? "selected" : ""
+                }>Deutsch</option>
+                <option value="es" ${
+                  this.settings.language === "es" ? "selected" : ""
+                }>Español</option>
+                <option value="zh-CN" ${
+                  this.settings.language === "zh-CN" ? "selected" : ""
+                }>简体中文</option>
+                <option value="ja" ${
+                  this.settings.language === "ja" ? "selected" : ""
+                }>日本語</option>
+                <option value="ko" ${
+                  this.settings.language === "ko" ? "selected" : ""
+                }>한국어</option>
+              </select>
+            </div>
+          </div>
+
           <div class="setting-group">
             <h3>${getLocalizedString("sound")}</h3>
             <div class="setting-item">
@@ -171,8 +207,8 @@ export class SettingsManager {
           <button class="modal-button modal-button-secondary settings-reset">${getLocalizedString(
             "reset"
           )}</button>
-          <button class="modal-button modal-button-primary settings-save">${getLocalizedString(
-            "save"
+          <button class="modal-button modal-button-primary modal-close">${getLocalizedString(
+            "close"
           )}</button>
         </div>
       </div>
@@ -183,64 +219,52 @@ export class SettingsManager {
   }
 
   setupModalEvents() {
-    // 닫기 버튼
-    this.modal.querySelector(".modal-close").addEventListener("click", () => {
-      this.closeModal();
-    });
+    const closeModal = () => this.closeModal();
+    this.modal.querySelectorAll(".modal-close").forEach(btn => btn.addEventListener("click", closeModal));
 
-    // 볼륨 슬라이더
-    const volumeSliders = this.modal.querySelectorAll('input[type="range"]');
-    volumeSliders.forEach((slider) => {
-      slider.addEventListener("input", (e) => {
-        const value = parseFloat(e.target.value);
-        const valueSpan = e.target.parentElement.nextElementSibling;
-        valueSpan.textContent = `${Math.round(value * 100)}%`;
-      });
-      slider.addEventListener("change", () => this.applySettings());
-    });
-
-    // 저장 버튼
-    this.modal.querySelector(".settings-save").addEventListener("click", () => {
-      this.saveSettingsFromModal();
-      this.closeModal();
-    });
-
-    // 초기화 버튼
-    this.modal
-      .querySelector(".settings-reset")
-      .addEventListener("click", () => {
-        this.resetSettings();
-      });
-
-    // 모달 외부 클릭시 닫기
     this.modal.addEventListener("click", (e) => {
       if (e.target === this.modal) {
-        this.closeModal();
+        closeModal();
       }
     });
-  }
 
-  saveSettingsFromModal() {
-    this.settings.masterVolume = parseFloat(
-      this.modal.querySelector("#masterVolume").value
-    );
-    this.settings.sfxVolume = parseFloat(
-      this.modal.querySelector("#sfxVolume").value
-    );
-    this.settings.musicVolume = parseFloat(
-      this.modal.querySelector("#musicVolume").value
-    );
-    this.settings.particleQuality =
-      this.modal.querySelector("#particleQuality").value;
-    this.settings.screenShake =
-      this.modal.querySelector("#screenShake").checked;
-    this.settings.showFPS = this.modal.querySelector("#showFPS").checked;
-    this.settings.colorBlindMode =
-      this.modal.querySelector("#colorBlindMode").checked;
-    this.settings.showTrajectory =
-      this.modal.querySelector("#showTrajectory").checked;
+    this.modal.querySelector("#language").addEventListener("change", (e) => {
+      this.settings.language = e.target.value;
+      this.saveSettings();
+      this.closeModal();
+      this.showSettingsModal();
+    });
 
-    this.saveSettings();
+    const sliders = this.modal.querySelectorAll('input[type="range"]');
+    sliders.forEach(slider => {
+        slider.addEventListener('input', (e) => {
+            const valueSpan = e.target.parentElement.nextElementSibling;
+            valueSpan.textContent = `${Math.round(e.target.value * 100)}%`;
+            this.settings[e.target.id] = parseFloat(e.target.value);
+            this.saveSettings();
+        });
+    });
+
+    const selects = this.modal.querySelectorAll('select');
+    selects.forEach(select => {
+        if(select.id === 'language') return;
+        select.addEventListener('change', (e) => {
+            this.settings[e.target.id] = e.target.value;
+            this.saveSettings();
+        });
+    });
+
+    const checkboxes = this.modal.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', (e) => {
+            this.settings[e.target.id] = e.target.checked;
+            this.saveSettings();
+        });
+    });
+
+    this.modal.querySelector(".settings-reset").addEventListener("click", () => {
+        this.resetSettings();
+    });
   }
 
   resetSettings() {
@@ -253,6 +277,7 @@ export class SettingsManager {
       particleQuality: "high",
       screenShake: true,
       colorBlindMode: false,
+      language: "en",
     };
     this.saveSettings();
     this.closeModal();

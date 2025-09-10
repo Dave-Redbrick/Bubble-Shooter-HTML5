@@ -30,10 +30,8 @@ export class UIManager {
       modalCloseButton: document.getElementById("modal-close-button"),
     };
 
-    this.localizeStaticUI();
-    this.addAdIcons();
-    // 캔버스 컨테이너 생성
     this.createCanvasContainer();
+    this.localizeStaticUI();
   }
 
   localizeStaticUI() {
@@ -42,10 +40,10 @@ export class UIManager {
         el.textContent = getLocalizedString(el.dataset.localize);
     });
     this.elements.modalCloseButton.textContent = getLocalizedString("cancel");
-  }
 
-  addAdIcons() {
     const adIconHTML = `<div class="ad-chip">${getLocalizedString("ad")}</div>`;
+    this.elements.itemSlotAim.querySelectorAll(".ad-chip").forEach(el => el.remove());
+    this.elements.itemSlotBomb.querySelectorAll(".ad-chip").forEach(el => el.remove());
     if (this.elements.itemSlotAim) {
         this.elements.itemSlotAim.insertAdjacentHTML('beforeend', adIconHTML);
     }
@@ -151,7 +149,7 @@ export class UIManager {
             aimSlot.classList.remove('active');
             this.elements.aimItemTimer.style.height = '0%';
             this.elements.aimItemTimerText.style.display = 'none';
-            aimText.innerHTML = getLocalizedString("itemAim");
+            aimText.innerHTML = getLocalizedString("itemAim"); // Keep this to restore the text
             if (adChip) adChip.style.display = 'block';
         }
 
@@ -166,9 +164,6 @@ export class UIManager {
     const bombSlot = this.elements.itemSlotBomb;
     if (bombSlot && items.bombBubble) {
         const { available } = items.bombBubble;
-        const bombText = bombSlot.querySelector('span');
-        bombText.innerHTML = getLocalizedString("itemBomb");
-
         if (available === 0) {
             bombSlot.classList.add('disabled');
         } else {
