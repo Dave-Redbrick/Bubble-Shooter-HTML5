@@ -53,51 +53,39 @@ export function getLevelConfig(canvas) {
   const deviceType = getDeviceType();
   const baseConfig = CONFIG.LEVEL_CONFIGS[deviceType];
 
-  // 캔버스 높이에 따라 타일 크기 동적 계산
-  const PREFERRED_ROWS = 18; // 이 값을 기준으로 버블 크기 결정
-  const topMargin = 0; // 버블 그리드 상단 여백
+  // Force the level width to match the canvas width
+  const levelWidth = canvas.width;
+  const x = 0;
+
+  // Derive tile and row dimensions from the fixed width
+  const tileWidth = levelWidth / (baseConfig.COLUMNS + 0.5);
+  const tileHeight = tileWidth; // Keep bubbles circular
+  const rowHeight = tileHeight * 0.866;
+  const radius = tileWidth / 2;
+
+  // Set the top margin and calculate available height for rows
+  const topMargin = 0;
   const deadlineY = canvas.height * 0.72;
   const availableHeight = deadlineY - topMargin;
-
-  const rowHeight = availableHeight / PREFERRED_ROWS;
-  const tileHeightFromHeight = rowHeight / 0.866; // 0.866 is sin(60deg) for hex grid
-
-  // Calculate tile width based on canvas width as well
-  const tileWidthFromWidth = canvas.width / (baseConfig.COLUMNS + 0.5);
-
-  // Use the smaller of the two to ensure the grid fits both vertically and horizontally
-  const tileWidth = Math.min(tileHeightFromHeight, tileWidthFromWidth);
-  const tileHeight = tileWidth; // Keep bubbles circular
-  const rowHeight = tileHeight * 0.866; // Recalculate rowHeight based on the final tileHeight
-  const radius = tileWidth / 2;
 
   const dynamicConfig = {
     ...baseConfig,
     TILE_WIDTH: tileWidth,
     TILE_HEIGHT: tileHeight,
-    ROW_HEIGHT: rowHeight, // Use the recalculated rowHeight
+    ROW_HEIGHT: rowHeight,
     RADIUS: radius,
   };
 
-  // 사용 가능한 세로 공간을 기반으로 행(row) 수를 동적으로 계산
+  // Dynamically calculate the number of rows based on the available height
   const calculatedRows = Math.floor(availableHeight / dynamicConfig.ROW_HEIGHT);
-  // 최소 행 수를 보장하면서, 계산된 행 수가 더 크면 그 값을 사용
-  const rows = Math.max(dynamicConfig.ROWS, calculatedRows);
+  const rows = Math.max(baseConfig.ROWS, calculatedRows);
 
-  // 새로운 행 수에 따라 레벨 영역 크기 다시 계산
-  const levelWidth =
-    dynamicConfig.COLUMNS * dynamicConfig.TILE_WIDTH +
-    dynamicConfig.TILE_WIDTH / 2;
-  const levelHeight =
-    (rows - 1) * dynamicConfig.ROW_HEIGHT + dynamicConfig.TILE_HEIGHT;
-
-  // 실제 캔버스 너비를 사용하여 중앙에 배치
-  const x = (canvas.width - levelWidth) / 2;
+  const levelHeight = (rows - 1) * dynamicConfig.ROW_HEIGHT + dynamicConfig.TILE_HEIGHT;
   const y = topMargin;
 
   return {
     ...dynamicConfig,
-    ROWS: rows, // 동적으로 계산된 행 수로 덮어쓰기
+    ROWS: rows,
     X: x,
     Y: y,
     WIDTH: levelWidth,
