@@ -242,7 +242,7 @@ export class UIManager {
     this.elements.modal.style.display = "flex";
   }
 
-  // 반응형 캔버스 크기 조정 - 화면 비율을 유지하며 컨테이너에 맞춤
+  // 반응형 캔버스 크기 조정 - 기기별로 최적화된 비율로 컨테이너에 맞춤
   resizeCanvas() {
     const canvas = this.elements.canvas;
     const container = document.querySelector(".game-area");
@@ -252,41 +252,53 @@ export class UIManager {
 
     const containerWidth = container.clientWidth;
     const containerHeight = container.clientHeight;
-
-    // 게임의 기본 가로세로 비율(9:16)
-    const ASPECT_RATIO = 9 / 16;
+    const deviceType = getDeviceType();
 
     let newWidth;
     let newHeight;
 
-    // 가로세로 비율에 따라 새 차원 계산
-    if (containerWidth / containerHeight > ASPECT_RATIO) {
-      // 컨테이너가 게임 가로세로 비율보다 넓으므로 높이가 제한 요소임
-      newHeight = containerHeight;
-      newWidth = newHeight * ASPECT_RATIO;
+    if (deviceType === "DESKTOP") {
+      // 데스크톱: 높이를 95%로 채우고 너비는 16:10 비율에 맞게 조정
+      const aspectRatio = 16 / 10;
+      newHeight = containerHeight * 0.95;
+      newWidth = newHeight * aspectRatio;
+
+      // 너비가 컨테이너를 초과하면 너비에 맞춤
+      if (newWidth > containerWidth * 0.95) {
+        newWidth = containerWidth * 0.95;
+        newHeight = newWidth / aspectRatio;
+      }
     } else {
-      // 컨테이너가 게임 가로세로 비율보다 높거나 같으므로 너비가 제한 요소임
-      newWidth = containerWidth;
-      newHeight = newWidth / ASPECT_RATIO;
+      // 모바일 & 태블릿: 9:16 비율을 엄격하게 유지
+      const ASPECT_RATIO = 9 / 16;
+      if (containerWidth / containerHeight > ASPECT_RATIO) {
+        newHeight = containerHeight;
+        newWidth = newHeight * ASPECT_RATIO;
+      } else {
+        newWidth = containerWidth;
+        newHeight = newWidth / ASPECT_RATIO;
+      }
     }
 
     // 레이아웃을 위해 캔버스 컨테이너에 크기 적용
     canvasContainer.style.width = `${newWidth}px`;
     canvasContainer.style.height = `${newHeight}px`;
 
-    // 캔버스 해상도 업데이트
-    if (canvas.width !== newWidth || canvas.height !== newHeight) {
-      canvas.width = newWidth;
-      canvas.height = newHeight;
+    // 캔버스 해상도 업데이트 (정수 값으로 반올림)
+    const roundedWidth = Math.round(newWidth);
+    const roundedHeight = Math.round(newHeight);
+
+    if (canvas.width !== roundedWidth || canvas.height !== roundedHeight) {
+      canvas.width = roundedWidth;
+      canvas.height = roundedHeight;
 
       if (this.game && typeof this.game.handleResize === "function") {
         this.game.handleResize();
       }
     }
 
-    const newDeviceType = getDeviceType();
-    if (newDeviceType !== this.currentDeviceType) {
-      this.currentDeviceType = newDeviceType;
+    if (deviceType !== this.currentDeviceType) {
+      this.currentDeviceType = deviceType;
     }
   }
 

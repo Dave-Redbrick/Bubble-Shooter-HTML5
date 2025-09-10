@@ -275,15 +275,16 @@ export class PhysicsEngine {
 
   checkGameOver() {
     const levelData = this.game.levelData;
-    const player = this.game.player;
-    const dangerY = player.y - levelData.tileHeight * 3;
+    // 일관성을 위해 레벨 설정의 deadlineY를 사용합니다.
+    const deadline = levelData.deadlineY;
 
     for (let i = 0; i < levelData.columns; i++) {
       for (let j = 0; j < levelData.rows; j++) {
         const tile = levelData.tiles[i][j];
         if (tile.type !== -1) {
           const coord = this.getTileCoordinate(i, j);
-          if (coord.tileY + levelData.tileHeight >= dangerY) {
+          // 버블의 하단이 데드라인을 지났는지 확인합니다.
+          if (coord.tileY + levelData.tileHeight >= deadline) {
             this.game.onGameOver();
             this.game.setGameState(CONFIG.GAME_STATES.GAME_OVER);
             return true;
