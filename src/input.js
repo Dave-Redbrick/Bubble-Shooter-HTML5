@@ -68,7 +68,7 @@ export class InputHandler {
     projectile.isBomb = player.isBomb;
     projectile.visible = true;
 
-    this.game.onBubbleShot();
+    // this.game.onBubbleShot();
     this.game.setGameState(CONFIG.GAME_STATES.SHOOT_BUBBLE);
 
     // Load the next bubble into the launcher

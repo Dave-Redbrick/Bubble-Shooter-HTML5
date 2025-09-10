@@ -12,16 +12,13 @@ import { ClusterManager } from "./cluster.js";
 import { ParticleSystem } from "./particles.js";
 import { LevelManager } from "./levels.js";
 import { PowerUpManager } from "./powerups.js";
-import { AchievementManager } from "./achievements.js";
 import { EffectsManager } from "./effects.js";
 import { SoundManager } from "./sound.js";
 import { ComboManager } from "./combo.js";
 import { TutorialManager } from "./tutorial.js";
 import { SettingsManager } from "./settings.js";
-import { StatisticsManager } from "./statistics.js";
 import { MenuManager } from "./menu.js";
 // import { LeaderboardManager } from "./leaderboard.js";
-import { DailyChallengeManager } from "./dailychallenge.js";
 
 export class Tile {
   constructor(x, y, type, shift = 0) {
@@ -176,15 +173,12 @@ export class BubbleShooterGame {
     this.particles = new ParticleSystem(this);
     this.levelManager = new LevelManager(this);
     this.powerUps = new PowerUpManager(this);
-    this.achievements = new AchievementManager(this);
     this.effects = new EffectsManager(this);
     this.combo = new ComboManager(this);
     this.tutorial = new TutorialManager(this);
     this.settings = new SettingsManager(this);
-    this.statistics = new StatisticsManager(this);
     this.menu = new MenuManager(this);
     // this.leaderboard = new LeaderboardManager(this);
-    this.dailyChallenge = new DailyChallengeManager(this);
 
     await this.sound.initialize();
 
@@ -363,7 +357,6 @@ export class BubbleShooterGame {
       this.items.aimGuide.available--;
       this.items.aimGuide.active = true;
       this.items.aimGuide.startTime = performance.now();
-      this.statistics.recordItemUse("aimGuide");
       this.updateUI();
     }
   }
@@ -381,7 +374,6 @@ export class BubbleShooterGame {
     // Always change the current bubble
     this.player.isBomb = true;
 
-    this.statistics.recordItemUse("bombBubble");
     this.updateUI();
   }
 
@@ -459,9 +451,6 @@ export class BubbleShooterGame {
     // 콤보 리셋
     this.combo.resetCombo();
 
-    // 통계 기록
-    this.statistics.recordGameStart();
-
     this.setGameState(CONFIG.GAME_STATES.READY);
     this.levelManager.initializeGame(); // 랜덤 레벨 생성
     this.nextBubble();
@@ -488,9 +477,6 @@ export class BubbleShooterGame {
 
     // 레벨업 체크
     this.levelManager.checkLevelUp(this.score);
-
-    this.achievements.checkAchievement("score", this.score);
-    this.dailyChallenge.updateProgress("score", { score: this.score });
     this.updateUI();
   }
 
@@ -571,20 +557,11 @@ export class BubbleShooterGame {
 
   onClusterRemoved(clusterSize) {
     // this.shotsWithoutPop = 0; // 연속 실패가 끊겼으므로 리셋
-    this.achievements.checkAchievement("firstPop");
-    this.achievements.checkAchievement("combo", clusterSize);
-    this.statistics.recordBubblesPop(clusterSize);
-    this.dailyChallenge.updateProgress("bubblesPopped", { count: clusterSize });
 
     // 콤보 추가
     const bonusScore = this.combo.addCombo(clusterSize);
-    this.statistics.recordCombo(this.combo.currentCombo);
-    this.dailyChallenge.updateProgress("combo", {
-      count: this.combo.currentCombo,
-    });
 
     if (this.wallBounceCount > 0) {
-      this.achievements.checkAchievement("wallBounce");
       this.wallBounceCount = 0;
     }
 
@@ -600,11 +577,6 @@ export class BubbleShooterGame {
   onLevelComplete() {
     // 모든 버블이 제거되었을 때 새로운 랜덤 레벨 생성
     this.levelManager.createRandomLevel();
-    this.achievements.checkAchievement("level", this.currentLevel);
-    this.statistics.recordLevelComplete();
-    this.dailyChallenge.updateProgress("levelReached", {
-      level: this.currentLevel,
-    });
 
     // 레벨 완료 효과
     this.effects.startColorFlash("#00ff88", 0.2);
@@ -617,9 +589,6 @@ export class BubbleShooterGame {
     window.CrazyGames.SDK.game.gameplayStop();
     this.combo.resetCombo();
     this.effects.startColorFlash("#ff0000", 0.15);
-
-    // 통계 기록
-    this.statistics.recordGameEnd(this.score);
 
     // 리더보드 체크
     // this.leaderboard.checkNewRecord(this.score, this.currentLevel);
@@ -634,7 +603,7 @@ export class BubbleShooterGame {
   }
 
   onBubbleShot() {
-    this.dailyChallenge.updateProgress("bubbleShot");
+    // this.dailyChallenge.updateProgress("bubbleShot");
   }
 
   handleMiss() {
