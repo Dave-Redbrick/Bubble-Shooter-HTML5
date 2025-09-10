@@ -1,24 +1,5 @@
 // Game configuration and constants
 export const CONFIG = {
-  CANVAS: {
-    WIDTH: 1920,
-    HEIGHT: 1080,
-  },
-  // 디바이스별 레벨 설정 - 캔버스 중앙 배치
-  LEVEL_CONFIGS: {
-    MOBILE: {
-      COLUMNS: 16,
-      ROWS: 12,
-    },
-    TABLET: {
-      COLUMNS: 18,
-      ROWS: 13,
-    },
-    DESKTOP: {
-      COLUMNS: 20,
-      ROWS: 14,
-    },
-  },
   BUBBLE: {
     COLORS: 7,
     SPEED: 2000,
@@ -40,62 +21,40 @@ export const CONFIG = {
   },
 };
 
-// 현재 디바이스 타입 감지
-export function getDeviceType() {
-  const width = window.innerWidth;
-  if (width < 768) return "MOBILE";
-  if (width < 1200) return "TABLET";
-  return "DESKTOP";
-}
-
-// 디바이스에 맞는 레벨 설정 가져오기 - 중앙 배치 계산 포함
+// 화면 비율에 따라 레벨 설정을 동적으로 가져옵니다.
 export function getLevelConfig(canvas) {
-  const deviceType = getDeviceType();
-  const baseConfig = CONFIG.LEVEL_CONFIGS[deviceType];
+  const aspectRatio = canvas.width / canvas.height;
 
-  let tileWidth, tileHeight, rowHeight, radius, x, levelWidth;
+  // 화면 비율에 따라 열(Column) 수를 결정합니다.
+  // 세로가 길면(portrait) 16열, 가로가 길면(landscape) 22열
+  const columns = aspectRatio < 1 ? 16 : 22;
+  const baseRows = 12; // 초기 최소 행 수
+
+  // 모든 계산은 캔버스 너비를 기준으로 합니다. 이렇게 하면 항상 수평으로 맞습니다.
+  const levelWidth = canvas.width;
+  const x = 0;
+  const tileWidth = levelWidth / (columns + 0.5);
+  const tileHeight = tileWidth;
+  const rowHeight = tileHeight * 0.866; // 6각형 그리드의 행 높이
+  const radius = tileWidth / 2;
+
   const topMargin = 0;
-  const deadlineY = canvas.height * 0.72;
+  const deadlineY = canvas.height * 0.8; // 데드라인을 80% 지점으로 조정
   const availableHeight = deadlineY - topMargin;
 
-  if (deviceType === "DESKTOP" || deviceType === "TABLET") {
-    // Original logic for wider screens: base size on height
-    const PREFERRED_ROWS = 18;
-    rowHeight = availableHeight / PREFERRED_ROWS;
-    tileHeight = rowHeight / 0.866;
-    tileWidth = tileHeight;
-    radius = tileWidth / 2;
-    levelWidth = baseConfig.COLUMNS * tileWidth + tileWidth / 2;
-    x = (canvas.width - levelWidth) / 2; // Center the play area
-  } else {
-    // 'MOBILE'
-    // New logic for narrow screens: base size on width
-    levelWidth = canvas.width;
-    x = 0;
-    tileWidth = levelWidth / (baseConfig.COLUMNS + 0.5);
-    tileHeight = tileWidth;
-    rowHeight = tileHeight * 0.866;
-    radius = tileWidth / 2;
-  }
+  // 사용 가능한 높이에 따라 실제 행 수를 계산합니다.
+  const calculatedRows = Math.floor(availableHeight / rowHeight);
+  const rows = Math.max(baseRows, calculatedRows);
+  const levelHeight = (rows - 1) * rowHeight + tileHeight;
+  const y = topMargin;
 
-  const dynamicConfig = {
-    ...baseConfig,
+  return {
+    COLUMNS: columns,
+    ROWS: rows,
     TILE_WIDTH: tileWidth,
     TILE_HEIGHT: tileHeight,
     ROW_HEIGHT: rowHeight,
     RADIUS: radius,
-  };
-
-  // Common logic for calculating rows and final dimensions
-  const calculatedRows = Math.floor(availableHeight / dynamicConfig.ROW_HEIGHT);
-  const rows = Math.max(baseConfig.ROWS, calculatedRows);
-  const levelHeight =
-    (rows - 1) * dynamicConfig.ROW_HEIGHT + dynamicConfig.TILE_HEIGHT;
-  const y = topMargin;
-
-  return {
-    ...dynamicConfig,
-    ROWS: rows,
     X: x,
     Y: y,
     WIDTH: levelWidth,

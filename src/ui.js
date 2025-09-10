@@ -1,11 +1,9 @@
-import { getDeviceType } from "./config.js";
 import { getLocalizedString } from "./localization.js";
 
 // UI Manager Class
 export class UIManager {
   constructor(game) {
     this.game = game;
-    this.currentDeviceType = getDeviceType();
     this.adblockEnabled = false;
     this.initializeElements();
     this.setupEventListeners();
@@ -28,6 +26,7 @@ export class UIManager {
       modalText: document.getElementById("modal-text"),
       modalConfirmButton: document.getElementById("modal-confirm-button"),
       modalCloseButton: document.getElementById("modal-close-button"),
+      rightSidebar: document.querySelector(".right-sidebar"),
     };
 
     this.createCanvasContainer();
@@ -247,25 +246,26 @@ export class UIManager {
     const canvas = this.elements.canvas;
     const container = document.querySelector(".game-area");
     const canvasContainer = this.elements.canvasContainer;
+    const rightSidebar = this.elements.rightSidebar;
 
     if (!container || !canvas || !canvasContainer) return;
 
     const containerWidth = container.clientWidth;
     const containerHeight = container.clientHeight;
-    const deviceType = getDeviceType();
 
     let newWidth;
     let newHeight;
 
-    if (deviceType === "DESKTOP") {
-      // 데스크톱: 높이를 95%로 채우고 너비는 16:10 비율에 맞게 조정
-      const aspectRatio = 16 / 10;
-      newHeight = containerHeight * 0.95;
+    // 데스크톱 뷰 분기 (가로가 넓은 화면)
+    if (window.innerWidth >= 1200 && rightSidebar) {
+      // 데스크톱: 오른쪽 사이드바의 높이에 캔버스 높이를 맞춤
+      newHeight = rightSidebar.offsetHeight;
+      const aspectRatio = 4 / 3; // 데스크톱용 4:3 비율
       newWidth = newHeight * aspectRatio;
 
-      // 너비가 컨테이너를 초과하면 너비에 맞춤
-      if (newWidth > containerWidth * 0.95) {
-        newWidth = containerWidth * 0.95;
+      // 계산된 너비가 사용 가능한 너비를 초과하는 경우 조정
+      if (newWidth > containerWidth) {
+        newWidth = containerWidth;
         newHeight = newWidth / aspectRatio;
       }
     } else {
@@ -295,10 +295,6 @@ export class UIManager {
       if (this.game && typeof this.game.handleResize === "function") {
         this.game.handleResize();
       }
-    }
-
-    if (deviceType !== this.currentDeviceType) {
-      this.currentDeviceType = deviceType;
     }
   }
 
