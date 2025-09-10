@@ -829,6 +829,36 @@ input[type="range"]::-moz-range-thumb {
   }
 }
 
+/* Mobile Layout */
+@media (max-width: 768px) {
+  .right-sidebar {
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    bottom: 10px;
+    top: auto;
+    left: 10px;
+    right: 10px;
+    width: auto;
+  }
+
+  .high-score-box {
+    order: 1;
+  }
+
+  .score-section {
+    order: 2;
+  }
+
+  .menu-button {
+    order: 3;
+  }
+
+  .help-section {
+    display: none;
+  }
+}
+
 /* Generic Item Modal Styles */
 .modal-overlay {
   display: none; /* Hidden by default, changed to flex by JS */

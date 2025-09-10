@@ -274,37 +274,15 @@ export class UIManager {
   // 모바일 터치 이벤트 처리
   setupMobileEvents() {
     const canvas = this.elements.canvas;
-
     if (!canvas) return;
 
-    // 터치 이벤트를 마우스 이벤트로 변환
-    canvas.addEventListener("touchstart", (e) => {
-      e.preventDefault();
-      const touch = e.touches[0];
-      if (touch) {
-        const mouseEvent = new MouseEvent("mousedown", {
-          clientX: touch.clientX,
-          clientY: touch.clientY,
-        });
-        canvas.dispatchEvent(mouseEvent);
-      }
-    });
-
-    canvas.addEventListener("touchmove", (e) => {
-      e.preventDefault();
-      const touch = e.touches[0];
-      if (touch) {
-        const mouseEvent = new MouseEvent("mousemove", {
-          clientX: touch.clientX,
-          clientY: touch.clientY,
-        });
-        canvas.dispatchEvent(mouseEvent);
-      }
-    });
-
-    canvas.addEventListener("touchend", (e) => {
-      e.preventDefault();
-    });
+    // Check for touch support
+    if ('ontouchstart' in window) {
+      // Use new touch handlers
+      canvas.addEventListener("touchstart", (e) => this.game.input.onTouchStart(e));
+      canvas.addEventListener("touchmove", (e) => this.game.input.onTouchMove(e));
+      canvas.addEventListener("touchend", (e) => this.game.input.onTouchEnd(e));
+    }
   }
 
   updateChances(shotsWithoutPop, chancesUntilNewRow) {
