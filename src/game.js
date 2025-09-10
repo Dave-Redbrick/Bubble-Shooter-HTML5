@@ -57,8 +57,7 @@ export class BubbleShooterGame {
     this.previousGameState = null;
     this.score = 0;
     this.highScore = parseInt(
-      // localStorage.getItem("bubbleShooterHighScore") || "0"
-      window.CrazyGames.SDK.data.getItem("beadsShooterHighScore") || "0"
+      window.safeStorage.getItem("beadsShooterHighScore") || "0"
     );
     this.currentLevel = 1;
     this.rowOffset = 0;
@@ -165,6 +164,7 @@ export class BubbleShooterGame {
 
   async initializeModules() {
     // 사운드 시스템 초기화
+    this.settings = new SettingsManager(this);
     this.sound = new SoundManager();
     this.physics = new PhysicsEngine(this);
     this.renderer = new Renderer(this);
@@ -176,7 +176,6 @@ export class BubbleShooterGame {
     this.effects = new EffectsManager(this);
     this.combo = new ComboManager(this);
     this.tutorial = new TutorialManager(this);
-    this.settings = new SettingsManager(this);
     this.menu = new MenuManager(this);
     // this.leaderboard = new LeaderboardManager(this);
 
@@ -207,7 +206,8 @@ export class BubbleShooterGame {
       "click",
       () => {
         activateSound();
-        window.CrazyGames.SDK.game.gameplayStart();
+        // onGameStart
+        // window.CrazyGames.SDK.game.gameplayStart();
       },
       { once: true }
     );
@@ -288,7 +288,8 @@ export class BubbleShooterGame {
     this.initialized = true;
     this.hasHappytime = false;
     this.main(0);
-    window.CrazyGames.SDK.game.gameplayStart();
+    // onGameStart
+    // window.CrazyGames.SDK.game.gameplayStart();
   }
 
   main(tFrame) {
@@ -468,8 +469,7 @@ export class BubbleShooterGame {
 
     if (this.score > this.highScore) {
       this.highScore = this.score;
-      // localStorage.setItem("bubbleShooterHighScore", this.highScore.toString());
-      window.CrazyGames.SDK.data.setItem(
+      window.safeStorage.setItem(
         "beadsShooterHighScore",
         this.highScore.toString()
       );
@@ -586,7 +586,8 @@ export class BubbleShooterGame {
   }
 
   onGameOver() {
-    window.CrazyGames.SDK.game.gameplayStop();
+    // onGameStop
+    // window.CrazyGames.SDK.game.gameplayStop();
     this.combo.resetCombo();
     this.effects.startColorFlash("#ff0000", 0.15);
 

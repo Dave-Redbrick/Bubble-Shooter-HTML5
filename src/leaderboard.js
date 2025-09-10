@@ -7,16 +7,14 @@ export class LeaderboardManager {
   }
 
   loadScores() {
-    // const saved = localStorage.getItem('bubbleShooterLeaderboard');
-    const saved = window.CrazyGames.SDK.data.getItem("beadsShooterLeaderboard");
+    const saved = window.safeStorage.getItem("beadsShooterLeaderboard");
     if (saved) {
       this.scores = JSON.parse(saved);
     }
   }
 
   saveScores() {
-    // localStorage.setItem('bubbleShooterLeaderboard', JSON.stringify(this.scores));
-    window.CrazyGames.SDK.data.setItem(
+    window.safeStorage.setItem(
       "beadsShooterLeaderboard",
       JSON.stringify(this.scores)
     );

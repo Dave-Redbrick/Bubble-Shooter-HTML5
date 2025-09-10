@@ -31,10 +31,10 @@ export class TutorialManager {
   }
 
   checkFirstTime() {
-    const hasPlayed = window.CrazyGames.SDK.data.getItem("beadsShooterPlayed");
+    const hasPlayed = window.safeStorage.getItem("beadsShooterPlayed");
     if (!hasPlayed) {
       this.startTutorial();
-      window.CrazyGames.SDK.data.setItem("beadsShooterPlayed", "true");
+      window.safeStorage.setItem("beadsShooterPlayed", "true");
     }
   }
 

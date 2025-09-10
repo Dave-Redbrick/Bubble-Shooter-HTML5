@@ -511,7 +511,8 @@ export class Renderer {
       );
       ctx.shadowBlur = 0;
       if (!this.game.hasHappytime) {
-        window.CrazyGames.SDK.game.happytime();
+        // onHappytime
+        // window.CrazyGames.SDK.game.happytime();
         this.game.hasHappytime = true;
       }
     }

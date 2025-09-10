@@ -7,7 +7,8 @@ export class MenuManager {
   }
 
   showMainMenu() {
-    window.CrazyGames.SDK.game.gameplayStop();
+    // onGamePause
+    // window.CrazyGames.SDK.game.gameplayStop();
     this.game.sound.setMuted(true);
     this.createMainMenu();
   }
@@ -26,7 +27,7 @@ export class MenuManager {
           <div class="menu-buttons">
             <button class="menu-btn" id="newGame">New Game</button>
             <button class="menu-btn" id="settings">Settings</button>
-            <button class="menu-btn" id="leaderboard">Leaderboard</button>
+            <!-- <button class="menu-btn" id="leaderboard">Leaderboard</button> -->
             <button class="menu-btn" id="tutorial">Tutorial</button>
           </div>
         </div>
@@ -86,7 +87,8 @@ export class MenuManager {
       this.modal = null;
       this.isOpen = false;
 
-      window.CrazyGames.SDK.game.gameplayStart();
+      // onGameUnpause
+      // window.CrazyGames.SDK.game.gameplayStart();
       this.game.sound.setMuted(false);
     }
   }

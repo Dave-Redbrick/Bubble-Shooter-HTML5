@@ -1,32 +1,42 @@
 import { BubbleShooterGame } from "./game.js";
 import { UIManager } from "./ui.js";
 
-// for CrazyGames local testing
-// (function ensureUseLocalSdk() {
-//   const url = new URL(window.location.href);
-//   if (!url.searchParams.has("useLocalSdk")) {
-//     url.searchParams.set("useLocalSdk", "true");
-//     window.location.replace(url.toString());
-//   }
-// })();
-
-async function init() {
-  try {
-    const user = await window.CrazyGames.SDK.user.getUser();
-    return user;
-  } catch (e) {
-    console.log("Get user error: ", e);
-  }
-}
+// for localStorage Incognito Support
+(function () {
+  window.safeStorage = {
+    getItem(key) {
+      try {
+        return window.localStorage.getItem(key);
+      } catch (e) {
+        console.warn("localStorage unavailable, using fallback:", e);
+        return null;
+      }
+    },
+    setItem(key, value) {
+      try {
+        window.localStorage.setItem(key, value);
+      } catch (e) {
+        console.warn("localStorage unavailable, skipping setItem:", e);
+      }
+    },
+    removeItem(key) {
+      try {
+        window.localStorage.removeItem(key);
+      } catch (e) {
+        console.warn("localStorage unavailable, skipping removeItem:", e);
+      }
+    },
+  };
+})();
 
 window.onload = async function () {
+  // for loading
   const loading = document.getElementById("rb-loading");
-
-  await window.CrazyGames.SDK.init();
-  window.CrazyGames.SDK.game.loadingStart();
-  const user = await init();
+  // trigger loading start event
+  const user = null;
+  // loading done
   loading.style.display = "none";
-  window.CrazyGames.SDK.game.loadingStop();
+  // trigger loading stop event
 
   const canvas = document.getElementById("viewport");
   const context = canvas.getContext("2d");
@@ -34,15 +44,16 @@ window.onload = async function () {
   const game = new BubbleShooterGame(canvas, context, user);
   const ui = new UIManager(game);
 
-  try {
-    const result = await window.CrazyGames.SDK.ad.hasAdblock();
-    console.log("Adblock usage fetched", result);
-    if (result) {
-      ui.setAdblockDetected();
-    }
-  } catch (e) {
-    console.error("Error checking for adblock:", e);
-  }
+  // set adblock detection
+  // try {
+  //   const result = await window.CrazyGames.SDK.ad.hasAdblock();
+  //   console.log("Adblock usage fetched", result);
+  //   if (result) {
+  //     ui.setAdblockDetected();
+  //   }
+  // } catch (e) {
+  //   console.error("Error checking for adblock:", e);
+  // }
 
   // UI 매니저를 게임에 연결
   game.ui = ui;
