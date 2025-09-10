@@ -208,9 +208,6 @@ export class SettingsManager {
           <button class="modal-button modal-button-secondary settings-reset">${getLocalizedString(
             "reset"
           )}</button>
-          <button class="modal-button modal-button-primary modal-close">${getLocalizedString(
-            "close"
-          )}</button>
         </div>
       </div>
     `;

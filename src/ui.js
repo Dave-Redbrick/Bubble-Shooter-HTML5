@@ -19,7 +19,9 @@ export class UIManager {
       itemSlotAim: document.getElementById("item-slot-aim"),
       itemSlotBomb: document.getElementById("item-slot-bomb"),
       aimItemTimer: document.querySelector("#item-slot-aim .item-timer"),
-      aimItemTimerText: document.querySelector("#item-slot-aim .item-timer-text"),
+      aimItemTimerText: document.querySelector(
+        "#item-slot-aim .item-timer-text"
+      ),
       canvas: document.getElementById("viewport"),
       canvasContainer: null,
       chancesContainer: document.querySelector(".chances-container"),
@@ -36,19 +38,23 @@ export class UIManager {
 
   localizeStaticUI() {
     document.title = getLocalizedString("gameTitle");
-    document.querySelectorAll("[data-localize]").forEach(el => {
-        el.textContent = getLocalizedString(el.dataset.localize);
+    document.querySelectorAll("[data-localize]").forEach((el) => {
+      el.textContent = getLocalizedString(el.dataset.localize);
     });
     this.elements.modalCloseButton.textContent = getLocalizedString("cancel");
 
     const adIconHTML = `<div class="ad-chip">${getLocalizedString("ad")}</div>`;
-    this.elements.itemSlotAim.querySelectorAll(".ad-chip").forEach(el => el.remove());
-    this.elements.itemSlotBomb.querySelectorAll(".ad-chip").forEach(el => el.remove());
+    this.elements.itemSlotAim
+      .querySelectorAll(".ad-chip")
+      .forEach((el) => el.remove());
+    this.elements.itemSlotBomb
+      .querySelectorAll(".ad-chip")
+      .forEach((el) => el.remove());
     if (this.elements.itemSlotAim) {
-        this.elements.itemSlotAim.insertAdjacentHTML('beforeend', adIconHTML);
+      this.elements.itemSlotAim.insertAdjacentHTML("beforeend", adIconHTML);
     }
     if (this.elements.itemSlotBomb) {
-        this.elements.itemSlotBomb.insertAdjacentHTML('beforeend', adIconHTML);
+      this.elements.itemSlotBomb.insertAdjacentHTML("beforeend", adIconHTML);
     }
   }
 
@@ -78,13 +84,13 @@ export class UIManager {
     // 아이템 슬롯 클릭
     if (this.elements.itemSlotAim) {
       this.elements.itemSlotAim.addEventListener("click", () => {
-        this.game.onItemButtonClick('aim');
+        this.game.onItemButtonClick("aim");
       });
     }
 
     if (this.elements.itemSlotBomb) {
       this.elements.itemSlotBomb.addEventListener("click", () => {
-        this.game.onItemButtonClick('bomb');
+        this.game.onItemButtonClick("bomb");
       });
     }
 
@@ -114,11 +120,13 @@ export class UIManager {
 
   updateLevelProgress(progress, scoreToNext) {
     // Display level progress
-    const levelIndicator = document.querySelector('.level-circle');
+    const levelIndicator = document.querySelector(".level-circle");
     if (levelIndicator) {
       const progressPercent = Math.floor(progress * 100);
-      levelIndicator.title = getLocalizedString("scoreToNextLevel", { score: scoreToNext.toLocaleString() });
-      
+      levelIndicator.title = getLocalizedString("scoreToNextLevel", {
+        score: scoreToNext.toLocaleString(),
+      });
+
       // Color change based on progress
       const hue = progress * 120; // 0 (red) ~ 120 (green)
       levelIndicator.style.background = `conic-gradient(hsl(${hue}, 70%, 50%) ${progressPercent}%, #666 ${progressPercent}%)`;
@@ -131,44 +139,45 @@ export class UIManager {
     // Aim Item
     const aimSlot = this.elements.itemSlotAim;
     if (aimSlot && items.aimGuide) {
-        const { active, remaining, duration, available } = items.aimGuide;
-        const aimText = aimSlot.querySelector('span');
-        const adChip = aimSlot.querySelector('.ad-chip');
+      const { active, remaining, duration, available } = items.aimGuide;
+      const aimText = aimSlot.querySelector("span");
+      const adChip = aimSlot.querySelector(".ad-chip");
 
-        if (active) {
-            aimSlot.classList.add('active');
-            aimText.innerHTML = getLocalizedString("itemAimActive");
-            const remainingSeconds = remaining / 1000;
-            this.elements.aimItemTimerText.textContent = remainingSeconds.toFixed(1) + 's';
-            this.elements.aimItemTimerText.style.display = 'block';
+      if (active) {
+        aimSlot.classList.add("active");
+        aimText.innerHTML = getLocalizedString("itemAimActive");
+        const remainingSeconds = remaining / 1000;
+        this.elements.aimItemTimerText.textContent =
+          remainingSeconds.toFixed(1) + "s";
+        this.elements.aimItemTimerText.style.display = "block";
 
-            const remainingPercent = (remaining / duration) * 100;
-            this.elements.aimItemTimer.style.height = `${remainingPercent}%`;
-            if (adChip) adChip.style.display = 'none';
-        } else {
-            aimSlot.classList.remove('active');
-            this.elements.aimItemTimer.style.height = '0%';
-            this.elements.aimItemTimerText.style.display = 'none';
-            aimText.innerHTML = getLocalizedString("itemAim"); // Keep this to restore the text
-            if (adChip) adChip.style.display = 'block';
-        }
+        const remainingPercent = (remaining / duration) * 100;
+        this.elements.aimItemTimer.style.height = `${remainingPercent}%`;
+        if (adChip) adChip.style.display = "none";
+      } else {
+        aimSlot.classList.remove("active");
+        this.elements.aimItemTimer.style.height = "0%";
+        this.elements.aimItemTimerText.style.display = "none";
+        aimText.innerHTML = getLocalizedString("itemAim"); // Keep this to restore the text
+        if (adChip) adChip.style.display = "block";
+      }
 
-        if (available === 0 && !active) {
-            aimSlot.classList.add('disabled');
-        } else {
-            aimSlot.classList.remove('disabled');
-        }
+      if (available === 0 && !active) {
+        aimSlot.classList.add("disabled");
+      } else {
+        aimSlot.classList.remove("disabled");
+      }
     }
 
     // Bomb Item
     const bombSlot = this.elements.itemSlotBomb;
     if (bombSlot && items.bombBubble) {
-        const { available } = items.bombBubble;
-        if (available === 0) {
-            bombSlot.classList.add('disabled');
-        } else {
-            bombSlot.classList.remove('disabled');
-        }
+      const { available } = items.bombBubble;
+      if (available === 0) {
+        bombSlot.classList.add("disabled");
+      } else {
+        bombSlot.classList.remove("disabled");
+      }
     }
   }
 
@@ -187,11 +196,15 @@ export class UIManager {
   showModal(title, text, onConfirm) {
     this.elements.modalTitle.textContent = title;
     this.elements.modalText.textContent = text;
-    this.elements.modalConfirmButton.textContent = getLocalizedString("confirm");
+    this.elements.modalConfirmButton.textContent =
+      getLocalizedString("confirm");
 
     // Clone and replace the button to remove old event listeners
     const newConfirmButton = this.elements.modalConfirmButton.cloneNode(true);
-    this.elements.modalConfirmButton.parentNode.replaceChild(newConfirmButton, this.elements.modalConfirmButton);
+    this.elements.modalConfirmButton.parentNode.replaceChild(
+      newConfirmButton,
+      this.elements.modalConfirmButton
+    );
     this.elements.modalConfirmButton = newConfirmButton;
 
     const confirmAndHide = () => {
@@ -212,7 +225,8 @@ export class UIManager {
   showAdblockerModal() {
     this.elements.modalTitle.textContent = getLocalizedString("adblockTitle");
     this.elements.modalText.textContent = getLocalizedString("adblockMessage");
-    this.elements.modalConfirmButton.textContent = getLocalizedString("refresh");
+    this.elements.modalConfirmButton.textContent =
+      getLocalizedString("refresh");
     this.elements.modalCloseButton.textContent = getLocalizedString("close");
 
     const newConfirmButton = this.elements.modalConfirmButton.cloneNode(true);
@@ -245,7 +259,7 @@ export class UIManager {
   // 반응형 캔버스 크기 조정 - 컨테이너에 꽉 채우기
   resizeCanvas() {
     const canvas = this.elements.canvas;
-    const container = document.querySelector('.game-area');
+    const container = document.querySelector(".game-area");
 
     if (!container || !canvas) return;
 
@@ -311,14 +325,14 @@ export class UIManager {
     const container = this.elements.chancesContainer;
     if (!container) return;
 
-    container.innerHTML = ''; // 이전 아이콘들 삭제
+    container.innerHTML = ""; // 이전 아이콘들 삭제
     const chancesLeft = chancesUntilNewRow - shotsWithoutPop;
 
     for (let i = 0; i < chancesUntilNewRow; i++) {
-      const pip = document.createElement('div');
-      pip.className = 'chance-pip';
+      const pip = document.createElement("div");
+      pip.className = "chance-pip";
       if (i < chancesLeft) {
-        pip.classList.add('full');
+        pip.classList.add("full");
       }
       container.appendChild(pip);
     }
@@ -329,51 +343,12 @@ export class UIManager {
   }
 
   disableItemButtons() {
-    this.elements.itemSlotAim.classList.add('disabled');
-    this.elements.itemSlotBomb.classList.add('disabled');
+    this.elements.itemSlotAim.classList.add("disabled");
+    this.elements.itemSlotBomb.classList.add("disabled");
   }
 
   enableItemButtons() {
-    this.elements.itemSlotAim.classList.remove('disabled');
-    this.elements.itemSlotBomb.classList.remove('disabled');
-  }
-
-  // Show daily challenge notification
-  showDailyChallengeNotification() {
-    if (this.game.dailyChallenge && this.game.dailyChallenge.challenges.length > 0) {
-      const notification = document.createElement('div');
-      notification.className = 'daily-challenge-notification';
-      notification.innerHTML = `
-        <div class="notification-content">
-          <div class="notification-icon">🎯</div>
-          <div class="notification-text">
-            <div class="notification-title">${getLocalizedString("newDailyChallenge")}</div>
-            <div class="notification-desc">${getLocalizedString("checkTodaysChallenge")}</div>
-          </div>
-          <button class="notification-close">&times;</button>
-        </div>
-      `;
-      
-      document.body.appendChild(notification);
-      
-      // Open daily challenge modal on click
-      notification.addEventListener('click', () => {
-        this.game.dailyChallenge.showChallengesModal();
-        notification.remove();
-      });
-      
-      // Close button
-      notification.querySelector('.notification-close').addEventListener('click', (e) => {
-        e.stopPropagation();
-        notification.remove();
-      });
-      
-      // Auto-remove after 10 seconds
-      setTimeout(() => {
-        if (notification.parentNode) {
-          notification.remove();
-        }
-      }, 10000);
-    }
+    this.elements.itemSlotAim.classList.remove("disabled");
+    this.elements.itemSlotBomb.classList.remove("disabled");
   }
 }
