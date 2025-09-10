@@ -79,10 +79,9 @@ export class Renderer {
   renderGameOverLine() {
     const ctx = this.context;
     const levelData = this.game.levelData;
-    const player = this.game.player;
 
-    // DANGER LINE을 실제 게임오버 지점과 동일하게 설정
-    const lineY = player.y - levelData.tileHeight * 3;
+    // DANGER LINE을 실제 게임오버 지점(levelData.deadlineY)과 동일하게 설정
+    const lineY = levelData.deadlineY;
 
     // 점선으로 게임 오버 선 그리기
     ctx.save();
