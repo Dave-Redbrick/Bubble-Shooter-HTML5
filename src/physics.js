@@ -76,7 +76,7 @@ export class PhysicsEngine {
     const dy = bubbleCenterY - tileCenterY;
     const distance = Math.sqrt(dx * dx + dy * dy);
 
-    if (distance > 0) {
+    if (distance > 0 && distance < levelData.radius * 2) {
       const targetDistance = levelData.radius * 2;
       const ratio = targetDistance / distance;
       player.bubble.x = tileCenterX + dx * ratio - levelData.tileWidth / 2;
@@ -87,31 +87,16 @@ export class PhysicsEngine {
   snapBubbleWithPrecision() {
     const player = this.game.player;
     const levelData = this.game.levelData;
-    const centerX = player.bubble.x + levelData.tileWidth / 2;
-    const centerY = player.bubble.y + levelData.tileHeight / 2;
-    const gridPos = this.findBestGridPosition(centerX, centerY);
+    const angleRad = this.degToRad(player.bubble.angle);
+    const velocity = { x: Math.cos(angleRad), y: -Math.sin(angleRad) };
 
-    gridPos.x = Math.max(0, Math.min(gridPos.x, levelData.columns - 1));
-    gridPos.y = Math.max(0, Math.min(gridPos.y, levelData.rows - 1));
+    const finalGridPos = this.determineFinalGridPosition(
+      player.bubble.x,
+      player.bubble.y,
+      velocity
+    );
 
-    let addTile = false;
-    let finalGridPos = { ...gridPos };
-
-    if (levelData.tiles[gridPos.x][gridPos.y].type !== -1) {
-      finalGridPos = this.findEmptyPosition(
-        gridPos.x,
-        gridPos.y,
-        centerX,
-        centerY
-      );
-      if (finalGridPos) {
-        addTile = true;
-      }
-    } else {
-      addTile = true;
-    }
-
-    if (addTile && finalGridPos) {
+    if (finalGridPos) {
       player.bubble.visible = false;
       const coord = this.getTileCoordinate(finalGridPos.x, finalGridPos.y);
       this.game.hitPosition = {
@@ -146,39 +131,69 @@ export class PhysicsEngine {
     this.handleTurnEnd();
   }
 
-  findBestGridPosition(x, y) {
+  /**
+   * [수정됨] 버블의 좌표와 속도를 기반으로 최종 안착할 그리드 위치를 결정합니다.
+   * 이 함수는 이제 예측과 실제 스냅의 유일한 기준점(Single Source of Truth)입니다.
+   */
+  determineFinalGridPosition(bubbleX, bubbleY, velocity) {
+    const levelData = this.game.levelData;
+    const centerX = bubbleX + levelData.tileWidth / 2;
+    const centerY = bubbleY + levelData.tileHeight / 2;
+
+    const gridPos = this.findBestGridPosition(centerX, centerY, velocity);
+
+    if (!gridPos || levelData.tiles[gridPos.x][gridPos.y].type === -1) {
+      return gridPos;
+    }
+
+    return this.findEmptyPosition(gridPos.x, gridPos.y, centerX, centerY);
+  }
+
+  /**
+   * [수정됨] 가장 가까운 그리드 위치를 찾되, 이동 방향을 고려하여 더 안정적으로 결정합니다.
+   */
+  findBestGridPosition(x, y, velocity) {
     const levelData = this.game.levelData;
     const baseGridPos = this.getGridPosition(x, y);
-    const candidates = [
-      baseGridPos,
-      { x: baseGridPos.x - 1, y: baseGridPos.y },
-      { x: baseGridPos.x + 1, y: baseGridPos.y },
-      { x: baseGridPos.x, y: baseGridPos.y - 1 },
-      { x: baseGridPos.x, y: baseGridPos.y + 1 },
-    ];
-    let bestPos = baseGridPos;
-    let minDistance = Infinity;
+    const tilerow = (baseGridPos.y + this.game.rowOffset) % 2;
+    const offsets = [[0, 0], ...NEIGHBOR_OFFSETS[tilerow]];
 
-    for (const pos of candidates) {
+    let bestPos = null;
+    let minScore = Infinity;
+
+    for (const offset of offsets) {
+      const newX = baseGridPos.x + offset[0];
+      const newY = baseGridPos.y + offset[1];
+
       if (
-        pos.x < 0 ||
-        pos.x >= levelData.columns ||
-        pos.y < 0 ||
-        pos.y >= levelData.rows
+        newX < 0 ||
+        newX >= levelData.columns ||
+        newY < 0 ||
+        newY >= levelData.rows
       )
         continue;
 
-      const coord = this.getTileCoordinate(pos.x, pos.y);
-      const distance = this.getDistance(
-        x,
-        y,
-        coord.tileX + levelData.tileWidth / 2,
-        coord.tileY + levelData.tileHeight / 2
-      );
+      const coord = this.getTileCoordinate(newX, newY);
+      const tileCenterX = coord.tileX + levelData.tileWidth / 2;
+      const tileCenterY = coord.tileY + levelData.tileHeight / 2;
 
-      if (distance < minDistance) {
-        minDistance = distance;
-        bestPos = pos;
+      const distance = this.getDistance(x, y, tileCenterX, tileCenterY);
+
+      // 방향성 가중치: 날아온 방향과 가까운 쪽을 선호
+      const dx = tileCenterX - x;
+      const dy = tileCenterY - y;
+      const dotProduct = dx * velocity.x + dy * velocity.y;
+      const directionPenalty =
+        1 -
+        dotProduct /
+          (Math.sqrt(dx * dx + dy * dy) *
+            Math.sqrt(velocity.x * velocity.x + velocity.y * velocity.y) || 1);
+
+      const score = distance * (1 + directionPenalty * 0.25); // 방향에 25% 가중치
+
+      if (score < minScore) {
+        minScore = score;
+        bestPos = { x: newX, y: newY };
       }
     }
     return bestPos;
@@ -187,17 +202,12 @@ export class PhysicsEngine {
   findEmptyPosition(x, y, bubbleX, bubbleY) {
     const levelData = this.game.levelData;
     const positions = [];
-    const offsets = [
-      { x: 0, y: 1 },
-      { x: -1, y: 0 },
-      { x: 1, y: 0 },
-      { x: -1, y: 1 },
-      { x: 1, y: 1 },
-    ];
+    const tilerow = (y + this.game.rowOffset) % 2;
+    const offsets = NEIGHBOR_OFFSETS[tilerow];
 
     for (const offset of offsets) {
-      const newX = x + offset.x;
-      const newY = y + offset.y;
+      const newX = x + offset[0];
+      const newY = y + offset[1];
       if (
         newX >= 0 &&
         newX < levelData.columns &&
@@ -219,12 +229,6 @@ export class PhysicsEngine {
     if (positions.length > 0) {
       positions.sort((a, b) => a.distance - b.distance);
       return positions[0];
-    }
-
-    for (let newRow = y + 1; newRow < levelData.rows; newRow++) {
-      if (levelData.tiles[x][newRow].type === -1) {
-        return { x, y: newRow };
-      }
     }
     return null;
   }
@@ -290,23 +294,18 @@ export class PhysicsEngine {
     return false;
   }
 
-  /**
-   * 발사될 버블의 궤적을 계산하여 반환합니다.
-   * @param {number} startX - 시작 X 좌표
-   * @param {number} startY - 시작 Y 좌표
-   * @param {number} angle - 발사 각도
-   * @param {number} maxBounces - 최대 반사 횟수
-   * @returns {Array<object>} 궤적 점들의 배열
-   */
   calculateTrajectory(startX, startY, angle, maxBounces = 5) {
     const trajectory = [];
     const levelData = this.game.levelData;
-    let x = startX;
-    let y = startY;
+
+    let x = startX - levelData.tileWidth / 2;
+    let y = startY - levelData.tileHeight / 2;
     let currentAngle = angle;
     let bounces = 0;
+
     const step = 2;
     const maxSteps = 3000;
+    const collisionDistance = levelData.radius * 2 - 2;
     let steps = 0;
 
     while (bounces <= maxBounces && y > levelData.y && steps < maxSteps) {
@@ -322,11 +321,8 @@ export class PhysicsEngine {
       const rightBound = levelData.x + levelData.width - levelData.tileWidth;
 
       if (nextX <= leftBound || nextX >= rightBound) {
-        if (nextX <= leftBound) {
-          x = leftBound;
-        } else {
-          x = rightBound;
-        }
+        if (nextX <= leftBound) x = leftBound;
+        else x = rightBound;
         currentAngle = 180 - currentAngle;
         bounces++;
         trajectory.push({
@@ -349,16 +345,16 @@ export class PhysicsEngine {
       }
 
       if (y <= levelData.y) {
-        const gridPos = this.findBestGridPosition(
-          x + levelData.tileWidth / 2,
-          levelData.y + levelData.tileHeight / 2
-        );
-        const finalCoord = this.getTileCoordinate(gridPos.x, 0);
-        trajectory.push({
-          x: finalCoord.tileX + levelData.tileWidth / 2,
-          y: finalCoord.tileY + levelData.tileHeight / 2,
-          isFinal: true,
-        });
+        const velocity = { x: Math.cos(angleRad), y: -Math.sin(angleRad) };
+        const gridPos = this.determineFinalGridPosition(x, y, velocity);
+        if (gridPos) {
+          const finalCoord = this.getTileCoordinate(gridPos.x, gridPos.y);
+          trajectory.push({
+            x: finalCoord.tileX + levelData.tileWidth / 2,
+            y: finalCoord.tileY + levelData.tileHeight / 2,
+            isFinal: true,
+          });
+        }
         break;
       }
 
@@ -381,35 +377,29 @@ export class PhysicsEngine {
               bubbleCenterY,
               tileCenterX,
               tileCenterY
-            ) <
-            levelData.radius * 2 - 2
+            ) < collisionDistance
           ) {
             collision = true;
 
-            // --- 수정된 예측 로직 ---
-            // 1. 실제 충돌처럼 표면 위치로 보정
+            let adjustedX = x;
+            let adjustedY = y;
             const dxAdjust = bubbleCenterX - tileCenterX;
             const dyAdjust = bubbleCenterY - tileCenterY;
             const dist = Math.sqrt(dxAdjust * dxAdjust + dyAdjust * dyAdjust);
-            let adjustedX = bubbleCenterX;
-            let adjustedY = bubbleCenterY;
-
             if (dist > 0) {
-              const adjustRatio = (levelData.radius * 2) / dist;
-              adjustedX = tileCenterX + dxAdjust * adjustRatio;
-              adjustedY = tileCenterY + dyAdjust * adjustRatio;
+              const ratio = (levelData.radius * 2) / dist;
+              adjustedX =
+                tileCenterX + dxAdjust * ratio - levelData.tileWidth / 2;
+              adjustedY =
+                tileCenterY + dyAdjust * ratio - levelData.tileHeight / 2;
             }
 
-            // 2. 보정된 위치를 기준으로 최종 안착 지점 계산
-            const gridPos = this.findBestGridPosition(adjustedX, adjustedY);
-            const finalPos =
-              this.findEmptyPosition(
-                gridPos.x,
-                gridPos.y,
-                adjustedX,
-                adjustedY
-              ) || gridPos;
-            // --- 수정 종료 ---
+            const velocity = { x: Math.cos(angleRad), y: -Math.sin(angleRad) };
+            const finalPos = this.determineFinalGridPosition(
+              adjustedX,
+              adjustedY,
+              velocity
+            );
 
             if (finalPos) {
               const finalCoord = this.getTileCoordinate(finalPos.x, finalPos.y);
@@ -514,16 +504,7 @@ export class PhysicsEngine {
     return { x: gridX, y: gridY };
   }
 
-  circleIntersection(x1, y1, r1, x2, y2, r2) {
-    const distance = this.getDistance(x1, y1, x2, y2);
-    return distance < r1 + r2;
-  }
-
   degToRad(angle) {
     return angle * (Math.PI / 180);
-  }
-
-  radToDeg(angle) {
-    return angle * (180 / Math.PI);
   }
 }

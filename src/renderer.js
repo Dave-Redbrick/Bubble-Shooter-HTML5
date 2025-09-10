@@ -111,7 +111,7 @@ export class Renderer {
     const player = this.game.player;
     const levelData = this.game.levelData;
 
-    // 궤적 계산
+    // 궤적 계산 - 실제 발사와 동일한 중심점 사용
     const startX = player.x + levelData.tileWidth / 2;
     const startY = player.y + levelData.tileHeight / 2;
     const trajectory = this.game.physics.calculateTrajectory(
