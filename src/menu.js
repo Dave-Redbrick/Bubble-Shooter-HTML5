@@ -9,7 +9,6 @@ export class MenuManager {
   showMainMenu() {
     // onGamePause
     // window.CrazyGames.SDK.game.gameplayStop();
-    this.game.sound.setMuted(true);
     this.createMainMenu();
   }
 
@@ -89,7 +88,6 @@ export class MenuManager {
 
       // onGameUnpause
       // window.CrazyGames.SDK.game.gameplayStart();
-      this.game.sound.setMuted(false);
     }
   }
 }

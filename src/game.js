@@ -254,6 +254,7 @@ export class BubbleShooterGame {
     if (this.previousGameState) {
       this.setGameState(this.previousGameState);
       this.previousGameState = null;
+      this.sound.setMuted(false);
     }
   }
 
@@ -350,7 +351,6 @@ export class BubbleShooterGame {
     } else if (itemName === "bomb") {
       this.useBombBubble();
     }
-    this.sound.setMuted(false);
   }
 
   useAimGuide() {
