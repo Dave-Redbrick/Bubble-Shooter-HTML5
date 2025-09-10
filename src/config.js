@@ -39,7 +39,8 @@ export function getLevelConfig(canvas) {
   const radius = tileWidth / 2;
 
   const topMargin = 0;
-  const deadlineY = canvas.height * 0.8; // 데드라인을 80% 지점으로 조정
+  // 화면 비율에 따라 데드라인 위치를 조정합니다.
+  const deadlineY = aspectRatio < 1 ? canvas.height * 0.80 : canvas.height * 0.88;
   const availableHeight = deadlineY - topMargin;
 
   // 사용 가능한 높이에 따라 실제 행 수를 계산합니다.
