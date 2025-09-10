@@ -23,15 +23,22 @@ export class InputHandler {
 
   onTouchEnd(e) {
     e.preventDefault();
+    const gameState = this.game.gameState;
+
     if (this.isDragging) {
-        const gameState = this.game.gameState;
-        if (gameState === CONFIG.GAME_STATES.READY) {
-            this.shootBubble();
-            if (this.sound) {
-                this.sound.play("shoot");
-            }
+      if (gameState === CONFIG.GAME_STATES.READY) {
+        this.shootBubble();
+        if (this.sound) {
+          this.sound.play("shoot");
         }
+      }
+    } else {
+      // Handle tap for game over restart
+      if (gameState === CONFIG.GAME_STATES.GAME_OVER) {
+        this.game.newGame();
+      }
     }
+
     this.isDragging = false;
   }
 
