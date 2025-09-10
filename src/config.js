@@ -53,20 +53,30 @@ export function getLevelConfig(canvas) {
   const deviceType = getDeviceType();
   const baseConfig = CONFIG.LEVEL_CONFIGS[deviceType];
 
-  // Force the level width to match the canvas width
-  const levelWidth = canvas.width;
-  const x = 0;
-
-  // Derive tile and row dimensions from the fixed width
-  const tileWidth = levelWidth / (baseConfig.COLUMNS + 0.5);
-  const tileHeight = tileWidth; // Keep bubbles circular
-  const rowHeight = tileHeight * 0.866;
-  const radius = tileWidth / 2;
-
-  // Set the top margin and calculate available height for rows
+  let tileWidth, tileHeight, rowHeight, radius, x, levelWidth;
   const topMargin = 0;
   const deadlineY = canvas.height * 0.72;
   const availableHeight = deadlineY - topMargin;
+
+  if (deviceType === "DESKTOP" || deviceType === "TABLET") {
+    // Original logic for wider screens: base size on height
+    const PREFERRED_ROWS = 18;
+    rowHeight = availableHeight / PREFERRED_ROWS;
+    tileHeight = rowHeight / 0.866;
+    tileWidth = tileHeight;
+    radius = tileWidth / 2;
+    levelWidth = baseConfig.COLUMNS * tileWidth + tileWidth / 2;
+    x = (canvas.width - levelWidth) / 2; // Center the play area
+  } else {
+    // 'MOBILE'
+    // New logic for narrow screens: base size on width
+    levelWidth = canvas.width;
+    x = 0;
+    tileWidth = levelWidth / (baseConfig.COLUMNS + 0.5);
+    tileHeight = tileWidth;
+    rowHeight = tileHeight * 0.866;
+    radius = tileWidth / 2;
+  }
 
   const dynamicConfig = {
     ...baseConfig,
@@ -76,11 +86,11 @@ export function getLevelConfig(canvas) {
     RADIUS: radius,
   };
 
-  // Dynamically calculate the number of rows based on the available height
+  // Common logic for calculating rows and final dimensions
   const calculatedRows = Math.floor(availableHeight / dynamicConfig.ROW_HEIGHT);
   const rows = Math.max(baseConfig.ROWS, calculatedRows);
-
-  const levelHeight = (rows - 1) * dynamicConfig.ROW_HEIGHT + dynamicConfig.TILE_HEIGHT;
+  const levelHeight =
+    (rows - 1) * dynamicConfig.ROW_HEIGHT + dynamicConfig.TILE_HEIGHT;
   const y = topMargin;
 
   return {
