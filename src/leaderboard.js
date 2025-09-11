@@ -45,7 +45,7 @@ export class LeaderboardManager {
   }
 
   async loadScores() {
-    const apiResult = await this.api.getUserData();
+    const apiResult = await this.api.getUserDataList();
     if (apiResult.success && Array.isArray(apiResult.data)) {
       this.scores = apiResult.data.map(item => ({
         id: item.id,
@@ -98,35 +98,6 @@ export class LeaderboardManager {
     await this.loadScores();
   }
 
-  addScore(playerName, score, level) {
-    const existingIndex = this.scores.findIndex(
-      (s) => s.id === (this.userIdentity ? this.userIdentity.id : null)
-    );
-
-    if (existingIndex !== -1) {
-      if (score > this.scores[existingIndex].score) {
-        this.scores[existingIndex].score = score;
-        this.scores[existingIndex].level = level;
-        this.scores[existingIndex].name = playerName;
-        this.scores[existingIndex].date = new Date().toLocaleDateString();
-      } else {
-        return false; // No update needed
-      }
-    } else {
-      // Add locally for now, will be replaced on next load
-      this.scores.push({
-        id: this.userIdentity ? this.userIdentity.id : "local",
-        name: playerName,
-        score: score,
-        level: level,
-        date: new Date().toLocaleDateString(),
-      });
-    }
-
-    this.scores.sort((a, b) => b.score - a.score);
-    window.safeStorage.setItem("beadsShooterLeaderboard", JSON.stringify(this.scores));
-    return true;
-  }
 
   showLeaderboard() {
     const modal = document.createElement("div");
@@ -216,7 +187,6 @@ export class LeaderboardManager {
 
     const handleScoreSubmit = async () => {
       const name = nameInput.value.trim() || "Anonymous";
-      this.addScore(name, score, level); // Update locally immediately
       modal.remove();
       await this.submitScore(name, score, level);
       this.showLeaderboard();
@@ -236,17 +206,13 @@ export class LeaderboardManager {
   }
 
   handleGameOver(score, level) {
-    const userScore = this.userIdentity ? this.scores.find(s => s.id === this.userIdentity.id) : null;
+    const userScoreEntry = this.userIdentity ? this.scores.find(s => s.id === this.userIdentity.id) : null;
+    const userHighScore = userScoreEntry ? userScoreEntry.score : 0;
 
-    // The user's global high score across all games
-    const globalHighScore = this.game.highScore;
-
-    if (score > globalHighScore) {
-        // This is a new high score, so we must prompt for name and update.
-        this.promptForName(score, level);
+    if (score > userHighScore) {
+      this.promptForName(score, level);
     } else {
-        // Not a new high score, just show the leaderboard.
-        this.showLeaderboard();
+      this.showLeaderboard();
     }
   }
 }

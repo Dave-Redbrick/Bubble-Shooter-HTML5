@@ -1,6 +1,6 @@
 const API_BASE_URL = "https://auds.poki.io/v0/";
 const GAME_ID = "use-your-poki-game-id"; // This should be replaced with the actual game ID from Poki.
-const ENDPOINT = "userdata/leaderboard";
+const ENDPOINT = "userdata/tests";
 
 export class ApiClient {
   constructor() {
@@ -13,7 +13,7 @@ export class ApiClient {
       return { success: false, message: "Game ID not set" };
     }
     try {
-      const response = await fetch(this.apiUrl);
+      const response = await fetch(`${this.apiUrl}?sort=-score`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }

@@ -30,10 +30,18 @@ import { UIManager } from "./ui.js";
 })();
 
 async function checkApiAvailability() {
+  const API_BASE_URL = "https://auds.poki.io/v0/";
+  const GAME_ID = "use-your-poki-game-id";
+  const ENDPOINT = "userdata/tests";
+  const apiUrl = `${API_BASE_URL}${GAME_ID}/${ENDPOINT}`;
+
   try {
-    const response = await fetch("https://auds.poki.io/v0/", { method: 'HEAD' });
+    // We use a GET request with a limit of 1 as a lightweight check.
+    // A HEAD request might not be supported by all endpoints.
+    const response = await fetch(`${apiUrl}?limit=1`);
     return response.ok;
   } catch (error) {
+    console.error("API availability check failed:", error);
     return false;
   }
 }
