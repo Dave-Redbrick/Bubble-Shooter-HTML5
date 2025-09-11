@@ -1,49 +1,71 @@
-// leaderboard system(removed)
+import { ApiClient } from "./api.js";
+
 export class LeaderboardManager {
   constructor(game) {
     this.game = game;
     this.scores = [];
+    this.api = new ApiClient();
+    this.userId = this.getUserId();
     this.loadScores();
   }
 
-  loadScores() {
-    const saved = window.safeStorage.getItem("beadsShooterLeaderboard");
-    if (saved) {
-      this.scores = JSON.parse(saved);
+  getUserId() {
+    let userId = window.safeStorage.getItem("beadsShooterUserId");
+    if (!userId) {
+      userId = "user-" + Date.now() + Math.random();
+      window.safeStorage.setItem("beadsShooterUserId", userId);
+    }
+    return userId;
+  }
+
+  async loadScores() {
+    const apiResult = await this.api.getScores();
+    if (apiResult.success) {
+      this.scores = apiResult.data;
+    } else {
+      const saved = window.safeStorage.getItem("beadsShooterLeaderboard");
+      if (saved) {
+        this.scores = JSON.parse(saved);
+      }
     }
   }
 
-  saveScores() {
+  async saveScores() {
+    // Save to local as a fallback
     window.safeStorage.setItem(
       "beadsShooterLeaderboard",
       JSON.stringify(this.scores)
     );
+
+    // Save to API
+    const userScore = this.scores.find((s) => s.id === this.userId);
+    if (userScore) {
+      await this.api.addScore(userScore);
+    }
   }
 
   addScore(playerName, score, level) {
-    const existing = this.scores.find((s) => s.name === playerName);
+    const existing = this.scores.find((s) => s.id === this.userId);
 
     if (existing) {
-      // 기존 플레이어: 더 높은 점수일 때만 갱신
       if (score > existing.score) {
         existing.score = score;
         existing.level = level;
         existing.date = new Date().toLocaleDateString();
+        existing.name = playerName; // Update name as well
       } else {
-        return false; // 낮은 점수는 무시
+        return false;
       }
     } else {
-      // 새 플레이어: 점수 추가
       this.scores.push({
         name: playerName,
         score: score,
         level: level,
         date: new Date().toLocaleDateString(),
-        id: Date.now(),
+        id: this.userId,
       });
     }
 
-    // 정렬 및 상위 10개 유지 후 저장
     this.scores.sort((a, b) => b.score - a.score);
     this.scores = this.scores.slice(0, 10);
     this.saveScores();
@@ -56,8 +78,11 @@ export class LeaderboardManager {
 
     let scoresHTML = "";
     this.scores.forEach((score, index) => {
+      const isCurrentUser = score.id === this.userId;
       scoresHTML += `
-        <div class="leaderboard-item ${index < 3 ? "top-three" : ""}">
+        <div class="leaderboard-item ${
+          index < 3 ? "top-three" : ""
+        } ${isCurrentUser ? "current-player" : ""}">
           <div class="rank">${index + 1}</div>
           <div class="player-name">${score.name}</div>
           <div class="player-score">${score.score.toLocaleString()}</div>
@@ -88,6 +113,7 @@ export class LeaderboardManager {
           ${scoresHTML}
         </div>
         <div class="modal-footer">
+          <button class="modal-button" id="updateNameBtn">Update Name</button>
           <button class="modal-button modal-button-secondary clear-leaderboard">Clear Scores</button>
         </div>
       </div>
@@ -95,8 +121,14 @@ export class LeaderboardManager {
 
     document.body.appendChild(modal);
 
-    // 이벤트 리스너
+    // Event listeners
     modal.querySelector(".modal-close").addEventListener("click", () => {
+      modal.remove();
+    });
+
+    modal.querySelector("#updateNameBtn").addEventListener("click", () => {
+      const userScore = this.scores.find(s => s.id === this.userId);
+      this.promptForName(userScore.score, userScore.level, true);
       modal.remove();
     });
 
@@ -109,15 +141,19 @@ export class LeaderboardManager {
     });
   }
 
-  promptForName(score, level) {
+  promptForName(score, level, isUpdate = false) {
     const modal = document.createElement("div");
     modal.className = "name-input-modal";
+    const title = isUpdate ? "Update Your Name" : "New High Score!";
+    const userScore = this.scores.find(s => s.id === this.userId);
+    const currentName = userScore ? userScore.name : "";
+
     modal.innerHTML = `
       <div class="name-input-content">
-        <h2>New High Score!</h2>
+        <h2>${title}</h2>
         <p>Score: ${score.toLocaleString()}</p>
         <p>Level: ${level}</p>
-        <input type="text" id="playerName" placeholder="Enter your name" maxlength="10">
+        <input type="text" id="playerName" placeholder="Enter your name" maxlength="10" value="${currentName}">
         <div class="name-input-buttons">
           <button id="submitScore" class="modal-button modal-button-primary">Submit</button>
           <button id="skipScore" class="modal-button modal-button-secondary">Skip</button>
@@ -140,6 +176,7 @@ export class LeaderboardManager {
     modal.querySelector("#submitScore").addEventListener("click", submitScore);
     modal.querySelector("#skipScore").addEventListener("click", () => {
       modal.remove();
+      this.showLeaderboard();
     });
 
     nameInput.addEventListener("keypress", (e) => {
@@ -150,13 +187,12 @@ export class LeaderboardManager {
   }
 
   checkNewRecord(score, level) {
-    if (
-      this.scores.length < 10 ||
-      score > this.scores[this.scores.length - 1].score
-    ) {
-      // this.promptForName(score, level);
-      // const name = this.game.user ? this.game.user.username : "Anonymous";
-      // this.addScore(name, score, level) && this.showLeaderboard();
+    const userScore = this.scores.find((s) => s.id === this.userId);
+    const isHighScore =
+      this.scores.length < 10 || score > this.scores[this.scores.length - 1].score;
+
+    if (isHighScore && (!userScore || score > userScore.score)) {
+      this.promptForName(score, level);
       return true;
     }
     return false;
