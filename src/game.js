@@ -18,7 +18,7 @@ import { ComboManager } from "./combo.js";
 import { TutorialManager } from "./tutorial.js";
 import { SettingsManager } from "./settings.js";
 import { MenuManager } from "./menu.js";
-// import { LeaderboardManager } from "./leaderboard.js";
+import { LeaderboardManager } from "./leaderboard.js";
 
 export class Tile {
   constructor(x, y, type, shift = 0) {
@@ -177,9 +177,10 @@ export class BubbleShooterGame {
     this.combo = new ComboManager(this);
     this.tutorial = new TutorialManager(this);
     this.menu = new MenuManager(this);
-    // this.leaderboard = new LeaderboardManager(this);
+    this.leaderboard = new LeaderboardManager(this);
 
     await this.sound.initialize();
+    await this.leaderboard.initialize();
 
     this.canvas.addEventListener("mousemove", (e) => this.input.onMouseMove(e));
     this.canvas.addEventListener("mousedown", (e) => this.input.onMouseDown(e));
@@ -623,7 +624,9 @@ export class BubbleShooterGame {
     this.effects.startColorFlash("#ff0000", 0.15);
 
     // 리더보드 체크
-    // this.leaderboard.checkNewRecord(this.score, this.currentLevel);
+    if (window.isLeaderboardEnabled) {
+      this.leaderboard.handleGameOver(this.score, this.currentLevel);
+    }
 
     if (this.sound) {
       this.sound.play("gameOver");

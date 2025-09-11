@@ -678,6 +678,23 @@ input[type="range"]::-moz-range-thumb {
   font-weight: bold;
   color: #f8f9fa;
 }
+
+.leaderboard-item.current-player {
+  background-color: #3a3a3a;
+  border-left: 3px solid #4caf50;
+}
+
+.edit-name-icon {
+  cursor: pointer;
+  margin-left: 8px;
+  font-size: 1.2em;
+  display: inline-block;
+  transition: transform 0.2s ease-in-out;
+}
+
+.edit-name-icon:hover {
+  transform: scale(1.2);
+}
 .stat-item .stat-label {
   font-size: 14px;
   opacity: 0.8;

@@ -33,9 +33,9 @@ export class MenuManager {
             <button class="menu-btn" id="settings">${getLocalizedString(
               "settings"
             )}</button>
-            <button class="menu-btn" id="leaderboard">${getLocalizedString(
-              "leaderboard"
-            )}</button>
+            <button class="menu-btn" id="leaderboard" ${
+              window.isLeaderboardEnabled ? "" : 'style="display: none;"'
+            }>${getLocalizedString("leaderboard")}</button>
             <button class="menu-btn" id="tutorial">${getLocalizedString(
               "help"
             )}</button>
