@@ -11,6 +11,7 @@ export class MenuManager {
   showMainMenu() {
     // onGamePause
     // window.CrazyGames.SDK.game.gameplayStop();
+    PokiSDK.gameplayStop();
     this.createMainMenu();
   }
 
@@ -26,10 +27,18 @@ export class MenuManager {
         
         <div class="menu-body">
           <div class="menu-buttons">
-            <button class="menu-btn" id="newGame">${getLocalizedString("newGame")}</button>
-            <button class="menu-btn" id="settings">${getLocalizedString("settings")}</button>
-            <!-- <button class="menu-btn" id="leaderboard">${getLocalizedString("leaderboard")}</button> -->
-            <button class="menu-btn" id="tutorial">${getLocalizedString("help")}</button>
+            <button class="menu-btn" id="newGame">${getLocalizedString(
+              "newGame"
+            )}</button>
+            <button class="menu-btn" id="settings">${getLocalizedString(
+              "settings"
+            )}</button>
+            <button class="menu-btn" id="leaderboard">${getLocalizedString(
+              "leaderboard"
+            )}</button>
+            <button class="menu-btn" id="tutorial">${getLocalizedString(
+              "help"
+            )}</button>
           </div>
         </div>
       </div>
@@ -93,19 +102,24 @@ export class MenuManager {
 
       // onGameUnpause
       // window.CrazyGames.SDK.game.gameplayStart();
+      PokiSDK.gameplayStart();
     }
   }
 
   updateButtonLabels() {
     if (!this.isOpen) return;
 
-    this.modal.querySelector("h1").textContent = getLocalizedString("gameTitle");
-    this.modal.querySelector("#newGame").textContent = getLocalizedString("newGame");
-    this.modal.querySelector("#settings").textContent = getLocalizedString("settings");
+    this.modal.querySelector("h1").textContent =
+      getLocalizedString("gameTitle");
+    this.modal.querySelector("#newGame").textContent =
+      getLocalizedString("newGame");
+    this.modal.querySelector("#settings").textContent =
+      getLocalizedString("settings");
     const leaderboardButton = this.modal.querySelector("#leaderboard");
     if (leaderboardButton) {
-        leaderboardButton.textContent = getLocalizedString("leaderboard");
+      leaderboardButton.textContent = getLocalizedString("leaderboard");
     }
-    this.modal.querySelector("#tutorial").textContent = getLocalizedString("help");
+    this.modal.querySelector("#tutorial").textContent =
+      getLocalizedString("help");
   }
 }

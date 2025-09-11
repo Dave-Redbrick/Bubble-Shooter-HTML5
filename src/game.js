@@ -208,6 +208,7 @@ export class BubbleShooterGame {
         activateSound();
         // onGameStart
         // window.CrazyGames.SDK.game.gameplayStart();
+        PokiSDK.gameplayStart();
       },
       { once: true }
     );
@@ -291,8 +292,6 @@ export class BubbleShooterGame {
     this.initialized = true;
     this.hasHappytime = false;
     this.main(0);
-    // onGameStart
-    // window.CrazyGames.SDK.game.gameplayStart();
   }
 
   main(tFrame) {
@@ -389,9 +388,8 @@ export class BubbleShooterGame {
       this.gameState === CONFIG.GAME_STATES.GAME_OVER ||
       this.gameState === CONFIG.GAME_STATES.PAUSED
     )
-      return; // Do not allow using items while already paused
+      return;
 
-    this.sound.setMuted(true);
     this.previousGameState = this.gameState;
     this.setGameState(CONFIG.GAME_STATES.PAUSED);
 
@@ -409,18 +407,26 @@ export class BubbleShooterGame {
     const info = itemInfo[itemName];
 
     this.ui.showModal(info.title, info.description, () => {
-      // This is the confirm callback.
-      // Ad integration point. e.g., pokiSDK.rewardedBreak().then((withReward) => { ... });
-      console.log("Starting ad (Poki/CrazyGames integration point)");
-      alert(getLocalizedString("adPlaceholder")); // Placeholder for successful ad view
+      PokiSDK.rewardedBreak(() => {
+        // Additional pause/mute logic if needed
+        this.sound.setMuted(true);
+      }).then((success) => {
+        // Unmute and resume regardless of ad result
+        this.sound.setMuted(false);
 
-      if (itemName === "aim") {
-        this.items.aimGuide.available++;
-      } else if (itemName === "bomb") {
-        this.items.bombBubble.available++;
-      }
-      this.useItem(itemName);
-      this.updateUI();
+        if (success) {
+          // Give reward only if ad was successfully displayed
+          if (itemName === "aim") {
+            this.items.aimGuide.available++;
+          } else if (itemName === "bomb") {
+            this.items.bombBubble.available++;
+          }
+          this.useItem(itemName);
+        }
+
+        this.updateUI();
+        console.log("Rewarded break finished, proceeding to game");
+      });
     });
   }
 
@@ -440,29 +446,41 @@ export class BubbleShooterGame {
   }
 
   newGame() {
-    this.score = 0;
-    this.currentLevel = 1;
-    this.rowOffset = 0;
-    this.maxChances = 5;
-    this.chancesUntilNewRow = this.maxChances;
-    this.shotsWithoutPop = 0;
-    this.comboCount = 0;
-    this.wallBounceCount = 0;
+    PokiSDK.commercialBreak(() => {
+      // 게임과 오디오 일시 정지
+      this.sound.setMuted(true);
+    }).then(() => {
+      // 광고 종료 후 게임 재개
+      this.sound.setMuted(false);
 
-    this.items.aimGuide.active = false;
+      this.score = 0;
+      this.currentLevel = 1;
+      this.rowOffset = 0;
+      this.maxChances = 5;
+      this.chancesUntilNewRow = this.maxChances;
+      this.shotsWithoutPop = 0;
+      this.comboCount = 0;
+      this.wallBounceCount = 0;
 
-    // 콤보 리셋
-    this.combo.resetCombo();
+      this.items.aimGuide.active = false;
 
-    this.setGameState(CONFIG.GAME_STATES.READY);
-    this.levelManager.initializeGame(); // 랜덤 레벨 생성
-    this.nextBubble();
-    this.nextBubble();
-    this.updateUI();
+      // 콤보 리셋
+      this.combo.resetCombo();
 
-    if (this.ui) {
-      this.ui.enableItemButtons();
-    }
+      this.setGameState(CONFIG.GAME_STATES.READY);
+      this.levelManager.initializeGame(); // 랜덤 레벨 생성
+      this.nextBubble();
+      this.nextBubble();
+      this.updateUI();
+
+      if (this.ui) {
+        this.ui.enableItemButtons();
+      }
+
+      // onGameStart
+      // window.CrazyGames.SDK.game.gameplayStart();
+      PokiSDK.gameplayStart();
+    });
   }
 
   updateScore(points) {
@@ -600,6 +618,7 @@ export class BubbleShooterGame {
   onGameOver() {
     // onGameStop
     // window.CrazyGames.SDK.game.gameplayStop();
+    PokiSDK.gameplayStop();
     this.combo.resetCombo();
     this.effects.startColorFlash("#ff0000", 0.15);
 

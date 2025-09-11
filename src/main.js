@@ -34,9 +34,11 @@ window.onload = async function () {
   const loading = document.getElementById("rb-loading");
   // trigger loading start event
   const user = null;
+  await PokiSDK.init();
   // loading done
   loading.style.display = "none";
   // trigger loading stop event
+  PokiSDK.gameLoadingFinished();
 
   const canvas = document.getElementById("viewport");
   const context = canvas.getContext("2d");
