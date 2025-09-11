@@ -466,6 +466,12 @@ export class Renderer {
     const centerY = h / 2;
     const time = Date.now() * 0.001;
 
+    // 화면 크기에 따른 텍스트 크기 계산
+    const baseFontSize = Math.min(this.game.levelData.tileWidth * 2, 50); // 기본 폰트 크기
+    const largeFontSize = `bold ${baseFontSize}px 'Varela Round'`;
+    const mediumFontSize = `${baseFontSize * 0.5}px 'Varela Round'`;
+    const smallFontSize = `${baseFontSize * 0.35}px 'Varela Round'`;
+
     // 1) 어두운 오버레이
     ctx.fillStyle = "rgba(0, 0, 0, 0.85)";
     ctx.fillRect(0, 0, w, h);
@@ -473,7 +479,6 @@ export class Renderer {
     // 2) 움직이는 데코 버블
     ctx.save();
     this.decorBubbles.forEach((b, i) => {
-      // y 위치에 시간에 따라 사인 곡선으로 소폭 흔들림
       const offsetY = Math.sin(time * (0.5 + i * 0.02)) * 5;
       ctx.globalAlpha = b.alpha;
       ctx.fillStyle = b.color;
@@ -489,37 +494,43 @@ export class Renderer {
 
     // 3) Final Score 텍스트
     ctx.textAlign = "center";
-    ctx.font = "bold 60px 'Varela Round'";
+    ctx.font = largeFontSize;
     ctx.fillStyle = "#4ecdc4";
     ctx.shadowColor = "#4ecdc4";
     ctx.shadowBlur = 15;
     ctx.fillText(
       getLocalizedString("finalScore", { score: this.game.score }),
       centerX,
-      centerY - 60
+      centerY - baseFontSize
     );
     ctx.shadowBlur = 0;
 
     // 4) High Score 갱신 시 추가 메시지
     const isNewHigh = this.game.score === this.game.highScore;
     if (isNewHigh) {
-      ctx.font = "28px 'Varela Round'";
+      ctx.font = mediumFontSize;
       ctx.fillStyle = "#FFD600";
       ctx.shadowColor = "#FFD600";
       ctx.shadowBlur = 15;
-      ctx.fillText(getLocalizedString("newHighScore"), centerX, centerY + 20);
+      ctx.fillText(
+        getLocalizedString("newHighScore"),
+        centerX,
+        centerY + baseFontSize * 0.3
+      );
       ctx.shadowBlur = 0;
       if (!this.game.hasHappytime) {
-        // onHappytime
-        // window.CrazyGames.SDK.game.happytime();
         this.game.hasHappytime = true;
       }
     }
 
     // 5) 재시작 안내
-    ctx.font = "20px 'Varela Round'";
+    ctx.font = smallFontSize;
     ctx.fillStyle = "rgba(255,255,255,0.8)";
-    ctx.fillText(getLocalizedString("clickToRestart"), centerX, centerY + 60);
+    ctx.fillText(
+      getLocalizedString("clickToRestart"),
+      centerX,
+      centerY + baseFontSize
+    );
 
     ctx.textAlign = "left";
   }
