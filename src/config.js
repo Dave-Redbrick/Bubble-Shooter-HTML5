@@ -1,24 +1,5 @@
 // Game configuration and constants
 export const CONFIG = {
-  CANVAS: {
-    WIDTH: 1920,
-    HEIGHT: 1080,
-  },
-  // 디바이스별 레벨 설정 - 캔버스 중앙 배치
-  LEVEL_CONFIGS: {
-    MOBILE: {
-      COLUMNS: 16,
-      ROWS: 12,
-    },
-    TABLET: {
-      COLUMNS: 18,
-      ROWS: 13,
-    },
-    DESKTOP: {
-      COLUMNS: 20,
-      ROWS: 14,
-    },
-  },
   BUBBLE: {
     COLORS: 7,
     SPEED: 2000,
@@ -40,57 +21,41 @@ export const CONFIG = {
   },
 };
 
-// 현재 디바이스 타입 감지
-export function getDeviceType() {
-  const width = window.innerWidth;
-  if (width < 768) return "MOBILE";
-  if (width < 1200) return "TABLET";
-  return "DESKTOP";
-}
-
-// 디바이스에 맞는 레벨 설정 가져오기 - 중앙 배치 계산 포함
+// 화면 비율에 따라 레벨 설정을 동적으로 가져옵니다.
 export function getLevelConfig(canvas) {
-  const deviceType = getDeviceType();
-  const baseConfig = CONFIG.LEVEL_CONFIGS[deviceType];
+  const aspectRatio = canvas.width / canvas.height;
 
-  // 캔버스 높이에 따라 타일 크기 동적 계산
-  const PREFERRED_ROWS = 18; // 이 값을 기준으로 버블 크기 결정
-  const topMargin = 0; // 버블 그리드 상단 여백
-  const deadlineY = canvas.height * 0.72;
-  const availableHeight = deadlineY - topMargin;
+  // 화면 비율에 따라 열(Column) 수를 결정합니다.
+  // 세로가 길면(portrait) 11열로 줄여 버블 크기를 키움, 가로가 길면(landscape) 22열
+  const columns = aspectRatio < 1 ? 11 : 22;
+  const baseRows = 12; // 초기 최소 행 수
 
-  const rowHeight = availableHeight / PREFERRED_ROWS;
-  const tileHeight = rowHeight / 0.866;
-  const tileWidth = tileHeight;
+  // 모든 계산은 캔버스 너비를 기준으로 합니다. 이렇게 하면 항상 수평으로 맞습니다.
+  const levelWidth = canvas.width;
+  const x = 0;
+  const tileWidth = levelWidth / (columns + 0.5);
+  const tileHeight = tileWidth;
+  const rowHeight = tileHeight * 0.866; // 6각형 그리드의 행 높이
   const radius = tileWidth / 2;
 
-  const dynamicConfig = {
-    ...baseConfig,
+  const topMargin = 0;
+  // 화면 비율에 따라 데드라인 위치를 조정합니다. (데스크톱 데드라인 수정)
+  const deadlineY = canvas.height * 0.8;
+  const availableHeight = deadlineY - topMargin;
+
+  // 사용 가능한 높이에 따라 실제 행 수를 계산합니다.
+  const calculatedRows = Math.floor(availableHeight / rowHeight);
+  const rows = Math.max(baseRows, calculatedRows) + 1;
+  const levelHeight = (rows - 1) * rowHeight + tileHeight;
+  const y = topMargin;
+
+  return {
+    COLUMNS: columns,
+    ROWS: rows,
     TILE_WIDTH: tileWidth,
     TILE_HEIGHT: tileHeight,
     ROW_HEIGHT: rowHeight,
     RADIUS: radius,
-  };
-
-  // 사용 가능한 세로 공간을 기반으로 행(row) 수를 동적으로 계산
-  const calculatedRows = Math.floor(availableHeight / dynamicConfig.ROW_HEIGHT);
-  // 최소 행 수를 보장하면서, 계산된 행 수가 더 크면 그 값을 사용
-  const rows = Math.max(dynamicConfig.ROWS, calculatedRows);
-
-  // 새로운 행 수에 따라 레벨 영역 크기 다시 계산
-  const levelWidth =
-    dynamicConfig.COLUMNS * dynamicConfig.TILE_WIDTH +
-    dynamicConfig.TILE_WIDTH / 2;
-  const levelHeight =
-    (rows - 1) * dynamicConfig.ROW_HEIGHT + dynamicConfig.TILE_HEIGHT;
-
-  // 실제 캔버스 너비를 사용하여 중앙에 배치
-  const x = (canvas.width - levelWidth) / 2;
-  const y = topMargin;
-
-  return {
-    ...dynamicConfig,
-    ROWS: rows, // 동적으로 계산된 행 수로 덮어쓰기
     X: x,
     Y: y,
     WIDTH: levelWidth,

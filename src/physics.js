@@ -8,57 +8,72 @@ export class PhysicsEngine {
   stateShootBubble(dt) {
     const player = this.game.player;
     const levelData = this.game.levelData;
-
     const speed = (this.game.canvas.height / 1080) * player.bubble.speed;
+
+    const totalDist = dt * speed;
+    // 버블이 한 프레임에 이동하는 거리가 버블 반지름의 절반보다 작도록 보장
+    const subStep = levelData.radius / 2;
+    const numSubSteps = Math.ceil(totalDist / subStep);
+
+    if (numSubSteps <= 0) return;
+
     const angleRad = this.degToRad(player.bubble.angle);
+    const stepX = (totalDist / numSubSteps) * Math.cos(angleRad);
+    const stepY = (totalDist / numSubSteps) * -1 * Math.sin(angleRad);
 
-    // 버블 위치 업데이트
-    player.bubble.x += dt * speed * Math.cos(angleRad);
-    player.bubble.y += dt * speed * -1 * Math.sin(angleRad);
+    for (let k = 0; k < numSubSteps; k++) {
+      // Move one sub-step
+      player.bubble.x += stepX;
+      player.bubble.y += stepY;
 
-    const leftBound = levelData.x;
-    const rightBound = levelData.x + levelData.width - levelData.tileWidth;
+      // --- Boundary checks ---
+      const leftBound = levelData.x;
+      const rightBound = levelData.x + levelData.width - levelData.tileWidth;
 
-    if (player.bubble.x <= leftBound) {
-      player.bubble.x = leftBound;
-      player.bubble.angle = 180 - player.bubble.angle;
-      this.game.wallBounceCount++;
-    } else if (player.bubble.x >= rightBound) {
-      player.bubble.x = rightBound;
-      player.bubble.angle = 180 - player.bubble.angle;
-      this.game.wallBounceCount++;
-    }
+      if (player.bubble.x <= leftBound) {
+        player.bubble.x = leftBound;
+        player.bubble.angle = 180 - player.bubble.angle;
+        this.game.wallBounceCount++;
+        return; // Recalculate angle in next frame
+      } else if (player.bubble.x >= rightBound) {
+        player.bubble.x = rightBound;
+        player.bubble.angle = 180 - player.bubble.angle;
+        this.game.wallBounceCount++;
+        return; // Recalculate angle in next frame
+      }
 
-    if (player.bubble.y <= levelData.y) {
-      player.bubble.y = levelData.y;
-      this.snapBubbleWithPrecision();
-      return;
-    }
+      if (player.bubble.y <= levelData.y) {
+        player.bubble.y = levelData.y;
+        this.snapBubbleWithPrecision();
+        return;
+      }
 
-    const bubbleCenterX = player.bubble.x + levelData.tileWidth / 2;
-    const bubbleCenterY = player.bubble.y + levelData.tileHeight / 2;
+      // --- Collision check ---
+      const bubbleCenterX = player.bubble.x + levelData.tileWidth / 2;
+      const bubbleCenterY = player.bubble.y + levelData.tileHeight / 2;
+      const collisionDistance = levelData.radius * 2 - 2;
 
-    for (let i = 0; i < levelData.columns; i++) {
-      for (let j = 0; j < levelData.rows; j++) {
-        const tile = levelData.tiles[i][j];
-        if (tile.type < 0) continue;
+      for (let i = 0; i < levelData.columns; i++) {
+        for (let j = 0; j < levelData.rows; j++) {
+          const tile = levelData.tiles[i][j];
+          if (tile.type < 0) continue;
 
-        const coord = this.getTileCoordinate(i, j);
-        const tileCenterX = coord.tileX + levelData.tileWidth / 2;
-        const tileCenterY = coord.tileY + levelData.tileHeight / 2;
-        const collisionDistance = levelData.radius * 2 - 2;
+          const coord = this.getTileCoordinate(i, j);
+          const tileCenterX = coord.tileX + levelData.tileWidth / 2;
+          const tileCenterY = coord.tileY + levelData.tileHeight / 2;
 
-        if (
-          this.getDistance(
-            bubbleCenterX,
-            bubbleCenterY,
-            tileCenterX,
-            tileCenterY
-          ) < collisionDistance
-        ) {
-          this.adjustBubblePositionBeforeSnap(tile, i, j);
-          this.snapBubbleWithPrecision();
-          return;
+          if (
+            this.getDistance(
+              bubbleCenterX,
+              bubbleCenterY,
+              tileCenterX,
+              tileCenterY
+            ) < collisionDistance
+          ) {
+            this.adjustBubblePositionBeforeSnap(tile, i, j);
+            this.snapBubbleWithPrecision();
+            return; // Exit after collision
+          }
         }
       }
     }
@@ -275,15 +290,16 @@ export class PhysicsEngine {
 
   checkGameOver() {
     const levelData = this.game.levelData;
-    const player = this.game.player;
-    const dangerY = player.y - levelData.tileHeight * 3;
+    // 일관성을 위해 레벨 설정의 deadlineY를 사용합니다.
+    const deadline = levelData.deadlineY;
 
     for (let i = 0; i < levelData.columns; i++) {
       for (let j = 0; j < levelData.rows; j++) {
         const tile = levelData.tiles[i][j];
         if (tile.type !== -1) {
           const coord = this.getTileCoordinate(i, j);
-          if (coord.tileY + levelData.tileHeight >= dangerY) {
+          // 버블의 하단이 데드라인을 지났는지 확인합니다.
+          if (coord.tileY + levelData.tileHeight >= deadline) {
             this.game.onGameOver();
             this.game.setGameState(CONFIG.GAME_STATES.GAME_OVER);
             return true;

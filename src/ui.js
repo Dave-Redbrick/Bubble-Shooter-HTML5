@@ -1,11 +1,9 @@
-import { getDeviceType } from "./config.js";
 import { getLocalizedString } from "./localization.js";
 
 // UI Manager Class
 export class UIManager {
   constructor(game) {
     this.game = game;
-    this.currentDeviceType = getDeviceType();
     this.adblockEnabled = false;
     this.initializeElements();
     this.setupEventListeners();
@@ -30,6 +28,7 @@ export class UIManager {
       modalText: document.getElementById("modal-text"),
       modalConfirmButton: document.getElementById("modal-confirm-button"),
       modalCloseButton: document.getElementById("modal-close-button"),
+      rightSidebar: document.querySelector(".right-sidebar"),
     };
 
     this.createCanvasContainer();
@@ -256,69 +255,106 @@ export class UIManager {
     this.elements.modal.style.display = "flex";
   }
 
-  // 반응형 캔버스 크기 조정 - 컨테이너에 꽉 채우기
+  // 반응형 캔버스 크기 조정 - 기기별로 최적화된 비율로 컨테이너에 맞춤
   resizeCanvas() {
     const canvas = this.elements.canvas;
     const container = document.querySelector(".game-area");
+    const canvasContainer = this.elements.canvasContainer;
+    const rightSidebar = this.elements.rightSidebar;
 
-    if (!container || !canvas) return;
+    if (!container || !canvas || !canvasContainer) return;
 
-    const newWidth = container.clientWidth;
-    const newHeight = container.clientHeight;
+    const containerWidth = container.clientWidth;
+    const containerHeight = container.clientHeight;
 
-    // 캔버스의 내부 해상도를 컨테이너 크기와 일치시킴
-    // 크기가 변경되었을 때만 게임 로직에 알림
-    if (canvas.width !== newWidth || canvas.height !== newHeight) {
-      canvas.width = newWidth;
-      canvas.height = newHeight;
+    let newWidth;
+    let newHeight;
 
-      // 캔버스 크기가 변경되었으므로 게임에 알려서 내부 요소들을 재배치하도록 함
-      if (this.game && typeof this.game.handleResize === "function") {
-        this.game.handleResize();
+    // 모바일 기기 회전 감지 (가로/세로)
+    const isHorizontal = window.innerWidth > window.innerHeight;
+
+    if (isHorizontal) {
+      // 가로 모드
+      if (window.innerWidth >= 800) {
+        // 데스크톱/태블릿 가로: 4:3 비율
+        const aspectRatio = 4 / 3;
+        if (containerWidth / containerHeight > aspectRatio) {
+          newHeight = containerHeight;
+          newWidth = newHeight * aspectRatio;
+        } else {
+          newWidth = containerWidth;
+          newHeight = newWidth / aspectRatio;
+        }
+      } else {
+        // 모바일 가로: 16:9 비율
+        const aspectRatio = 16 / 9;
+        if (containerWidth / containerHeight > aspectRatio) {
+          newHeight = containerHeight;
+          newWidth = newHeight * aspectRatio;
+        } else {
+          newWidth = containerWidth;
+          newHeight = newWidth / aspectRatio;
+        }
+      }
+    } else {
+      // 세로 모드
+      if (window.innerWidth >= 800) {
+        // 데스크톱/태블릿 세로: 3:4 비율
+        const aspectRatio = 3 / 4;
+        if (containerWidth / containerHeight > aspectRatio) {
+          newHeight = containerHeight;
+          newWidth = newHeight * aspectRatio;
+        } else {
+          newWidth = containerWidth;
+          newHeight = newWidth / aspectRatio;
+        }
+      } else {
+        // 모바일 세로: 9:16 비율
+        const aspectRatio = 9 / 16;
+        if (containerWidth / containerHeight > aspectRatio) {
+          newHeight = containerHeight;
+          newWidth = newHeight * aspectRatio;
+        } else {
+          newWidth = containerWidth;
+          newHeight = newWidth / aspectRatio;
+        }
       }
     }
 
-    // 디바이스 타입 변경 감지 로직은 유지
-    const newDeviceType = getDeviceType();
-    if (newDeviceType !== this.currentDeviceType) {
-      this.currentDeviceType = newDeviceType;
+    // 레이아웃을 위해 캔버스 컨테이너에 크기 적용
+    canvasContainer.style.width = `${newWidth}px`;
+    canvasContainer.style.height = `${newHeight}px`;
+
+    // 캔버스 해상도 업데이트 (정수 값으로 반올림)
+    const roundedWidth = Math.round(newWidth);
+    const roundedHeight = Math.round(newHeight);
+
+    if (canvas.width !== roundedWidth || canvas.height !== roundedHeight) {
+      canvas.width = roundedWidth;
+      canvas.height = roundedHeight;
+
+      if (this.game && typeof this.game.handleResize === "function") {
+        this.game.handleResize();
+      }
     }
   }
 
   // 모바일 터치 이벤트 처리
   setupMobileEvents() {
     const canvas = this.elements.canvas;
-
     if (!canvas) return;
 
-    // 터치 이벤트를 마우스 이벤트로 변환
-    canvas.addEventListener("touchstart", (e) => {
-      e.preventDefault();
-      const touch = e.touches[0];
-      if (touch) {
-        const mouseEvent = new MouseEvent("mousedown", {
-          clientX: touch.clientX,
-          clientY: touch.clientY,
-        });
-        canvas.dispatchEvent(mouseEvent);
-      }
-    });
-
-    canvas.addEventListener("touchmove", (e) => {
-      e.preventDefault();
-      const touch = e.touches[0];
-      if (touch) {
-        const mouseEvent = new MouseEvent("mousemove", {
-          clientX: touch.clientX,
-          clientY: touch.clientY,
-        });
-        canvas.dispatchEvent(mouseEvent);
-      }
-    });
-
-    canvas.addEventListener("touchend", (e) => {
-      e.preventDefault();
-    });
+    // Check for touch support
+    if ("ontouchstart" in window) {
+      // Use new touch handlers
+      canvas.addEventListener("touchstart", (e) =>
+        this.game.input.onTouchStart(e)
+      );
+      canvas.addEventListener("touchmove", (e) =>
+        this.game.input.onTouchMove(e)
+      );
+      canvas.addEventListener("touchend", (e) => this.game.input.onTouchEnd(e));
+    }
   }
 
   updateChances(shotsWithoutPop, chancesUntilNewRow) {
