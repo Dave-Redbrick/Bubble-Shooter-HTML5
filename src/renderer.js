@@ -493,7 +493,11 @@ export class Renderer {
     ctx.fillStyle = "#4ecdc4";
     ctx.shadowColor = "#4ecdc4";
     ctx.shadowBlur = 15;
-    ctx.fillText(`Final Score: ${this.game.score}`, centerX, centerY - 60);
+    ctx.fillText(
+      getLocalizedString("finalScore", { score: this.game.score }),
+      centerX,
+      centerY - 60
+    );
     ctx.shadowBlur = 0;
 
     // 4) High Score 갱신 시 추가 메시지
@@ -503,11 +507,7 @@ export class Renderer {
       ctx.fillStyle = "#FFD600";
       ctx.shadowColor = "#FFD600";
       ctx.shadowBlur = 15;
-      ctx.fillText(
-        "🎉 New High Score! Congratulations! 🎉",
-        centerX,
-        centerY + 20
-      );
+      ctx.fillText(getLocalizedString("newHighScore"), centerX, centerY + 20);
       ctx.shadowBlur = 0;
       if (!this.game.hasHappytime) {
         // onHappytime
@@ -519,7 +519,7 @@ export class Renderer {
     // 5) 재시작 안내
     ctx.font = "20px 'Varela Round'";
     ctx.fillStyle = "rgba(255,255,255,0.8)";
-    ctx.fillText("Click to play again or press R", centerX, centerY + 60);
+    ctx.fillText(getLocalizedString("clickToRestart"), centerX, centerY + 60);
 
     ctx.textAlign = "left";
   }
