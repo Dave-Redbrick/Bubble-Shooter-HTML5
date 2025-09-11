@@ -45,7 +45,7 @@ export function getLevelConfig(canvas) {
 
   // 사용 가능한 높이에 따라 실제 행 수를 계산합니다.
   const calculatedRows = Math.floor(availableHeight / rowHeight);
-  const rows = Math.max(baseRows, calculatedRows);
+  const rows = Math.max(baseRows, calculatedRows) + 1;
   const levelHeight = (rows - 1) * rowHeight + tileHeight;
   const y = topMargin;
 
