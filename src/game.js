@@ -259,6 +259,8 @@ export class BubbleShooterGame {
       this.setGameState(this.previousGameState);
       this.previousGameState = null;
       this.sound.setMuted(false);
+      // onGameStart event trigger
+      PokiSDK.gameplayStart();
     }
   }
 
@@ -381,53 +383,61 @@ export class BubbleShooterGame {
   }
 
   onItemButtonClick(itemName) {
-    if (this.ui && this.ui.adblockEnabled) {
+    // Early returns for invalid states
+    if (this.ui?.adblockEnabled) {
       this.ui.showAdblockerModal();
       return;
     }
+
     if (
-      this.gameState === CONFIG.GAME_STATES.GAME_OVER ||
-      this.gameState === CONFIG.GAME_STATES.PAUSED
-    )
+      [CONFIG.GAME_STATES.GAME_OVER, CONFIG.GAME_STATES.PAUSED].includes(
+        this.gameState
+      )
+    ) {
       return;
+    }
 
-    this.previousGameState = this.gameState;
-    this.setGameState(CONFIG.GAME_STATES.PAUSED);
-
+    // Item configuration
     const itemInfo = {
       aim: {
         title: getLocalizedString("itemAimTitle"),
         description: getLocalizedString("itemAimDescription"),
+        onReward: () => this.items.aimGuide.available++,
       },
       bomb: {
         title: getLocalizedString("itemBombTitle"),
         description: getLocalizedString("itemBombDescription"),
+        onReward: () => this.items.bombBubble.available++,
       },
     };
 
     const info = itemInfo[itemName];
+    if (!info) return;
 
-    this.ui.showModal(info.title, info.description, () => {
-      PokiSDK.rewardedBreak(() => {
-        // Additional pause/mute logic if needed
+    // Pause game and show ad
+    this.previousGameState = this.gameState;
+    this.setGameState(CONFIG.GAME_STATES.PAUSED);
+    PokiSDK.gameplayStop();
+
+    this.ui.showModal(info.title, info.description, async () => {
+      try {
         this.sound.setMuted(true);
-      }).then((success) => {
-        // Unmute and resume regardless of ad result
+        const success = await PokiSDK.rewardedBreak();
         this.sound.setMuted(false);
 
         if (success) {
-          // Give reward only if ad was successfully displayed
-          if (itemName === "aim") {
-            this.items.aimGuide.available++;
-          } else if (itemName === "bomb") {
-            this.items.bombBubble.available++;
-          }
+          info.onReward();
           this.useItem(itemName);
         }
 
         this.updateUI();
         console.log("Rewarded break finished, proceeding to game");
-      });
+        return success;
+      } catch (error) {
+        console.error("Ad error:", error);
+        this.sound.setMuted(false);
+        return false;
+      }
     });
   }
 
@@ -446,7 +456,7 @@ export class BubbleShooterGame {
     this.animationTime = 0;
   }
 
-  newGame() {
+  async newGame() {
     this.score = 0;
     this.currentLevel = 1;
     this.rowOffset = 0;
@@ -471,7 +481,7 @@ export class BubbleShooterGame {
       this.ui.enableItemButtons();
     }
     if (this.initialized) {
-      PokiSDK.commercialBreak(() => {
+      await PokiSDK.commercialBreak(() => {
         // 게임과 오디오 일시 정지
         this.sound.setMuted(true);
       }).then(() => {

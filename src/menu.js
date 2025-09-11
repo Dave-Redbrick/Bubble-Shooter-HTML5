@@ -58,7 +58,7 @@ export class MenuManager {
     // 새 게임
     this.modal.querySelector("#newGame").addEventListener("click", () => {
       this.game.newGame();
-      this.closeMenu();
+      this.closeMenu(false);
     });
 
     // 설정
@@ -94,7 +94,7 @@ export class MenuManager {
     });
   }
 
-  closeMenu() {
+  closeMenu(isGameStart = true) {
     if (this.modal) {
       this.modal.remove();
       this.modal = null;
@@ -102,7 +102,7 @@ export class MenuManager {
 
       // onGameUnpause
       // window.CrazyGames.SDK.game.gameplayStart();
-      PokiSDK.gameplayStart();
+      if (isGameStart) PokiSDK.gameplayStart();
     }
   }
 

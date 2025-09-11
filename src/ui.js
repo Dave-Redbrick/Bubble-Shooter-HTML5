@@ -193,26 +193,39 @@ export class UIManager {
   }
 
   showModal(title, text, onConfirm) {
-    this.elements.modalTitle.textContent = title;
-    this.elements.modalText.textContent = text;
-    this.elements.modalConfirmButton.textContent =
-      getLocalizedString("confirm");
+    // Validate parameters
+    if (!title || !text || typeof onConfirm !== "function") {
+      console.error("Invalid modal parameters");
+      return;
+    }
 
-    // Clone and replace the button to remove old event listeners
+    // Update modal content
+    Object.assign(this.elements.modalTitle, { textContent: title });
+    Object.assign(this.elements.modalText, { textContent: text });
+    Object.assign(this.elements.modalConfirmButton, {
+      textContent: getLocalizedString("confirm"),
+    });
+
+    // Create new button to clear event listeners
     const newConfirmButton = this.elements.modalConfirmButton.cloneNode(true);
-    this.elements.modalConfirmButton.parentNode.replaceChild(
-      newConfirmButton,
-      this.elements.modalConfirmButton
-    );
+    this.elements.modalConfirmButton.replaceWith(newConfirmButton);
     this.elements.modalConfirmButton = newConfirmButton;
 
-    const confirmAndHide = () => {
-      onConfirm();
-      this.hideModal();
+    // Setup confirmation handler
+    const confirmAndHide = async () => {
+      try {
+        await onConfirm();
+        this.hideModal();
+      } catch (error) {
+        console.error("Modal confirmation error:", error);
+        this.hideModal();
+      }
     };
 
+    // Add event listener
     newConfirmButton.addEventListener("click", confirmAndHide, { once: true });
 
+    // Show modal
     this.elements.modal.style.display = "flex";
   }
 
