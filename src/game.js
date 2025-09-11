@@ -180,6 +180,7 @@ export class BubbleShooterGame {
     this.leaderboard = new LeaderboardManager(this);
 
     await this.sound.initialize();
+    await this.leaderboard.initialize();
 
     this.canvas.addEventListener("mousemove", (e) => this.input.onMouseMove(e));
     this.canvas.addEventListener("mousedown", (e) => this.input.onMouseDown(e));
@@ -623,7 +624,9 @@ export class BubbleShooterGame {
     this.effects.startColorFlash("#ff0000", 0.15);
 
     // 리더보드 체크
-    this.leaderboard.checkNewRecord(this.score, this.currentLevel);
+    if (window.isLeaderboardEnabled) {
+      this.leaderboard.handleGameOver(this.score, this.currentLevel);
+    }
 
     if (this.sound) {
       this.sound.play("gameOver");

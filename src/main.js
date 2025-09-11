@@ -29,11 +29,38 @@ import { UIManager } from "./ui.js";
   };
 })();
 
+async function checkApiAvailability() {
+  try {
+    const response = await fetch("https://auds.poki.io/v0/", { method: 'HEAD' });
+    return response.ok;
+  } catch (error) {
+    return false;
+  }
+}
+
+async function isIncognito() {
+  try {
+    const { quota } = await navigator.storage.estimate();
+    // A common heuristic: if quota is less than 120MB, it's likely incognito.
+    return quota < 120 * 1024 * 1024;
+  } catch (e) {
+    // If the API is not supported or fails, assume not incognito but log it.
+    console.warn("Could not determine incognito mode, assuming not.", e);
+    return false;
+  }
+}
+
 window.onload = async function () {
   // for loading
   const loading = document.getElementById("rb-loading");
   // trigger loading start event
   const user = null;
+
+  // Leaderboard availability check
+  const apiAvailable = await checkApiAvailability();
+  const incognito = await isIncognito();
+  window.isLeaderboardEnabled = apiAvailable && !incognito;
+
   await PokiSDK.init();
   // loading done
   loading.style.display = "none";

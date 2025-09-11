@@ -6,7 +6,26 @@ export class LeaderboardManager {
     this.scores = [];
     this.api = new ApiClient();
     this.userIdentity = this.getUserIdentity(); // { id, secret }
-    this.loadScores();
+  }
+
+  async initialize() {
+    if (!window.isLeaderboardEnabled) return;
+
+    if (this.userIdentity) {
+      // Fetch user's latest score
+      const result = await this.api.getUserData(this.userIdentity.id);
+      if (result.success) {
+        const userScore = result.data.values.score || 0;
+        this.game.highScore = Math.max(this.game.highScore, userScore);
+      }
+    } else {
+      // Create a new user
+      const result = await this.api.createUserData({ values: { name: "Anonymous", score: 0, level: 0 }, data: {} });
+      if (result.success && result.data.id && result.data.secret) {
+        this.setUserIdentity(result.data);
+      }
+    }
+    await this.loadScores();
   }
 
   getUserIdentity() {
@@ -216,14 +235,18 @@ export class LeaderboardManager {
     });
   }
 
-  checkNewRecord(score, level) {
+  handleGameOver(score, level) {
     const userScore = this.userIdentity ? this.scores.find(s => s.id === this.userIdentity.id) : null;
-    const isHighScore = this.scores.length < 10 || score > this.scores[this.scores.length - 1].score;
 
-    if (isHighScore && (!userScore || score > userScore.score)) {
-      this.promptForName(score, level);
-      return true;
+    // The user's global high score across all games
+    const globalHighScore = this.game.highScore;
+
+    if (score > globalHighScore) {
+        // This is a new high score, so we must prompt for name and update.
+        this.promptForName(score, level);
+    } else {
+        // Not a new high score, just show the leaderboard.
+        this.showLeaderboard();
     }
-    return false;
   }
 }

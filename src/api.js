@@ -1,6 +1,6 @@
 const API_BASE_URL = "https://auds.poki.io/v0/";
 const GAME_ID = "use-your-poki-game-id"; // This should be replaced with the actual game ID from Poki.
-const ENDPOINT = "userdata/tests";
+const ENDPOINT = "userdata/leaderboard";
 
 export class ApiClient {
   constructor() {
@@ -8,14 +8,29 @@ export class ApiClient {
     this.apiUrl = `${API_BASE_URL}${this.gameId}/${ENDPOINT}`;
   }
 
-  async getUserData() {
+  async getUserDataList() {
     if (!this.gameId) {
       return { success: false, message: "Game ID not set" };
     }
     try {
-      // The user's example uses a query, but for a leaderboard, we usually get all scores.
-      // I'll fetch all for now, and it can be filtered later if needed.
       const response = await fetch(this.apiUrl);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      return { success: true, data };
+    } catch (error) {
+      console.error("Failed to get user data list:", error);
+      return { success: false, message: error.message };
+    }
+  }
+
+  async getUserData(id) {
+    if (!this.gameId) {
+      return { success: false, message: "Game ID not set" };
+    }
+    try {
+      const response = await fetch(`${this.apiUrl}/${id}`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
