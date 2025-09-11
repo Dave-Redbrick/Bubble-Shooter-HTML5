@@ -5,23 +5,37 @@ export class LeaderboardManager {
     this.game = game;
     this.scores = [];
     this.api = new ApiClient();
-    this.userId = this.getUserId();
+    this.userIdentity = this.getUserIdentity(); // { id, secret }
     this.loadScores();
   }
 
-  getUserId() {
-    let userId = window.safeStorage.getItem("beadsShooterUserId");
-    if (!userId) {
-      userId = "user-" + Date.now() + Math.random();
-      window.safeStorage.setItem("beadsShooterUserId", userId);
+  getUserIdentity() {
+    const identity = window.safeStorage.getItem("beadsShooterUserIdentity");
+    if (identity) {
+      return JSON.parse(identity);
     }
-    return userId;
+    return null;
+  }
+
+  setUserIdentity(identity) {
+    this.userIdentity = identity;
+    window.safeStorage.setItem(
+      "beadsShooterUserIdentity",
+      JSON.stringify(identity)
+    );
   }
 
   async loadScores() {
-    const apiResult = await this.api.getScores();
-    if (apiResult.success) {
-      this.scores = apiResult.data;
+    const apiResult = await this.api.getUserData();
+    if (apiResult.success && Array.isArray(apiResult.data)) {
+      this.scores = apiResult.data.map(item => ({
+        id: item.id,
+        name: item.values.name || 'Anonymous',
+        score: item.values.score || 0,
+        level: item.values.level || 1,
+        date: new Date(item.updatedAt).toLocaleDateString(),
+      }));
+      this.scores.sort((a, b) => b.score - a.score);
     } else {
       const saved = window.safeStorage.getItem("beadsShooterLeaderboard");
       if (saved) {
@@ -30,45 +44,68 @@ export class LeaderboardManager {
     }
   }
 
-  async saveScores() {
-    // Save to local as a fallback
-    window.safeStorage.setItem(
-      "beadsShooterLeaderboard",
-      JSON.stringify(this.scores)
-    );
+  async submitScore(playerName, score, level) {
+    const playerData = {
+      values: {
+        name: playerName,
+        score: score,
+        level: level,
+      },
+      data: {}, // Not used for now
+    };
 
-    // Save to API
-    const userScore = this.scores.find((s) => s.id === this.userId);
-    if (userScore) {
-      await this.api.addScore(userScore);
+    if (this.userIdentity) {
+      // Update existing score
+      const result = await this.api.updateUserData(
+        this.userIdentity.id,
+        this.userIdentity.secret,
+        playerData
+      );
+      if (!result.success) {
+        // Handle API error if needed
+        console.error("Failed to update score");
+      }
+    } else {
+      // Create new score
+      const result = await this.api.createUserData(playerData);
+      if (result.success && result.data.id && result.data.secret) {
+        this.setUserIdentity(result.data);
+      } else {
+        console.error("Failed to create score");
+      }
     }
+
+    // Refresh scores from server
+    await this.loadScores();
   }
 
   addScore(playerName, score, level) {
-    const existing = this.scores.find((s) => s.id === this.userId);
+    const existingIndex = this.scores.findIndex(
+      (s) => s.id === (this.userIdentity ? this.userIdentity.id : null)
+    );
 
-    if (existing) {
-      if (score > existing.score) {
-        existing.score = score;
-        existing.level = level;
-        existing.date = new Date().toLocaleDateString();
-        existing.name = playerName; // Update name as well
+    if (existingIndex !== -1) {
+      if (score > this.scores[existingIndex].score) {
+        this.scores[existingIndex].score = score;
+        this.scores[existingIndex].level = level;
+        this.scores[existingIndex].name = playerName;
+        this.scores[existingIndex].date = new Date().toLocaleDateString();
       } else {
-        return false;
+        return false; // No update needed
       }
     } else {
+      // Add locally for now, will be replaced on next load
       this.scores.push({
+        id: this.userIdentity ? this.userIdentity.id : "local",
         name: playerName,
         score: score,
         level: level,
         date: new Date().toLocaleDateString(),
-        id: this.userId,
       });
     }
 
     this.scores.sort((a, b) => b.score - a.score);
-    this.scores = this.scores.slice(0, 10);
-    this.saveScores();
+    window.safeStorage.setItem("beadsShooterLeaderboard", JSON.stringify(this.scores));
     return true;
   }
 
@@ -78,7 +115,7 @@ export class LeaderboardManager {
 
     let scoresHTML = "";
     this.scores.forEach((score, index) => {
-      const isCurrentUser = score.id === this.userId;
+      const isCurrentUser = this.userIdentity && score.id === this.userIdentity.id;
       scoresHTML += `
         <div class="leaderboard-item ${
           index < 3 ? "top-three" : ""
@@ -114,30 +151,22 @@ export class LeaderboardManager {
         </div>
         <div class="modal-footer">
           <button class="modal-button" id="updateNameBtn">Update Name</button>
-          <button class="modal-button modal-button-secondary clear-leaderboard">Clear Scores</button>
         </div>
       </div>
     `;
 
     document.body.appendChild(modal);
 
-    // Event listeners
     modal.querySelector(".modal-close").addEventListener("click", () => {
       modal.remove();
     });
 
     modal.querySelector("#updateNameBtn").addEventListener("click", () => {
-      const userScore = this.scores.find(s => s.id === this.userId);
+      const userScore = this.userIdentity
+        ? this.scores.find(s => s.id === this.userIdentity.id)
+        : { score: 0, level: 1 }; // Default if no score yet
       this.promptForName(userScore.score, userScore.level, true);
       modal.remove();
-    });
-
-    modal.querySelector(".clear-leaderboard").addEventListener("click", () => {
-      if (confirm("Are you sure you want to delete all scores?")) {
-        this.scores = [];
-        this.saveScores();
-        modal.remove();
-      }
     });
   }
 
@@ -145,7 +174,7 @@ export class LeaderboardManager {
     const modal = document.createElement("div");
     modal.className = "name-input-modal";
     const title = isUpdate ? "Update Your Name" : "New High Score!";
-    const userScore = this.scores.find(s => s.id === this.userId);
+    const userScore = this.userIdentity ? this.scores.find(s => s.id === this.userIdentity.id) : null;
     const currentName = userScore ? userScore.name : "";
 
     modal.innerHTML = `
@@ -155,8 +184,8 @@ export class LeaderboardManager {
         <p>Level: ${level}</p>
         <input type="text" id="playerName" placeholder="Enter your name" maxlength="10" value="${currentName}">
         <div class="name-input-buttons">
-          <button id="submitScore" class="modal-button modal-button-primary">Submit</button>
-          <button id="skipScore" class="modal-button modal-button-secondary">Skip</button>
+          <button id="submitScoreBtn" class="modal-button modal-button-primary">Submit</button>
+          <button id="skipScoreBtn" class="modal-button modal-button-secondary">Skip</button>
         </div>
       </div>
     `;
@@ -166,30 +195,30 @@ export class LeaderboardManager {
     const nameInput = modal.querySelector("#playerName");
     nameInput.focus();
 
-    const submitScore = () => {
+    const handleScoreSubmit = async () => {
       const name = nameInput.value.trim() || "Anonymous";
-      this.addScore(name, score, level);
+      this.addScore(name, score, level); // Update locally immediately
       modal.remove();
+      await this.submitScore(name, score, level);
       this.showLeaderboard();
     };
 
-    modal.querySelector("#submitScore").addEventListener("click", submitScore);
-    modal.querySelector("#skipScore").addEventListener("click", () => {
+    modal.querySelector("#submitScoreBtn").addEventListener("click", handleScoreSubmit);
+    modal.querySelector("#skipScoreBtn").addEventListener("click", () => {
       modal.remove();
       this.showLeaderboard();
     });
 
     nameInput.addEventListener("keypress", (e) => {
       if (e.key === "Enter") {
-        submitScore();
+        handleScoreSubmit();
       }
     });
   }
 
   checkNewRecord(score, level) {
-    const userScore = this.scores.find((s) => s.id === this.userId);
-    const isHighScore =
-      this.scores.length < 10 || score > this.scores[this.scores.length - 1].score;
+    const userScore = this.userIdentity ? this.scores.find(s => s.id === this.userIdentity.id) : null;
+    const isHighScore = this.scores.length < 10 || score > this.scores[this.scores.length - 1].score;
 
     if (isHighScore && (!userScore || score > userScore.score)) {
       this.promptForName(score, level);
