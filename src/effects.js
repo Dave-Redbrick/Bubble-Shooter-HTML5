@@ -6,29 +6,30 @@ export class EffectsManager {
       active: false,
       intensity: 0,
       duration: 0,
-      time: 0
+      time: 0,
     };
     this.slowMotion = {
       active: false,
       factor: 1,
       duration: 0,
-      time: 0
+      time: 0,
     };
     this.colorFlash = {
       active: false,
-      color: '#ffffff',
+      color: "#ffffff",
       alpha: 0,
       duration: 0,
-      time: 0
+      time: 0,
     };
     this.levelUpText = {
       active: false,
-      text: '',
-      x: 0, y: 0,
+      text: "",
+      x: 0,
+      y: 0,
       alpha: 0,
       scale: 1,
       duration: 3,
-      time: 0
+      time: 0,
     };
   }
 
@@ -45,7 +46,7 @@ export class EffectsManager {
     if (this.game.settings && !this.game.settings.settings.screenShake) {
       return;
     }
-    
+
     this.screenShake.active = true;
     this.screenShake.intensity = Math.min(intensity, 5); // 최대 강도 제한
     this.screenShake.duration = duration;
@@ -60,18 +61,22 @@ export class EffectsManager {
       this.screenShake.active = false;
       // 원래 위치로 복원
       const canvas = this.game.canvas;
-      canvas.style.transform = 'translate(0px, 0px)';
+      canvas.style.transform = "translate(0px, 0px)";
       return;
     }
 
     const progress = this.screenShake.time / this.screenShake.duration;
     const currentIntensity = this.screenShake.intensity * (1 - progress);
-    
+
     // 부드러운 사인파 기반 흔들림
     const frequency = 20; // 흔들림 주파수
-    const offsetX = Math.sin(this.screenShake.time * frequency) * currentIntensity;
-    const offsetY = Math.cos(this.screenShake.time * frequency * 1.3) * currentIntensity * 0.5;
-    
+    const offsetX =
+      Math.sin(this.screenShake.time * frequency) * currentIntensity;
+    const offsetY =
+      Math.cos(this.screenShake.time * frequency * 1.3) *
+      currentIntensity *
+      0.5;
+
     const canvas = this.game.canvas;
     canvas.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
   }
@@ -99,7 +104,7 @@ export class EffectsManager {
   }
 
   // 부드러운 색상 플래시 효과
-  startColorFlash(color = '#ffffff', duration = 0.15) {
+  startColorFlash(color = "#ffffff", duration = 0.15) {
     this.colorFlash.active = true;
     this.colorFlash.color = color;
     this.colorFlash.duration = duration;
@@ -112,7 +117,7 @@ export class EffectsManager {
 
     this.colorFlash.time += dt;
     const progress = this.colorFlash.time / this.colorFlash.duration;
-    
+
     if (progress >= 1) {
       this.colorFlash.active = false;
       this.colorFlash.alpha = 0;
@@ -136,11 +141,15 @@ export class EffectsManager {
     this.levelUpText.active = true;
     this.levelUpText.text = `LEVEL ${level} UP!`;
 
-    const dangerLineY = this.game.player.y - this.game.levelData.tileHeight * 3;
+    // 데드라인 위치와 그리드 우측 끝 위치 가져오기
+    const deadlineY = this.game.levelData.deadlineY;
     const gridRightX = this.game.levelData.x + this.game.levelData.width;
 
+    // 폰트 크기를 타일 크기에 맞게 조정 (콤보 텍스트보다 약간 더 크게)
+    const fontSize = Math.min(this.game.levelData.tileWidth, 48);
+
     this.levelUpText.x = gridRightX - 20;
-    this.levelUpText.y = dangerLineY - 80; // 콤보보다 약간 아래
+    this.levelUpText.y = deadlineY - fontSize * 1.5; // 콤보 텍스트보다 위에 위치
 
     this.levelUpText.time = 0;
     this.levelUpText.alpha = 1;
@@ -169,7 +178,7 @@ export class EffectsManager {
 
     // 마지막 1초간 사라지는 효과
     if (effect.time > effect.duration - 1) {
-      effect.alpha = (effect.duration - effect.time);
+      effect.alpha = effect.duration - effect.time;
     } else {
       effect.alpha = 1;
     }
@@ -179,34 +188,35 @@ export class EffectsManager {
     if (!this.levelUpText.active) return;
 
     const effect = this.levelUpText;
+    const fontSize = Math.min(this.game.levelData.tileWidth, 48);
 
     ctx.save();
     ctx.globalAlpha = effect.alpha;
     ctx.translate(effect.x, effect.y);
     ctx.scale(effect.scale, effect.scale);
 
-    ctx.font = 'bold 36px Arial';
-    ctx.textAlign = 'right';
-    ctx.textBaseline = 'bottom';
+    ctx.font = `bold ${fontSize}px 'Varela Round'`;
+    ctx.textAlign = "right";
+    ctx.textBaseline = "bottom";
 
     // 그림자
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+    ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
     ctx.fillText(effect.text, 2, 2);
 
     // 메인 텍스트
-    ctx.fillStyle = '#00ff88';
+    ctx.fillStyle = "#00ff88";
     ctx.fillText(effect.text, 0, 0);
 
     // 외곽선
-    ctx.strokeStyle = '#ffffff';
-    ctx.lineWidth = 1.5;
-    ctx.strokeText(effect.text, 0, 0);
+    // ctx.strokeStyle = "#ffffff";
+    // ctx.lineWidth = 1.5;
+    // ctx.strokeText(effect.text, 0, 0);
 
     ctx.restore();
   }
 
   // 파티클 효과용 부드러운 링 생성
-  createSoftExplosionRing(x, y, maxRadius = 50, color = '#ff6600') {
+  createSoftExplosionRing(x, y, maxRadius = 50, color = "#ff6600") {
     const rings = [];
     for (let i = 0; i < 2; i++) {
       rings.push({
@@ -218,24 +228,24 @@ export class EffectsManager {
         color: color,
         speed: 200 + i * 50,
         life: 0.6 - i * 0.1,
-        maxLife: 0.6 - i * 0.1
+        maxLife: 0.6 - i * 0.1,
       });
     }
     return rings;
   }
 
   updateExplosionRings(rings, dt) {
-    return rings.filter(ring => {
+    return rings.filter((ring) => {
       ring.radius += ring.speed * dt;
       ring.life -= dt;
       ring.alpha = Math.max(0, ring.life / ring.maxLife);
-      
+
       return ring.life > 0 && ring.radius < ring.maxRadius;
     });
   }
 
   renderExplosionRings(ctx, rings) {
-    rings.forEach(ring => {
+    rings.forEach((ring) => {
       ctx.save();
       ctx.globalAlpha = ring.alpha * 0.6; // 부드러운 투명도
       ctx.strokeStyle = ring.color;

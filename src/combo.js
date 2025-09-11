@@ -118,12 +118,16 @@ export class ComboManager {
   render(ctx) {
     if (!this.comboDisplay.visible) return;
 
-    const dangerLineY = this.game.player.y - this.game.levelData.tileHeight * 3;
+    // 데드라인 위치 가져오기
+    const deadlineY = this.game.levelData.deadlineY;
     const gridRightX = this.game.levelData.x + this.game.levelData.width;
 
-    // 위치를 위험선 우측 상단으로 변경
+    // 폰트 크기를 타일 크기에 맞게 조정
+    const fontSize = Math.min(this.game.levelData.tileWidth, 48);
+
+    // 위치를 데드라인 바로 위로 설정
     const x = gridRightX - 20;
-    const y = dangerLineY - 20;
+    const y = deadlineY - fontSize / 2; // 데드라인보다 폰트 크기 + 여백만큼 위
 
     ctx.save();
     ctx.globalAlpha = this.comboDisplay.alpha;
@@ -132,9 +136,9 @@ export class ComboManager {
 
     // 그림자
     ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
-    ctx.font = "bold 48px Arial";
-    ctx.textAlign = "right"; // 오른쪽 정렬
-    ctx.textBaseline = "bottom"; // 하단 정렬
+    ctx.font = `bold ${fontSize}px 'Varela Round'`;
+    ctx.textAlign = "right";
+    ctx.textBaseline = "bottom";
     ctx.fillText(this.comboDisplay.text, 2, 2);
 
     // 메인 텍스트
@@ -149,9 +153,9 @@ export class ComboManager {
     ctx.fillText(this.comboDisplay.text, 0, 0);
 
     // 외곽선
-    ctx.strokeStyle = "#ffffff";
-    ctx.lineWidth = 2;
-    ctx.strokeText(this.comboDisplay.text, 0, 0);
+    // ctx.strokeStyle = "#ffffff";
+    // ctx.lineWidth = 2;
+    // ctx.strokeText(this.comboDisplay.text, 0, 0);
 
     ctx.restore();
   }
