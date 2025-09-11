@@ -57,7 +57,7 @@ window.onload = async function () {
   // Leaderboard availability check
   const apiAvailable = await checkApiAvailability();
   const incognito = await isIncognito();
-  window.isLeaderboardEnabled = true;
+  window.isLeaderboardEnabled = apiAvailable && !incognito;
 
   await PokiSDK.init();
   // loading done

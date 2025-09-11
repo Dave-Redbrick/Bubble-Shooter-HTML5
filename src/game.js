@@ -447,41 +447,41 @@ export class BubbleShooterGame {
   }
 
   newGame() {
-    PokiSDK.commercialBreak(() => {
-      // 게임과 오디오 일시 정지
-      this.sound.setMuted(true);
-    }).then(() => {
-      // 광고 종료 후 게임 재개
-      this.sound.setMuted(false);
+    this.score = 0;
+    this.currentLevel = 1;
+    this.rowOffset = 0;
+    this.maxChances = 5;
+    this.chancesUntilNewRow = this.maxChances;
+    this.shotsWithoutPop = 0;
+    this.comboCount = 0;
+    this.wallBounceCount = 0;
 
-      this.score = 0;
-      this.currentLevel = 1;
-      this.rowOffset = 0;
-      this.maxChances = 5;
-      this.chancesUntilNewRow = this.maxChances;
-      this.shotsWithoutPop = 0;
-      this.comboCount = 0;
-      this.wallBounceCount = 0;
+    this.items.aimGuide.active = false;
 
-      this.items.aimGuide.active = false;
+    // 콤보 리셋
+    this.combo.resetCombo();
 
-      // 콤보 리셋
-      this.combo.resetCombo();
+    this.setGameState(CONFIG.GAME_STATES.READY);
+    this.levelManager.initializeGame(); // 랜덤 레벨 생성
+    this.nextBubble();
+    this.nextBubble();
+    this.updateUI();
 
-      this.setGameState(CONFIG.GAME_STATES.READY);
-      this.levelManager.initializeGame(); // 랜덤 레벨 생성
-      this.nextBubble();
-      this.nextBubble();
-      this.updateUI();
-
-      if (this.ui) {
-        this.ui.enableItemButtons();
-      }
-
-      // onGameStart
-      // window.CrazyGames.SDK.game.gameplayStart();
-      PokiSDK.gameplayStart();
-    });
+    if (this.ui) {
+      this.ui.enableItemButtons();
+    }
+    if (this.initialized) {
+      PokiSDK.commercialBreak(() => {
+        // 게임과 오디오 일시 정지
+        this.sound.setMuted(true);
+      }).then(() => {
+        // 광고 종료 후 게임 재개
+        this.sound.setMuted(false);
+        // onGameStart
+        // window.CrazyGames.SDK.game.gameplayStart();
+        PokiSDK.gameplayStart();
+      });
+    }
   }
 
   updateScore(points) {
