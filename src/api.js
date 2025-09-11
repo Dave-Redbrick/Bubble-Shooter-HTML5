@@ -1,6 +1,6 @@
 const API_BASE_URL = "https://auds.poki.io/v0/";
 const GAME_ID = "use-your-poki-game-id"; // This should be replaced with the actual game ID from Poki.
-const ENDPOINT = "userdata/tests";
+const ENDPOINT = "userdata/leaderboard";
 
 export class ApiClient {
   constructor() {
